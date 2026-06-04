@@ -1,0 +1,3 @@
+# SeniorEase - Mobile
+
+⚠️ **Projeto em construção** ⚠️
