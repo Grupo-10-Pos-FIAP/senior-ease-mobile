@@ -33,6 +33,9 @@ migrate_working_dir/
 /build/
 /coverage/
 
+# Golden/widget test failure output (local diffs; never commit)
+test/**/failures/
+
 # Symbolication related
 app.*.symbols
 
@@ -43,3 +46,10 @@ app.*.map.json
 /android/app/debug
 /android/app/profile
 /android/app/release
+
+
+# Arquivos com chaves de API reais
+.env
+android/app/google-services.json
+# Android build output
+android/build/

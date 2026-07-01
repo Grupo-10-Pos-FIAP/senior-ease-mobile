@@ -11,13 +11,13 @@ class HomeScreen extends StatelessWidget {
         backgroundColor: Colors.white,
         title: SvgPicture.asset(
           'lib/assets/logo.svg',
-          width: 140,
+          width: 140, 
           fit: BoxFit.contain,
         ),
       ),
       body: Container(
         color: const Color(0xFFF9F9F9),
-        child: const Center(child: Text('Welcome to SeniorEase!')),
+        child: const Center(child: Text('Welcome to SeniorEASE!')),
       ),
     );
   }

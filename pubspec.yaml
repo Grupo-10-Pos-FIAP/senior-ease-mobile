@@ -1,7 +1,9 @@
-name: seniorease
+name: senior_ease
 description: "A new Flutter project."
-publish_to: "none"
-version: 0.1.0
+
+publish_to: "none" # Remove this line if you wish to publish to pub.dev
+
+version: 1.0.0+1
 
 environment:
   sdk: ^3.10.7
@@ -9,21 +11,84 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  flutter_svg: ^2.0.0
+  firebase_core: ^3.1.0 
+  firebase_auth: ^5.1.0
+  google_sign_in: ^6.2.2
+  flutter_svg: ^2.0.10+1
+  flutter_dotenv: ^6.0.0
+
+  cupertino_icons: ^1.0.8
+  cloud_firestore: ^5.1.0
+  firebase_storage: ^12.1.0
+  provider: ^6.1.2
+  state_notifier: ^1.0.0
+  flutter_state_notifier: ^1.0.0
+  get_it: ^9.2.0
+  google_fonts: ^8.0.1
+  url_launcher: ^6.3.1
+  syncfusion_flutter_charts: ^32.2.7
+  connectivity_plus: ^7.0.0
+  file_picker: ^10.3.10
+  path_provider: ^2.1.5
+  universal_html: ^2.3.0
+  uuid: ^4.5.3
+  flutter_image_compress: ^2.4.0
+  cached_network_image: ^3.4.1
+  image: ^4.8.0
+  intl: ^0.20.2
+  flutter_secure_storage: ^9.2.4
+  encrypt: ^5.0.3
 
 dev_dependencies:
   flutter_test:
     sdk: flutter
+  integration_test:
+    sdk: flutter
+  mocktail: ^1.0.4
+  nested: ^1.0.0
+
   flutter_lints: ^6.0.0
+
 
 flutter:
   uses-material-design: true
 
   assets:
+    - .env
     - lib/assets/img-loading-initial.svg
     - lib/assets/logo.svg
+    - lib/assets/back.svg
+    - lib/assets/bin.svg
+    - lib/assets/check.svg
+    - lib/assets/contrast.svg
+    - lib/assets/edit.svg
+    - lib/assets/foward.svg
     - lib/assets/logo-dark.svg
-    - fonts/Roboto-Regular.ttf
-    - fonts/Roboto-Medium.ttf
-    - fonts/Roboto-SemiBold.ttf
-    - fonts/Roboto-Bold.ttf
+    - lib/assets/logout.svg
+    - lib/assets/navigation.svg
+    - lib/assets/steps.svg
+    - lib/assets/text.svg
+    - lib/assets/undo.svg
+
+
+  # An image asset can refer to one or more resolution-specific "variants", see
+  # https://flutter.dev/to/resolution-aware-images
+
+  # For details regarding adding assets from package dependencies, see
+  # https://flutter.dev/to/asset-from-package
+
+  # To add custom fonts to your application, add a fonts section here,
+  # in this "flutter" section. Each entry in this list should have a
+  # "family" key with the font family name, and a "fonts" key with a
+  # list giving the asset and other descriptors for the font. For
+  # example:
+  fonts:
+    - family: Roboto
+      fonts:
+        - asset: fonts/Roboto-Regular.ttf
+        - asset: fonts/Roboto-Medium.ttf
+          weight: 500
+        - asset: fonts/Roboto-SemiBold.ttf
+          weight: 600
+        - asset: fonts/Roboto-Bold.ttf
+          weight: 700
