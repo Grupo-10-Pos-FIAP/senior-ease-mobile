@@ -51,7 +51,7 @@ class AppDesignTokens {
 
   static const Color colorBase = Color(0xFF1A1A1A);
   static const Color colorPrimary = Color(0xFF1F2D5C);
-  static const Color colorSecondary = Color(0xFF658864);
+  static const Color colorSecondary = Color(0xFF42484E);
   static const Color colorNeutral = colorGray300;
   static const Color colorSoft = Color(0xFFE1F0FB);
 
