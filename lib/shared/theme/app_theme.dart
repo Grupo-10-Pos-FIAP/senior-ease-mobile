@@ -100,9 +100,6 @@ class AppTheme {
                 if (states.contains(WidgetState.pressed)) {
                   return AppDesignTokens.buttonBrandBgPressed;
                 }
-                if (states.contains(WidgetState.hovered)) {
-                  return AppDesignTokens.buttonBrandBgHovered;
-                }
                 return AppDesignTokens.buttonBrandBgDefault;
               }),
               foregroundColor: WidgetStateProperty.resolveWith((states) {
@@ -138,9 +135,6 @@ class AppTheme {
                 if (states.contains(WidgetState.pressed)) {
                   return AppDesignTokens.buttonOutlinedBgPressed;
                 }
-                if (states.contains(WidgetState.hovered)) {
-                  return AppDesignTokens.buttonOutlinedBgHovered;
-                }
                 return AppDesignTokens.buttonOutlinedBgDefault;
               }),
               foregroundColor: WidgetStateProperty.resolveWith((states) {
@@ -150,21 +144,12 @@ class AppTheme {
                 if (states.contains(WidgetState.pressed)) {
                   return AppDesignTokens.buttonOutlinedContentPressed;
                 }
-                if (states.contains(WidgetState.hovered)) {
-                  return AppDesignTokens.buttonOutlinedContentHovered;
-                }
                 return AppDesignTokens.buttonOutlinedContentDefault;
               }),
               side: WidgetStateProperty.resolveWith((states) {
                 if (states.contains(WidgetState.disabled)) {
                   return const BorderSide(
                     color: AppDesignTokens.buttonOutlinedBorderDisabled,
-                  );
-                }
-                if (states.contains(WidgetState.pressed) ||
-                    states.contains(WidgetState.hovered)) {
-                  return const BorderSide(
-                    color: AppDesignTokens.buttonOutlinedBorderHovered,
                   );
                 }
                 return const BorderSide(

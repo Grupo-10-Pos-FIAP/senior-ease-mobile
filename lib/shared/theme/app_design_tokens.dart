@@ -51,6 +51,9 @@ class AppDesignTokens {
 
   static const Color colorBase = Color(0xFF1A1A1A);
   static const Color colorPrimary = Color(0xFF1F2D5C);
+  static const Color colorPrimarySurface = Color(0xFFE6E4FF);
+  static const Color colorErrorSurface = Color(0xFFFBE6E4);
+  static const Color colorErrorOnSurface = Color(0xFF5C271F);
   static const Color colorSecondary = Color(0xFF42484E);
   static const Color colorNeutral = colorGray300;
   static const Color colorSoft = Color(0xFFE1F0FB);
@@ -61,7 +64,6 @@ class AppDesignTokens {
   static const Color colorBgPrimary = colorPrimary;
   static const Color colorBgSecondary = colorSecondary;
   static const Color colorBgDisabled = colorGray200;
-  static const Color colorBgHovered = colorSoft;
   static const Color colorBgOverlay = Color(0xCCFFFFFF);
   static const Color colorBgFullscreen = Color(0xE6FFFFFF);
   static const Color colorBgAvatar = Color(0xFFEDF2FE);
@@ -76,11 +78,9 @@ class AppDesignTokens {
   static const Color colorBorderDefault = colorNeutral;
   static const Color colorBorderDisabled = Color(0x00FFFFFF);
   static const Color colorBorderFocused = colorPrimary;
-  static const Color colorBorderHovered = colorNeutral;
 
-  static const Color colorLink = Color(0xFF1C6EA4);
-  static const Color colorLinkHover = Color(0xFF144B70);
-  static const Color colorLinkVisited = Color(0xFF0F3C5C);
+  static const Color colorLink = colorPrimary;
+  static const Color colorLinkVisited = buttonBrandBgPressed;
 
   static const Color colorFeedbackSuccess = Color(0xFF81BE7F);
   static const Color colorFeedbackWarning = Color(0xFFDEBB51);
@@ -123,44 +123,35 @@ class AppDesignTokens {
   static const int zIndexTooltip = 1070;
   static const int zIndexLoading = 9999;
 
-  static const Color buttonBrandBgDefault = Color(0xFF1C6EA4);
-  static const Color buttonBrandBgHovered = Color(0xFF2395DF);
-  static const Color buttonBrandBgPressed = Color(0xFF0C4165);
-  static const Color buttonBrandBgDisabled = Color(0xFFCDE6F6);
+  static const Color buttonBrandBgDefault = colorPrimary;
+  static const Color buttonBrandBgPressed = Color(0xFF141D3D);
+  static const Color buttonBrandBgDisabled = colorPrimarySurface;
   static const Color buttonBrandContentDefault = colorWhite;
-  static const Color buttonBrandContentDisabled = colorWhite;
+  static const Color buttonBrandContentDisabled = colorContentDisabled;
 
   static const Color buttonSecondaryBgDefault = Color(0xFF658864);
-  static const Color buttonSecondaryBgHovered = Color(0xFF81BE7F);
   static const Color buttonSecondaryBgPressed = Color(0xFF2C4D2B);
   static const Color buttonSecondaryBgDisabled = Color(0xFFD6EED6);
   static const Color buttonSecondaryContentDefault = colorWhite;
   static const Color buttonSecondaryContentDisabled = colorWhite;
 
   static const Color buttonOutlinedBgDefault = Colors.transparent;
-  static const Color buttonOutlinedBgHovered = Color(0xFFFAFAFA);
   static const Color buttonOutlinedBgPressed = Color(0xFF3A3C3C);
   static const Color buttonOutlinedBgDisabled = Colors.transparent;
   static const Color buttonOutlinedBorderDefault = Color(0x331A1A1A);
-  static const Color buttonOutlinedBorderHovered = Color(0xCC1A1A1A);
-  static const Color buttonOutlinedBorderPressed = Color(0xCC1A1A1A);
   static const Color buttonOutlinedBorderDisabled = Color(0x1A1A1A1A);
-  static const Color buttonOutlinedContentDefault = Color(0xFF555555);
-  static const Color buttonOutlinedContentHovered = colorBase;
+  static const Color buttonOutlinedContentDefault = colorPrimary;
   static const Color buttonOutlinedContentPressed = colorWhite;
   static const Color buttonOutlinedContentDisabled = Color(0xFFC2C2C2);
 
   static const Color buttonNegativeBgDefault = Colors.transparent;
-  static const Color buttonNegativeBgHovered = colorBase;
   static const Color buttonNegativeBgPressed = colorBlack;
   static const Color buttonNegativeBgDisabled = Colors.transparent;
   static const Color buttonNegativeBorderDefault = colorWhite;
-  static const Color buttonNegativeBorderHovered = Color(0xFF555555);
   static const Color buttonNegativeBorderPressed = colorBase;
   static const Color buttonNegativeBorderDisabled = colorWhite;
   static const Color buttonNegativeContentDefault = colorWhite;
   static const Color buttonNegativeContentDisabled = colorWhite;
 
   static const Color listItemContentActived = Color(0xFF2563EB);
-  static const Color listItemBgHovered = Color(0xFFF3F4F6);
 }

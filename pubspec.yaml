@@ -11,32 +11,25 @@ environment:
 dependencies:
   flutter:
     sdk: flutter
-  firebase_core: ^3.1.0 
-  firebase_auth: ^5.1.0
-  google_sign_in: ^6.2.2
+  firebase_core: ^4.11.0
+  firebase_auth: ^6.5.4
+  google_sign_in: ^7.2.0
   flutter_svg: ^2.0.10+1
   flutter_dotenv: ^6.0.0
 
-  cupertino_icons: ^1.0.8
-  cloud_firestore: ^5.1.0
-  firebase_storage: ^12.1.0
+  cloud_firestore: ^6.6.0
+  firebase_storage: ^13.4.3
   provider: ^6.1.2
   state_notifier: ^1.0.0
   flutter_state_notifier: ^1.0.0
   get_it: ^9.2.0
   google_fonts: ^8.0.1
   url_launcher: ^6.3.1
-  syncfusion_flutter_charts: ^32.2.7
   connectivity_plus: ^7.0.0
-  file_picker: ^10.3.10
-  path_provider: ^2.1.5
-  universal_html: ^2.3.0
-  uuid: ^4.5.3
-  flutter_image_compress: ^2.4.0
   cached_network_image: ^3.4.1
   image: ^4.8.0
   intl: ^0.20.2
-  flutter_secure_storage: ^9.2.4
+  flutter_secure_storage: ^10.3.1
   encrypt: ^5.0.3
 
 dev_dependencies:
