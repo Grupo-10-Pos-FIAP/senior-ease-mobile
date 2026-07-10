@@ -11,7 +11,7 @@ class AppSettings {
   factory AppSettings.defaults() => const AppSettings(
     fontSize: 'Normal',
     contrastLevel: 'Padrão',
-    navigationMode: 'Básico',
+    navigationMode: 'Simples',
     spacing: 'Normal',
     enhancedVisualFeedback: false,
     criticalActionConfirmation: true,

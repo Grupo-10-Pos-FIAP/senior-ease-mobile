@@ -28,7 +28,7 @@ class SettingsScreen extends StatelessWidget {
     'Escuro',
   ];
 
-  static const List<String> _navigationModes = ['Básico', 'Avançado'];
+  static const List<String> _navigationModes = ['Simples', 'Avançado'];
 
   static const List<String> _spacingOptions = [
     'Compacto',
@@ -105,7 +105,7 @@ class SettingsScreen extends StatelessWidget {
             AppSubtitle(text: 'Modo de navegação'),
             const SizedBox(height: AppDesignTokens.spacingXs),
             const AppInfo(
-              'No modo básico, a plataforma mostra menos opções e textos '
+              'No modo Simples, a plataforma mostra menos opções e textos '
               'mais diretos. Já no modo avançado, todas as opções são '
               'visíveis.',
             ),
