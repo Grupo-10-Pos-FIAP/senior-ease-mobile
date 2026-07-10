@@ -40,7 +40,13 @@ class DashboardScreen extends StatelessWidget {
                   ),
                   const SizedBox(height: AppDesignTokens.spacingLg),
                   if (!controller.isLoading)
-                    ...items.map((activity) => ActivityCard(activity: activity)),
+                    ...items.map(
+                      (activity) => ActivityCard(
+                        activity: activity,
+                        onHowTo: () =>
+                            Navigator.of(context).pushNamed(RouteNames.steps),
+                      ),
+                    ),
                   if (!controller.isLoading && items.isEmpty)
                     Padding(
                       padding: const EdgeInsets.only(
