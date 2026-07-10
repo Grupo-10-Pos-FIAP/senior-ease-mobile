@@ -1,31 +1,11 @@
 import 'package:flutter/material.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
-import 'package:senior_ease/shared/widgets/app_card.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
+import 'package:senior_ease/shared/widgets/app_card.dart';
 
-class ActivityStepsScreen extends StatefulWidget {
+class ActivityStepsScreen extends StatelessWidget {
   const ActivityStepsScreen({super.key});
-
-  @override
-  State<ActivityStepsScreen> createState() => _ActivityStepsScreenState();
-}
-
-class _ActivityStepsScreenState extends State<ActivityStepsScreen> {
-  final List<_ActivityStep> _steps = [
-    _ActivityStep(title: 'Boas-vindas e apresentação', completed: true),
-    _ActivityStep(title: 'Conhecendo o aparelho', completed: true),
-    _ActivityStep(title: 'Aprendendo toques e comandos', completed: false),
-    _ActivityStep(title: 'Conectando à internet', completed: false),
-  ];
-
-  void _toggleStepCompletion(int index) {
-    setState(() {
-      _steps[index] = _steps[index].copyWith(
-        completed: !_steps[index].completed,
-      );
-    });
-  }
 
   @override
   Widget build(BuildContext context) {
@@ -61,19 +41,30 @@ class _ActivityStepsScreenState extends State<ActivityStepsScreen> {
               ),
             ),
             const SizedBox(height: AppDesignTokens.spacingLg),
-            ..._steps.asMap().entries.map((entry) {
-              final index = entry.key;
-              final step = entry.value;
-              return AppCard.simple(
-                title: step.title,
-                subtitle: step.completed ? 'Etapa concluída' : 'Pendente',
-                selected: step.completed,
-                onTap: () {
-                  _toggleStepCompletion(index);
-                  Navigator.of(context).pushNamed('/stage');
-                },
-              );
-            }),
+            AppCard.simple(
+              title: 'Boas-vindas e apresentação',
+              subtitle: 'Etapa concluída',
+              selected: true,
+              onTap: () => Navigator.of(context).pushNamed('/stage'),
+            ),
+            AppCard.simple(
+              title: 'Conhecendo o aparelho',
+              subtitle: 'Etapa concluída',
+              selected: true,
+              onTap: () => Navigator.of(context).pushNamed('/stage'),
+            ),
+            AppCard.simple(
+              title: 'Aprendendo toques e comandos',
+              subtitle: 'Etapa concluída',
+              selected: true,
+              onTap: () => Navigator.of(context).pushNamed('/stage'),
+            ),
+            AppCard.simple(
+              title: 'Conectando à internet',
+              subtitle: 'Etapa concluída',
+              selected: true,
+              onTap: () => Navigator.of(context).pushNamed('/stage'),
+            ),
             const SizedBox(height: AppDesignTokens.spacingLg),
             AppButton(
               label: 'Concluir atividade',
@@ -93,20 +84,6 @@ class _ActivityStepsScreenState extends State<ActivityStepsScreen> {
           ],
         ),
       ),
-    );
-  }
-}
-
-class _ActivityStep {
-  final String title;
-  final bool completed;
-
-  _ActivityStep({required this.title, required this.completed});
-
-  _ActivityStep copyWith({String? title, bool? completed}) {
-    return _ActivityStep(
-      title: title ?? this.title,
-      completed: completed ?? this.completed,
     );
   }
 }

@@ -1,4 +1,5 @@
 import 'package:flutter/material.dart';
+import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
@@ -69,7 +70,9 @@ class ActivityStageScreen extends StatelessWidget {
                   child: AppButton(
                     label: '',
                     onPressed: () {
-                      Navigator.of(context).pushReplacementNamed('/profile');
+                      Navigator.of(
+                        context,
+                      ).pushReplacementNamed(RouteNames.profile);
                     },
                     variant: ButtonVariant.primary,
                     icon: const Icon(
