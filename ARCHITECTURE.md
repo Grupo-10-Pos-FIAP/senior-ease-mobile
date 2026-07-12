@@ -9,7 +9,7 @@ tarefas → `tasks`, perfil → `profile`, configurações → `settings`.
 
 ## Estrutura
 
-```
+```text
 lib/
   app/        # composition root: MainApp, rotas, DI, telas de composição (sem
               # regra de negócio própria) — splash e o shell de tabs do profile
@@ -43,6 +43,16 @@ Cada módulo em `features/` segue `domain/ → data/ → presentation/`:
 
 Nenhuma dessas regras é garantida por lint automático — são convenção de
 projeto, verificadas manualmente/por revisão de código.
+
+**Exceção deliberada**: `core/app_mode/app_mode_controller.dart` é um
+`ChangeNotifier` singleton (registrado no GetIt) que guarda `isSimpleMode`,
+derivado do "Modo de navegação" salvo em `configuracoes`/`settings`. Como o
+Simple mode precisa esconder elementos em telas de módulos diferentes
+(`dashboard` hoje; potencialmente outros no futuro), ele vive em `core/` — o
+único lugar de onde qualquer `features/*` pode importar sem virar um import
+cruzado feature-a-feature. `SettingsController` escreve nele ao
+carregar/salvar; `DashboardController` só lê (`isSimpleMode` getter) e escuta
+mudanças para recalcular as abas visíveis.
 
 ## Simplificações deliberadas
 

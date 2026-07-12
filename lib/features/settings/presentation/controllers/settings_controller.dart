@@ -1,14 +1,16 @@
 import 'package:flutter/foundation.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/core/usecase/usecase.dart';
 import 'package:senior_ease/features/settings/domain/entities/app_settings.dart';
 import 'package:senior_ease/features/settings/domain/usecases/get_settings.dart';
 import 'package:senior_ease/features/settings/domain/usecases/save_settings.dart';
 
 class SettingsController extends ChangeNotifier {
-  SettingsController(this._getSettings, this._saveSettings);
+  SettingsController(this._getSettings, this._saveSettings, this._appMode);
 
   final GetSettings _getSettings;
   final SaveSettings _saveSettings;
+  final AppModeController _appMode;
 
   bool isLoading = true;
   AppSettings draft = AppSettings.defaults();
@@ -22,6 +24,7 @@ class SettingsController extends ChangeNotifier {
     _persisted = await _getSettings(const NoParams());
     draft = _persisted;
     isLoading = false;
+    _appMode.update(isSimpleMode: _persisted.navigationMode == 'Simples');
     notifyListeners();
   }
 
@@ -60,6 +63,7 @@ class SettingsController extends ChangeNotifier {
   Future<void> save() async {
     await _saveSettings(draft);
     _persisted = draft;
+    _appMode.update(isSimpleMode: _persisted.navigationMode == 'Simples');
     notifyListeners();
   }
 

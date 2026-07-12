@@ -1,4 +1,5 @@
 import 'package:get_it/get_it.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/features/settings/data/datasources/settings_local_data_source.dart';
 import 'package:senior_ease/features/settings/data/repositories/settings_repository_impl.dart';
 import 'package:senior_ease/features/settings/domain/repositories/settings_repository.dart';
@@ -17,5 +18,7 @@ void registerSettingsDependencies(GetIt sl) {
   sl.registerLazySingleton(() => SaveSettings(sl()));
   // Singleton (not factory): ProfileShellScreen creates this once and keeps
   // both tabs mounted via IndexedStack, so a single shared instance is correct.
-  sl.registerLazySingleton(() => SettingsController(sl(), sl()));
+  sl.registerLazySingleton(
+    () => SettingsController(sl(), sl(), sl<AppModeController>()),
+  );
 }

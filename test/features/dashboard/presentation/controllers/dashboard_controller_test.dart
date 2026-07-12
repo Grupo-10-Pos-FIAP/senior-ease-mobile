@@ -1,5 +1,6 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/core/usecase/usecase.dart';
 import 'package:senior_ease/features/dashboard/domain/entities/activity.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/get_activities.dart';
@@ -9,6 +10,7 @@ class MockGetActivities extends Mock implements GetActivities {}
 
 void main() {
   late MockGetActivities getActivities;
+  late AppModeController appMode;
   late DashboardController controller;
 
   const activities = [
@@ -28,7 +30,8 @@ void main() {
 
   setUp(() {
     getActivities = MockGetActivities();
-    controller = DashboardController(getActivities);
+    appMode = AppModeController();
+    controller = DashboardController(getActivities, appMode);
   });
 
   test('load() fetches activities and stops loading', () async {
@@ -53,5 +56,14 @@ void main() {
 
     expect(controller.selectedTab, 1);
     expect(controller.filteredActivities, [activities[1]]);
+  });
+
+  test('hides the "Expiradas" tab and clamps selectedTab in simple mode', () {
+    controller.selectTab(2);
+
+    appMode.update(isSimpleMode: true);
+
+    expect(controller.tabLabels, ['Atividades', 'Concluídas']);
+    expect(controller.selectedTab, 0);
   });
 }

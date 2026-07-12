@@ -46,6 +46,7 @@ class SettingsScreen extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final draft = controller.draft;
+        final isSimpleMode = draft.navigationMode == 'Simples';
         return ListView(
           padding: const EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
@@ -121,73 +122,73 @@ class SettingsScreen extends StatelessWidget {
                   )
                   .toList(),
             ),
-            const SizedBox(height: AppDesignTokens.spacingXl),
-
-            AppSubtitle(text: 'Espaçamento entre elementos'),
-            const SizedBox(height: AppDesignTokens.spacingXs),
-            const AppInfo(
-              'Aumente o espaço entre botões e blocos se tiver dificuldade '
-              'para tocar.',
-            ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
-            AppCard(
-              options: _spacingOptions
-                  .map(
-                    (spacing) => AppCardItem(
-                      label: spacing,
-                      selected: draft.spacing == spacing,
-                      onTap: () => controller.selectSpacing(spacing),
-                    ),
-                  )
-                  .toList(),
-            ),
-            const SizedBox(height: AppDesignTokens.spacingXl),
-
-            AppSubtitle(text: 'Feedback visual reforçado'),
-            const SizedBox(height: AppDesignTokens.spacingXs),
-            const AppInfo(
-              'Destaca botões e foco com contornos mais visíveis ao tocar '
-              'ou navegar.',
-            ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
-            AppCard(
-              options: [
-                AppCardItem(
-                  label: 'Sim',
-                  selected: draft.enhancedVisualFeedback,
-                  onTap: () => controller.setEnhancedVisualFeedback(true),
-                ),
-                AppCardItem(
-                  label: 'Não',
-                  selected: !draft.enhancedVisualFeedback,
-                  onTap: () => controller.setEnhancedVisualFeedback(false),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppDesignTokens.spacingXl),
-
-            AppSubtitle(text: 'Confirmação em ações críticas'),
-            const SizedBox(height: AppDesignTokens.spacingXs),
-            const AppInfo(
-              'Pede confirmação antes de ações importantes, como restaurar '
-              'configurações.',
-            ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
-            AppCard(
-              options: [
-                AppCardItem(
-                  label: 'Sim',
-                  selected: draft.criticalActionConfirmation,
-                  onTap: () => controller.setCriticalActionConfirmation(true),
-                ),
-                AppCardItem(
-                  label: 'Não',
-                  selected: !draft.criticalActionConfirmation,
-                  onTap: () =>
-                      controller.setCriticalActionConfirmation(false),
-                ),
-              ],
-            ),
+            if (!isSimpleMode) ...[
+              const SizedBox(height: AppDesignTokens.spacingXl),
+              AppSubtitle(text: 'Espaçamento entre elementos'),
+              const SizedBox(height: AppDesignTokens.spacingXs),
+              const AppInfo(
+                'Aumente o espaço entre botões e blocos se tiver dificuldade '
+                'para tocar.',
+              ),
+              const SizedBox(height: AppDesignTokens.spacingMd),
+              AppCard(
+                options: _spacingOptions
+                    .map(
+                      (spacing) => AppCardItem(
+                        label: spacing,
+                        selected: draft.spacing == spacing,
+                        onTap: () => controller.selectSpacing(spacing),
+                      ),
+                    )
+                    .toList(),
+              ),
+              const SizedBox(height: AppDesignTokens.spacingXl),
+              AppSubtitle(text: 'Feedback visual reforçado'),
+              const SizedBox(height: AppDesignTokens.spacingXs),
+              const AppInfo(
+                'Destaca botões e foco com contornos mais visíveis ao tocar '
+                'ou navegar.',
+              ),
+              const SizedBox(height: AppDesignTokens.spacingMd),
+              AppCard(
+                options: [
+                  AppCardItem(
+                    label: 'Sim',
+                    selected: draft.enhancedVisualFeedback,
+                    onTap: () => controller.setEnhancedVisualFeedback(true),
+                  ),
+                  AppCardItem(
+                    label: 'Não',
+                    selected: !draft.enhancedVisualFeedback,
+                    onTap: () => controller.setEnhancedVisualFeedback(false),
+                  ),
+                ],
+              ),
+              const SizedBox(height: AppDesignTokens.spacingXl),
+              AppSubtitle(text: 'Confirmação em ações críticas'),
+              const SizedBox(height: AppDesignTokens.spacingXs),
+              const AppInfo(
+                'Pede confirmação antes de ações importantes, como restaurar '
+                'configurações.',
+              ),
+              const SizedBox(height: AppDesignTokens.spacingMd),
+              AppCard(
+                options: [
+                  AppCardItem(
+                    label: 'Sim',
+                    selected: draft.criticalActionConfirmation,
+                    onTap: () =>
+                        controller.setCriticalActionConfirmation(true),
+                  ),
+                  AppCardItem(
+                    label: 'Não',
+                    selected: !draft.criticalActionConfirmation,
+                    onTap: () =>
+                        controller.setCriticalActionConfirmation(false),
+                  ),
+                ],
+              ),
+            ],
             const SizedBox(height: AppDesignTokens.spacingXl),
 
             AppButton(
