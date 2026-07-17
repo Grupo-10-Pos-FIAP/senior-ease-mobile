@@ -45,5 +45,18 @@
 	<true/>
 	<key>UIApplicationSupportsIndirectInputEvents</key>
 	<true/>
+	<key>CFBundleURLTypes</key>
+	<array>
+		<dict>
+			<key>CFBundleTypeRole</key>
+			<string>Editor</string>
+			<key>CFBundleURLSchemes</key>
+			<array>
+				<!-- REVERSED_CLIENT_ID from GoogleService-Info.plist, required
+				     by Google Sign-In to receive the auth redirect on iOS. -->
+				<string>com.googleusercontent.apps.201174810090-6dutj0uugp9bso6ijvlj0mq9fh7dufmc</string>
+			</array>
+		</dict>
+	</array>
 </dict>
 </plist>

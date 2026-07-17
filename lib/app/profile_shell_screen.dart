@@ -25,14 +25,26 @@ class _ProfileShellScreenState extends State<ProfileShellScreen> {
   final List<String> _tabs = const ['Personalização', 'Informações'];
 
   @override
+  void initState() {
+    super.initState();
+    // sl<SettingsController>()/sl<ProfileInfoController>() are GetIt
+    // singletons shared for the app's lifetime, not owned by this screen —
+    // load() is kicked off once per visit here (not via Provider's `create`,
+    // which would dispose the shared instance when this screen is popped,
+    // breaking every later visit).
+    sl<SettingsController>().load();
+    sl<ProfileInfoController>().load();
+  }
+
+  @override
   Widget build(BuildContext context) {
     return MultiProvider(
       providers: [
-        ChangeNotifierProvider<SettingsController>(
-          create: (_) => sl<SettingsController>()..load(),
+        ChangeNotifierProvider<SettingsController>.value(
+          value: sl<SettingsController>(),
         ),
-        ChangeNotifierProvider<ProfileInfoController>(
-          create: (_) => sl<ProfileInfoController>()..load(),
+        ChangeNotifierProvider<ProfileInfoController>.value(
+          value: sl<ProfileInfoController>(),
         ),
       ],
       child: Scaffold(

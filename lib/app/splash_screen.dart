@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:flutter_svg/svg.dart';
+import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/auth/auth_controller.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 
 class SplashScreen extends StatefulWidget {
@@ -16,9 +18,11 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Simular carregamento do app
     Future.delayed(const Duration(seconds: 4), () {
-      if (mounted) {
-        Navigator.of(context).pushReplacementNamed(RouteNames.home);
-      }
+      if (!mounted) return;
+      final isSignedIn = sl<AuthController>().currentUser != null;
+      Navigator.of(
+        context,
+      ).pushReplacementNamed(isSignedIn ? RouteNames.home : RouteNames.login);
     });
   }
 

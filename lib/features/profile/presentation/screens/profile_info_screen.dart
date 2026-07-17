@@ -23,11 +23,11 @@ class ProfileInfoScreen extends StatelessWidget {
           ),
           children: [
             InfoRow(label: 'Nome completo', value: profile.fullName),
-            InfoRow(label: 'Idade', value: profile.age),
-            InfoRow(label: 'Matrícula', value: profile.registration),
+            InfoRow(label: 'Idade', value: _ageLabel(profile.birthDate)),
+            InfoRow(label: 'Matrícula', value: profile.registrationId),
             InfoRow(
               label: 'Possui alguma deficiência?',
-              value: profile.disabilityDescription,
+              value: profile.disabilityDescription ?? 'Não informado',
             ),
             InfoRow(label: 'E-mail', value: profile.email),
             InfoRow(label: 'Telefone', value: profile.phone),
@@ -50,5 +50,16 @@ class ProfileInfoScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  String _ageLabel(DateTime? birthDate) {
+    if (birthDate == null) return 'Não informada';
+    final now = DateTime.now();
+    var age = now.year - birthDate.year;
+    if (now.month < birthDate.month ||
+        (now.month == birthDate.month && now.day < birthDate.day)) {
+      age--;
+    }
+    return '$age anos';
   }
 }

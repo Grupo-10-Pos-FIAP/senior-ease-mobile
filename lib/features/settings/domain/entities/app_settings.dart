@@ -17,6 +17,36 @@ class AppSettings {
     criticalActionConfirmation: true,
   );
 
+  // Single source of truth for the selectable labels — shared between the
+  // Settings screen's option cards and the Firestore data source's
+  // label <-> 1-based-index mapping (preferences are stored as ints there).
+  static const List<String> fontSizeOptions = [
+    'Pequena',
+    'Reduzida',
+    'Normal',
+    'Grande',
+    'Muito grande',
+  ];
+
+  static const List<String> contrastLevelOptions = [
+    'Padrão',
+    'Suave',
+    'Conforto',
+    'Alto',
+    'Máximo',
+    'Escuro',
+  ];
+
+  static const List<String> navigationModeOptions = ['Simples', 'Avançado'];
+
+  static const List<String> spacingOptions = [
+    'Compacto',
+    'Reduzido',
+    'Normal',
+    'Amplo',
+    'Muito amplo',
+  ];
+
   final String fontSize;
   final String contrastLevel;
   final String navigationMode;

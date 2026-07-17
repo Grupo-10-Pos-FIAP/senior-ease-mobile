@@ -43,8 +43,10 @@ class DashboardScreen extends StatelessWidget {
                     ...items.map(
                       (activity) => ActivityCard(
                         activity: activity,
-                        onHowTo: () =>
-                            Navigator.of(context).pushNamed(RouteNames.steps),
+                        onHowTo: () => Navigator.of(context).pushNamed(
+                          RouteNames.steps,
+                          arguments: activity.id,
+                        ),
                       ),
                     ),
                   if (!controller.isLoading && items.isEmpty)

@@ -1,14 +1,43 @@
 import 'package:flutter/material.dart';
-import 'package:senior_ease/core/routes/route_names.dart';
+import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
+import 'package:senior_ease/features/tasks/domain/usecases/complete_step.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
+import 'package:senior_ease/shared/widgets/app_card.dart';
 
-class ActivityStageScreen extends StatelessWidget {
+typedef ActivityStageArgs = ({String activityId, TaskStep step});
+
+/// Per-step detail view: renders the step's reading content or quiz
+/// question/options (from Firestore, via route arguments), and marks the
+/// step complete on Firestore when the user acts on it — no right/wrong
+/// checking for quiz steps, picking an option is enough (reflection-style).
+class ActivityStageScreen extends StatefulWidget {
   const ActivityStageScreen({super.key});
 
   @override
+  State<ActivityStageScreen> createState() => _ActivityStageScreenState();
+}
+
+class _ActivityStageScreenState extends State<ActivityStageScreen> {
+  bool _isSubmitting = false;
+
+  Future<void> _complete(String activityId, String stepId) async {
+    setState(() => _isSubmitting = true);
+    await sl<CompleteStep>()(
+      CompleteStepParams(activityId: activityId, stepId: stepId),
+    );
+    if (!mounted) return;
+    Navigator.of(context).pop(true);
+  }
+
+  @override
   Widget build(BuildContext context) {
+    final args =
+        ModalRoute.of(context)!.settings.arguments as ActivityStageArgs;
+    final step = args.step;
+
     return Scaffold(
       backgroundColor: AppDesignTokens.colorGray100,
       appBar: SeniorEaseAppBar(onProfileTap: () {}, onLogoutTap: () {}),
@@ -21,73 +50,21 @@ class ActivityStageScreen extends StatelessWidget {
           ),
           children: [
             Text(
-              'Boas-vindas e apresentação',
+              step.label,
               style: TextStyle(
                 fontSize: AppDesignTokens.fontSizeH4,
                 fontWeight: AppDesignTokens.fontWeightBold,
                 color: AppDesignTokens.colorContentDefault,
               ),
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
-            Text(
-              'Sejam muito bem-vindos à oficina “Primeiros Passos no Digital”. Este é um espaço criado especialmente para quem está começando a usar o celular, encontrar informações e conhecer como a internet pode ajudar no dia a dia.',
-              style: TextStyle(
-                fontSize: AppDesignTokens.fontSizeBody,
-                fontWeight: AppDesignTokens.fontWeightRegular,
-                height: AppDesignTokens.lineHeightBody,
-                color: AppDesignTokens.colorContentSecondary,
-              ),
-            ),
             const SizedBox(height: AppDesignTokens.spacingLg),
-            _buildSection(
-              title: 'O que você verá nesta etapa',
-              content:
-                  'Ao longo desta oficina, vamos descobrir juntos como usar o celular, enviar mensagens, buscar informações, criar senhas e navegar com mais confiança.',
-            ),
-            _buildSection(
-              title: 'Por que isso importa?',
-              content:
-                  'Estas habilidades ajudam você a se manter conectado com familiares, acessar serviços e aproveitar novas oportunidades com segurança.',
-            ),
+            if (step.kind == TaskStepKind.contentReading)
+              ..._buildReadingContent(args.activityId, step)
+            else
+              ..._buildQuizContent(args.activityId, step),
             const SizedBox(height: AppDesignTokens.spacingXl),
-            Row(
-              children: [
-                Expanded(
-                  child: AppButton(
-                    label: '',
-                    onPressed: () {
-                      Navigator.of(context).pop();
-                    },
-                    variant: ButtonVariant.outlined,
-                    icon: const Icon(
-                      Icons.arrow_back,
-                      color: AppDesignTokens.colorPrimary,
-                    ),
-                  ),
-                ),
-                const SizedBox(width: AppDesignTokens.spacingMd),
-                Expanded(
-                  child: AppButton(
-                    label: '',
-                    onPressed: () {
-                      Navigator.of(
-                        context,
-                      ).pushReplacementNamed(RouteNames.profile);
-                    },
-                    variant: ButtonVariant.primary,
-                    icon: const Icon(
-                      Icons.arrow_forward,
-                      color: AppDesignTokens.colorWhite,
-                    ),
-                  ),
-                ),
-              ],
-            ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
             TextButton(
-              onPressed: () {
-                Navigator.of(context).pop();
-              },
+              onPressed: () => Navigator.of(context).pop(),
               child: Text(
                 'Voltar para o passo-a-passo',
                 style: TextStyle(
@@ -103,31 +80,52 @@ class ActivityStageScreen extends StatelessWidget {
     );
   }
 
-  Widget _buildSection({required String title, required String content}) {
-    return Padding(
-      padding: const EdgeInsets.only(bottom: AppDesignTokens.spacingLg),
-      child: Column(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Text(
-            title,
-            style: TextStyle(
-              fontSize: AppDesignTokens.fontSizeTitle,
-              fontWeight: AppDesignTokens.fontWeightSemibold,
-              color: AppDesignTokens.colorContentDefault,
-            ),
-          ),
-          const SizedBox(height: AppDesignTokens.spacingSm),
-          Text(
-            content,
-            style: TextStyle(
-              fontSize: AppDesignTokens.fontSizeBody,
-              color: AppDesignTokens.colorContentSecondary,
-              height: AppDesignTokens.lineHeightBody,
-            ),
-          ),
-        ],
+  List<Widget> _buildReadingContent(String activityId, TaskStep step) {
+    return [
+      Text(
+        step.body ?? '',
+        style: TextStyle(
+          fontSize: AppDesignTokens.fontSizeBody,
+          height: AppDesignTokens.lineHeightBody,
+          color: AppDesignTokens.colorContentSecondary,
+        ),
       ),
-    );
+      const SizedBox(height: AppDesignTokens.spacingLg),
+      AppButton(
+        label: 'Marcar como concluído',
+        loading: _isSubmitting,
+        onPressed: step.completed
+            ? null
+            : () => _complete(activityId, step.id),
+        variant: ButtonVariant.primary,
+      ),
+    ];
+  }
+
+  List<Widget> _buildQuizContent(String activityId, TaskStep step) {
+    return [
+      if (step.question != null) ...[
+        Text(
+          step.question!,
+          style: TextStyle(
+            fontSize: AppDesignTokens.fontSizeBody,
+            height: AppDesignTokens.lineHeightBody,
+            color: AppDesignTokens.colorContentSecondary,
+          ),
+        ),
+        const SizedBox(height: AppDesignTokens.spacingLg),
+      ],
+      for (final option in step.options ?? <TaskStepOption>[])
+        Padding(
+          padding: const EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+          child: AppCard.simple(
+            title: option.label,
+            selected: false,
+            onTap: _isSubmitting || step.completed
+                ? null
+                : () => _complete(activityId, step.id),
+          ),
+        ),
+    ];
   }
 }

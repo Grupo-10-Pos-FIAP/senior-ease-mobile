@@ -13,8 +13,9 @@ class ActivityStepsScreen extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final activityId = ModalRoute.of(context)!.settings.arguments as String;
     return ChangeNotifierProvider<TaskStepsController>(
-      create: (_) => sl<TaskStepsController>()..load(),
+      create: (_) => sl<TaskStepsController>()..load(activityId),
       child: Scaffold(
         backgroundColor: AppDesignTokens.colorGray100,
         appBar: SeniorEaseAppBar(
@@ -35,7 +36,7 @@ class ActivityStepsScreen extends StatelessWidget {
                 ),
                 children: [
                   Text(
-                    'Oficina “Primeiros Passos no Digital”',
+                    controller.activityTitle,
                     style: TextStyle(
                       fontSize: AppDesignTokens.fontSizeH4,
                       fontWeight: AppDesignTokens.fontWeightBold,
@@ -52,18 +53,25 @@ class ActivityStepsScreen extends StatelessWidget {
                     ),
                   ),
                   const SizedBox(height: AppDesignTokens.spacingLg),
-                  ...controller.steps.asMap().entries.map((entry) {
-                    final index = entry.key;
-                    final step = entry.value;
+                  ...controller.steps.map((step) {
                     return AppCard.simple(
-                      title: step.title,
+                      title: step.label,
                       subtitle: step.completed
                           ? 'Etapa concluída'
                           : 'Pendente',
                       selected: step.completed,
-                      onTap: () {
-                        controller.toggleStep(index);
-                        Navigator.of(context).pushNamed(RouteNames.stage);
+                      onTap: () async {
+                        final completed = await Navigator.of(context)
+                            .pushNamed(
+                              RouteNames.stage,
+                              arguments: (
+                                activityId: activityId,
+                                step: step,
+                              ),
+                            );
+                        if (completed == true) {
+                          controller.markCompleted(step.id);
+                        }
                       },
                     );
                   }),

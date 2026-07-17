@@ -1,4 +1,4 @@
-package com.example.seniorease
+package br.com.seniorease
 
 import io.flutter.embedding.android.FlutterActivity
 

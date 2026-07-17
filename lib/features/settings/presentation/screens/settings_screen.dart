@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:senior_ease/features/settings/domain/entities/app_settings.dart';
 import 'package:senior_ease/features/settings/presentation/controllers/settings_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
@@ -10,33 +11,6 @@ import 'package:senior_ease/shared/widgets/app_title.dart';
 
 class SettingsScreen extends StatelessWidget {
   const SettingsScreen({super.key});
-
-  static const List<String> _fontSizes = [
-    'Pequena',
-    'Reduzida',
-    'Normal',
-    'Grande',
-    'Muito grande',
-  ];
-
-  static const List<String> _contrastLevels = [
-    'Padrão',
-    'Suave',
-    'Conforto',
-    'Alto',
-    'Máximo',
-    'Escuro',
-  ];
-
-  static const List<String> _navigationModes = ['Simples', 'Avançado'];
-
-  static const List<String> _spacingOptions = [
-    'Compacto',
-    'Reduzido',
-    'Normal',
-    'Amplo',
-    'Muito amplo',
-  ];
 
   @override
   Widget build(BuildContext context) {
@@ -72,7 +46,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
-              options: _fontSizes
+              options: AppSettings.fontSizeOptions
                   .map(
                     (size) => AppCardItem(
                       label: size,
@@ -91,7 +65,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
-              options: _contrastLevels
+              options: AppSettings.contrastLevelOptions
                   .map(
                     (level) => AppCardItem(
                       label: level,
@@ -112,7 +86,7 @@ class SettingsScreen extends StatelessWidget {
             ),
             const SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
-              options: _navigationModes
+              options: AppSettings.navigationModeOptions
                   .map(
                     (mode) => AppCardItem(
                       label: mode,
@@ -132,7 +106,7 @@ class SettingsScreen extends StatelessWidget {
               ),
               const SizedBox(height: AppDesignTokens.spacingMd),
               AppCard(
-                options: _spacingOptions
+                options: AppSettings.spacingOptions
                     .map(
                       (spacing) => AppCardItem(
                         label: spacing,
