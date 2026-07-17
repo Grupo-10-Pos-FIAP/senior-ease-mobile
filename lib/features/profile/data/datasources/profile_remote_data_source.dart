@@ -24,7 +24,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
       birthDate: birthDateRaw != null
           ? DateTime.tryParse(birthDateRaw)
           : null,
-      registrationId: data['registrationId'] as String? ?? '',
+      // "Matrícula" is the Firebase uid itself — read from auth, not the
+      // Firestore field, so it's always correct even for accounts created
+      // before registrationId was seeded (or seeded with a placeholder).
+      registrationId: uid,
       disabilityDescription: data['disability'] as String?,
       email: data['email'] as String? ?? '',
       phone: data['phone'] as String? ?? '',
