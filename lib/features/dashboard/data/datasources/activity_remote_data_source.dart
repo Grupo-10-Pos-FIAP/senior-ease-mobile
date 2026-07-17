@@ -37,20 +37,32 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
         doc.id: doc.data()['status'] as String?,
     };
 
-    return activitiesSnapshot.docs.map((doc) {
+    final activities = activitiesSnapshot.docs.map((doc) {
       final data = doc.data();
       final status =
           progressStatusByActivityId[doc.id] ?? data['status'] as String?;
-      return Activity(
-        id: doc.id,
-        title: data['title'] as String? ?? '',
-        dateRange: _formatDateRange(
-          data['startDate'] as String?,
-          data['endDate'] as String?,
+      final endDate = data['endDate'] as String?;
+      return (
+        activity: Activity(
+          id: doc.id,
+          title: data['title'] as String? ?? '',
+          dateRange: _formatDateRange(data['startDate'] as String?, endDate),
+          status: _statusFrom(status),
         ),
-        status: _statusFrom(status),
+        dueDate: endDate != null ? DateTime.tryParse(endDate) : null,
       );
     }).toList();
+
+    // Nearest due date (vencimento) first; activities with no parseable
+    // end date sort last rather than breaking the ordering.
+    activities.sort((a, b) {
+      if (a.dueDate == null && b.dueDate == null) return 0;
+      if (a.dueDate == null) return 1;
+      if (b.dueDate == null) return -1;
+      return a.dueDate!.compareTo(b.dueDate!);
+    });
+
+    return activities.map((entry) => entry.activity).toList();
   }
 
   String _formatDateRange(String? startDate, String? endDate) {
