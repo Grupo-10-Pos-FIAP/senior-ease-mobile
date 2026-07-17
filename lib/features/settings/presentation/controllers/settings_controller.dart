@@ -24,7 +24,7 @@ class SettingsController extends ChangeNotifier {
     _persisted = await _getSettings(const NoParams());
     draft = _persisted;
     isLoading = false;
-    _appMode.update(isSimpleMode: _persisted.navigationMode == 'Simples');
+    _syncAppMode();
     notifyListeners();
   }
 
@@ -58,12 +58,12 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Persists [draft] as the current settings for the rest of the session
-  /// (in-memory only today; see the local data source for why).
+  /// Persists [draft] as the current settings (in the signed-in user's
+  /// Firestore document).
   Future<void> save() async {
     await _saveSettings(draft);
     _persisted = draft;
-    _appMode.update(isSimpleMode: _persisted.navigationMode == 'Simples');
+    _syncAppMode();
     notifyListeners();
   }
 
@@ -72,5 +72,15 @@ class SettingsController extends ChangeNotifier {
   void resetToDefaults() {
     draft = AppSettings.defaults();
     notifyListeners();
+  }
+
+  void _syncAppMode() {
+    _appMode.update(
+      isSimpleMode: _persisted.navigationMode == 'Simples',
+      fontScale: _persisted.fontScale,
+      spacingScale: _persisted.spacingScale,
+      contrastLevel: _persisted.contrastLevelEnum,
+      reinforcedVisualFeedback: _persisted.enhancedVisualFeedback,
+    );
   }
 }

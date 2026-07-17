@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
 class AppCardItem {
@@ -46,10 +49,11 @@ class AppCard extends StatelessWidget {
   }
 
   Widget _buildSimpleCard() {
-    return GestureDetector(
+    return _TappableCard(
       onTap: onTap,
+      borderRadius: BorderRadius.circular(AppDesignTokens.borderRadiusDefault),
       child: Container(
-        margin: const EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+        margin: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
         decoration: BoxDecoration(
           color: selected
               ? AppDesignTokens.colorPrimarySurface
@@ -60,7 +64,7 @@ class AppCard extends StatelessWidget {
           border: Border.all(color: AppDesignTokens.colorGray200),
         ),
         child: Padding(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
             vertical: AppDesignTokens.spacingMd,
           ),
@@ -80,7 +84,7 @@ class AppCard extends StatelessWidget {
                       ),
                     ),
                     if (subtitle != null) ...[
-                      const SizedBox(height: AppDesignTokens.spacingXs),
+                      SizedBox(height: AppDesignTokens.spacingXs),
                       Text(
                         subtitle!,
                         style: TextStyle(
@@ -93,7 +97,7 @@ class AppCard extends StatelessWidget {
                   ],
                 ),
               ),
-              if (selected) const SizedBox(width: AppDesignTokens.spacingSm),
+              if (selected) SizedBox(width: AppDesignTokens.spacingSm),
               if (selected)
                 Icon(
                   Icons.check_circle,
@@ -113,7 +117,7 @@ class AppCard extends StatelessWidget {
       children: [
         if (title != null) ...[
           Padding(
-            padding: const EdgeInsets.only(
+            padding: EdgeInsets.only(
               left: AppDesignTokens.spacingMd,
               right: AppDesignTokens.spacingMd,
               bottom: AppDesignTokens.spacingSm,
@@ -141,10 +145,11 @@ class _AppCardItemWidget extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
+    return _TappableCard(
       onTap: item.onTap,
+      borderRadius: BorderRadius.circular(AppDesignTokens.borderRadiusDefault),
       child: Container(
-        margin: const EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+        margin: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
         decoration: BoxDecoration(
           color: item.selected
               ? AppDesignTokens.colorPrimarySurface
@@ -154,7 +159,7 @@ class _AppCardItemWidget extends StatelessWidget {
           ),
           border: Border.all(color: AppDesignTokens.colorGray200),
         ),
-        padding: const EdgeInsets.symmetric(
+        padding: EdgeInsets.symmetric(
           horizontal: AppDesignTokens.spacingMd,
           vertical: AppDesignTokens.spacingMd,
         ),
@@ -179,6 +184,52 @@ class _AppCardItemWidget extends StatelessWidget {
               ),
           ],
         ),
+      ),
+    );
+  }
+}
+
+/// Wraps card content with a tap handler. In normal mode this is a plain
+/// [GestureDetector] (unchanged behavior); with "Feedback visual reforçado"
+/// on, taps get haptic feedback plus a visible ripple/highlight via
+/// [InkWell], so touch feedback is unmistakable for low-vision users.
+class _TappableCard extends StatelessWidget {
+  const _TappableCard({
+    required this.onTap,
+    required this.borderRadius,
+    required this.child,
+  });
+
+  final VoidCallback? onTap;
+  final BorderRadius borderRadius;
+  final Widget child;
+
+  @override
+  Widget build(BuildContext context) {
+    final reinforced = sl<AppModeController>().reinforcedVisualFeedback;
+
+    if (!reinforced) {
+      return GestureDetector(onTap: onTap, child: child);
+    }
+
+    final effectiveOnTap = onTap == null
+        ? null
+        : () {
+            HapticFeedback.mediumImpact();
+            onTap!();
+          };
+
+    return Material(
+      color: Colors.transparent,
+      borderRadius: borderRadius,
+      child: InkWell(
+        onTap: effectiveOnTap,
+        borderRadius: borderRadius,
+        splashColor: AppDesignTokens.colorFeedbackInfo.withValues(alpha: 0.24),
+        highlightColor: AppDesignTokens.colorFeedbackInfo.withValues(
+          alpha: 0.12,
+        ),
+        child: child,
       ),
     );
   }

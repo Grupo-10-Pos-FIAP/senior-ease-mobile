@@ -44,7 +44,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
       body: SafeArea(
         bottom: false,
         child: ListView(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
             vertical: AppDesignTokens.spacingLg,
           ),
@@ -57,12 +57,12 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                 color: AppDesignTokens.colorContentDefault,
               ),
             ),
-            const SizedBox(height: AppDesignTokens.spacingLg),
+            SizedBox(height: AppDesignTokens.spacingLg),
             if (step.kind == TaskStepKind.contentReading)
               ..._buildReadingContent(args.activityId, step)
             else
               ..._buildQuizContent(args.activityId, step),
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
             TextButton(
               onPressed: () => Navigator.of(context).pop(),
               child: Text(
@@ -90,7 +90,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
           color: AppDesignTokens.colorContentSecondary,
         ),
       ),
-      const SizedBox(height: AppDesignTokens.spacingLg),
+      SizedBox(height: AppDesignTokens.spacingLg),
       AppButton(
         label: 'Marcar como concluído',
         loading: _isSubmitting,
@@ -113,11 +113,11 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
             color: AppDesignTokens.colorContentSecondary,
           ),
         ),
-        const SizedBox(height: AppDesignTokens.spacingLg),
+        SizedBox(height: AppDesignTokens.spacingLg),
       ],
       for (final option in step.options ?? <TaskStepOption>[])
         Padding(
-          padding: const EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+          padding: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
           child: AppCard.simple(
             title: option.label,
             selected: false,

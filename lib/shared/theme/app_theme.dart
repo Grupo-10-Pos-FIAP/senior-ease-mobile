@@ -32,7 +32,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
             color: AppDesignTokens.colorBorderDefault,
           ),
         ),
@@ -40,7 +40,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
             color: AppDesignTokens.colorBorderDefault,
           ),
         ),
@@ -48,7 +48,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
             color: AppDesignTokens.colorBorderFocused,
             width: AppDesignTokens.borderWidthSmall,
           ),
@@ -61,7 +61,7 @@ class AppTheme {
             color: AppDesignTokens.colorFeedbackError,
           ),
         ),
-        contentPadding: const EdgeInsets.symmetric(
+        contentPadding: EdgeInsets.symmetric(
           horizontal: AppDesignTokens.spacingMd,
           vertical: AppDesignTokens.spacingMd,
         ),
@@ -84,7 +84,7 @@ class AppTheme {
                   AppDesignTokens.borderRadiusDefault,
                 ),
               ),
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 vertical: AppDesignTokens.spacingMd,
               ),
               textStyle: TextStyle(
@@ -119,7 +119,7 @@ class AppTheme {
                   AppDesignTokens.borderRadiusDefault,
                 ),
               ),
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 vertical: AppDesignTokens.spacingMd,
               ),
               textStyle: TextStyle(
@@ -265,18 +265,4 @@ class AppTheme {
       ),
     );
   }
-
-  // Legacy aliases for existing code that references AppTheme.primaryBlue etc.
-  static const Color primaryBlue = AppDesignTokens.colorPrimary;
-  static const Color secondaryGreen = AppDesignTokens.colorSecondary;
-  static const Color baseDark = AppDesignTokens.colorBase;
-  static const Color errorRed = AppDesignTokens.colorFeedbackError;
-  static const Color successGreen = AppDesignTokens.colorFeedbackSuccess;
-  static const double spacingXS = AppDesignTokens.spacingXs;
-  static const double spacingSM = AppDesignTokens.spacingSm;
-  static const double spacingMD = AppDesignTokens.spacingMd;
-  static const double spacingLG = AppDesignTokens.spacingLg;
-  static const double spacingXL = AppDesignTokens.spacingXl;
-  static const double spacing2XL = AppDesignTokens.spacing2xl;
-  static const double borderRadius = AppDesignTokens.borderRadiusDefault;
 }

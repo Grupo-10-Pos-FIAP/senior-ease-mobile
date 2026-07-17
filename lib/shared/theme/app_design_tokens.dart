@@ -1,18 +1,37 @@
 import 'package:flutter/material.dart';
+import 'package:senior_ease/core/app_mode/contrast_level.dart';
 
 class AppDesignTokens {
   AppDesignTokens._();
 
-  static const double fontSizeCaption = 12;
-  static const double fontSizeSmall = 14;
-  static const double fontSizeBody = 16;
-  static const double fontSizeSubtitle = 18;
-  static const double fontSizeTitle = 20;
-  static const double fontSizeH4 = 22;
-  static const double fontSizeH3 = 24;
-  static const double fontSizeH2 = 26;
-  static const double fontSizeH1 = 28;
-  static const double fontSizeH5 = 30;
+  static double _fontScale = 1.0;
+  static double _spacingScale = 1.0;
+  static ContrastLevel _contrast = ContrastLevel.padrao;
+
+  /// Called from the app root whenever AppModeController's derived
+  /// personalization state changes, so every widget rebuilt after this
+  /// point reads the updated scale/contrast through the getters below.
+  static void configure({
+    required double fontScale,
+    required double spacingScale,
+    required ContrastLevel contrast,
+  }) {
+    _fontScale = fontScale;
+    _spacingScale = spacingScale;
+    _contrast = contrast;
+  }
+
+  // ---- Font sizes (scaled by the "Tamanho da letra" setting) ----
+  static double get fontSizeCaption => 12 * _fontScale;
+  static double get fontSizeSmall => 14 * _fontScale;
+  static double get fontSizeBody => 16 * _fontScale;
+  static double get fontSizeSubtitle => 18 * _fontScale;
+  static double get fontSizeTitle => 20 * _fontScale;
+  static double get fontSizeH4 => 22 * _fontScale;
+  static double get fontSizeH3 => 24 * _fontScale;
+  static double get fontSizeH2 => 26 * _fontScale;
+  static double get fontSizeH1 => 28 * _fontScale;
+  static double get fontSizeH5 => 30 * _fontScale;
 
   static const FontWeight fontWeightRegular = FontWeight.w400;
   static const FontWeight fontWeightMedium = FontWeight.w500;
@@ -36,46 +55,70 @@ class AppDesignTokens {
   static double letterSpacingWide(double fontSize) => fontSize * 0.03;
   static double letterSpacingWider(double fontSize) => fontSize * 0.05;
 
+  // ---- Colors ----
+  // Brand/status colors stay fixed — "Nível de contraste" is about
+  // background/text/border legibility, not brand identity. The semantic
+  // tokens below (grays, backgrounds, content, borders) run through
+  // `_adjust`, which pushes each color toward its nearest extreme
+  // (white for light/background-leaning colors, black for dark/text-leaning
+  // ones) by an increasing factor per level, and inverts lightness entirely
+  // for "Escuro".
   static const Color colorWhite = Color(0xFFFFFFFF);
   static const Color colorBlack = Color(0xFF000000);
 
-  static const Color colorGray100 = Color(0xFFF8F9FA);
-  static const Color colorGray200 = Color(0xFFE0E0E0);
-  static const Color colorGray300 = Color(0xFFC0C0C0);
-  static const Color colorGray400 = Color(0xFFA0A0A0);
-  static const Color colorGray500 = Color(0xFF808080);
-  static const Color colorGray600 = Color(0xFF606060);
-  static const Color colorGray700 = Color(0xFF404040);
-  static const Color colorGray800 = Color(0xFF202020);
-  static const Color colorGray900 = Color(0xFF101010);
+  static const Color _gray100 = Color(0xFFF8F9FA);
+  static const Color _gray200 = Color(0xFFE0E0E0);
+  static const Color _gray300 = Color(0xFFC0C0C0);
+  static const Color _gray400 = Color(0xFFA0A0A0);
+  static const Color _gray500 = Color(0xFF808080);
+  static const Color _gray600 = Color(0xFF606060);
+  static const Color _gray700 = Color(0xFF404040);
+  static const Color _gray800 = Color(0xFF202020);
+  static const Color _gray900 = Color(0xFF101010);
 
-  static const Color colorBase = Color(0xFF1A1A1A);
+  static Color get colorGray100 => _adjust(_gray100);
+  static Color get colorGray200 => _adjust(_gray200);
+  static Color get colorGray300 => _adjust(_gray300);
+  static Color get colorGray400 => _adjust(_gray400);
+  static Color get colorGray500 => _adjust(_gray500);
+  static Color get colorGray600 => _adjust(_gray600);
+  static Color get colorGray700 => _adjust(_gray700);
+  static Color get colorGray800 => _adjust(_gray800);
+  static Color get colorGray900 => _adjust(_gray900);
+
+  static const Color _base = Color(0xFF1A1A1A);
+  static Color get colorBase => _adjust(_base);
+
   static const Color colorPrimary = Color(0xFF1F2D5C);
   static const Color colorPrimarySurface = Color(0xFFE6E4FF);
   static const Color colorErrorSurface = Color(0xFFFBE6E4);
   static const Color colorErrorOnSurface = Color(0xFF5C271F);
   static const Color colorSecondary = Color(0xFF42484E);
-  static const Color colorNeutral = colorGray300;
+  static Color get colorNeutral => colorGray300;
   static const Color colorSoft = Color(0xFFE1F0FB);
 
-  static const Color colorBgDefault = Color(0xFFF5F5F5);
-  static const Color colorBgDefaultDark = Color(0xFF374151);
-  static const Color colorBgLight = colorWhite;
+  static const Color _bgDefault = Color(0xFFF5F5F5);
+  static const Color _bgDefaultDark = Color(0xFF374151);
+  static Color get colorBgDefault => _adjust(_bgDefault);
+  static Color get colorBgDefaultDark => _adjust(_bgDefaultDark);
+  static Color get colorBgLight => _adjust(colorWhite);
   static const Color colorBgPrimary = colorPrimary;
   static const Color colorBgSecondary = colorSecondary;
-  static const Color colorBgDisabled = colorGray200;
+  static Color get colorBgDisabled => colorGray200;
   static const Color colorBgOverlay = Color(0xCCFFFFFF);
   static const Color colorBgFullscreen = Color(0xE6FFFFFF);
   static const Color colorBgAvatar = Color(0xFFEDF2FE);
 
-  static const Color colorContentDefault = colorBase;
+  static Color get colorContentDefault => colorBase;
   static const Color colorContentPrimary = colorPrimary;
-  static const Color colorContentSecondary = colorSecondary;
+  static const Color _contentSecondary = Color(0xFF42484E);
+  static Color get colorContentSecondary => _adjust(_contentSecondary);
   static const Color colorContentInverse = colorWhite;
-  static const Color colorContentDisabled = colorGray500;
-  static const Color colorContentMuted = Color(0xFF555555);
+  static Color get colorContentDisabled => colorGray500;
+  static const Color _contentMuted = Color(0xFF555555);
+  static Color get colorContentMuted => _adjust(_contentMuted);
 
-  static const Color colorBorderDefault = colorNeutral;
+  static Color get colorBorderDefault => colorNeutral;
   static const Color colorBorderDisabled = Color(0x00FFFFFF);
   static const Color colorBorderFocused = colorPrimary;
 
@@ -88,25 +131,48 @@ class AppDesignTokens {
   static const Color colorFeedbackInfo = Color(0xFF1C6EA4);
   static const Color colorFeedbackAlert = Color(0xFFD32F2F);
   static const Color colorFeedbackFavorite = Colors.red;
-  static const Color colorFeedbackMuted = colorGray100;
+  static Color get colorFeedbackMuted => colorGray100;
 
   /// Badge “Agendada” no extrato (lavanda — distinto de Pendente/azul e Completa/verde).
   static const Color colorBadgeScheduledBackground = Color(0xFFEDE7F6);
   static const Color colorBadgeScheduledForeground = Color(0xFF5E35B1);
 
-  static const double spacingXs = 4;
-  static const double spacingSm = 8;
-  static const double spacingMd = 16;
-  static const double spacingLg = 24;
-  static const double spacingXl = 32;
-  static const double spacing2xl = 48;
-  static const double spacing3xl = 64;
+  static Color _adjust(Color base) {
+    if (_contrast == ContrastLevel.padrao) return base;
+    final hsl = HSLColor.fromColor(base);
+    if (_contrast == ContrastLevel.escuro) {
+      return hsl.withLightness((1 - hsl.lightness).clamp(0.0, 1.0)).toColor();
+    }
+    final isLight = hsl.lightness >= 0.5;
+    if (_contrast == ContrastLevel.maximo) {
+      return isLight ? Colors.white : Colors.black;
+    }
+    final factor = switch (_contrast) {
+      ContrastLevel.suave => 0.10,
+      ContrastLevel.conforto => 0.20,
+      ContrastLevel.alto => 0.40,
+      ContrastLevel.padrao || ContrastLevel.maximo || ContrastLevel.escuro =>
+        0.0,
+    };
+    final target = isLight ? 1.0 : 0.0;
+    final nextLightness = hsl.lightness + (target - hsl.lightness) * factor;
+    return hsl.withLightness(nextLightness.clamp(0.0, 1.0)).toColor();
+  }
 
-  static const double borderRadiusDefault = spacingSm;
+  // ---- Spacing (scaled by the "Espaçamento entre elementos" setting) ----
+  static double get spacingXs => 4 * _spacingScale;
+  static double get spacingSm => 8 * _spacingScale;
+  static double get spacingMd => 16 * _spacingScale;
+  static double get spacingLg => 24 * _spacingScale;
+  static double get spacingXl => 32 * _spacingScale;
+  static double get spacing2xl => 48 * _spacingScale;
+  static double get spacing3xl => 64 * _spacingScale;
+
+  static double get borderRadiusDefault => spacingSm;
   static const double borderWidthDefault = 1;
   static const double borderWidthSmall = 2;
   static const double borderWidthMedium = 3;
-  static const double borderWidthLarge = spacingXs;
+  static double get borderWidthLarge => spacingXs;
 
   static const double breakpointMobile = 480;
   static const double breakpointDetailModalActions = 425;
@@ -127,7 +193,7 @@ class AppDesignTokens {
   static const Color buttonBrandBgPressed = Color(0xFF141D3D);
   static const Color buttonBrandBgDisabled = colorPrimarySurface;
   static const Color buttonBrandContentDefault = colorWhite;
-  static const Color buttonBrandContentDisabled = colorContentDisabled;
+  static Color get buttonBrandContentDisabled => colorContentDisabled;
 
   static const Color buttonSecondaryBgDefault = Color(0xFF658864);
   static const Color buttonSecondaryBgPressed = Color(0xFF2C4D2B);
@@ -148,7 +214,7 @@ class AppDesignTokens {
   static const Color buttonNegativeBgPressed = colorBlack;
   static const Color buttonNegativeBgDisabled = Colors.transparent;
   static const Color buttonNegativeBorderDefault = colorWhite;
-  static const Color buttonNegativeBorderPressed = colorBase;
+  static Color get buttonNegativeBorderPressed => colorBase;
   static const Color buttonNegativeBorderDisabled = colorWhite;
   static const Color buttonNegativeContentDefault = colorWhite;
   static const Color buttonNegativeContentDisabled = colorWhite;

@@ -30,7 +30,7 @@ class ActivityStepsScreen extends StatelessWidget {
                 return const SizedBox.shrink();
               }
               return ListView(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: AppDesignTokens.spacingMd,
                   vertical: AppDesignTokens.spacingLg,
                 ),
@@ -43,7 +43,7 @@ class ActivityStepsScreen extends StatelessWidget {
                       color: AppDesignTokens.colorContentDefault,
                     ),
                   ),
-                  const SizedBox(height: AppDesignTokens.spacingMd),
+                  SizedBox(height: AppDesignTokens.spacingMd),
                   Text(
                     'Etapas concluídas',
                     style: TextStyle(
@@ -52,7 +52,7 @@ class ActivityStepsScreen extends StatelessWidget {
                       color: AppDesignTokens.colorContentSecondary,
                     ),
                   ),
-                  const SizedBox(height: AppDesignTokens.spacingLg),
+                  SizedBox(height: AppDesignTokens.spacingLg),
                   ...controller.steps.map((step) {
                     return AppCard.simple(
                       title: step.label,
@@ -75,7 +75,7 @@ class ActivityStepsScreen extends StatelessWidget {
                       },
                     );
                   }),
-                  const SizedBox(height: AppDesignTokens.spacingLg),
+                  SizedBox(height: AppDesignTokens.spacingLg),
                   AppButton(
                     label: 'Concluir atividade',
                     onPressed: () => Navigator.of(
@@ -86,7 +86,7 @@ class ActivityStepsScreen extends StatelessWidget {
                     ),
                     variant: ButtonVariant.primary,
                   ),
-                  const SizedBox(height: AppDesignTokens.spacingMd),
+                  SizedBox(height: AppDesignTokens.spacingMd),
                   AppButton(
                     label: 'Voltar para minhas atividades',
                     onPressed: () {

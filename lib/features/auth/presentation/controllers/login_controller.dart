@@ -50,11 +50,17 @@ class LoginController extends ChangeNotifier {
     notifyListeners();
     try {
       await action();
-      // The persisted "Simples"/"Avançado" mode otherwise only syncs once
-      // the Settings screen is opened — sync it now so Dashboard reflects
-      // it immediately after login, same as on a warm app start.
+      // The persisted personalization otherwise only syncs once the
+      // Settings screen is opened — sync it now so Dashboard reflects it
+      // immediately after login, same as on a warm app start.
       final settings = await _getSettings(const NoParams());
-      _appMode.update(isSimpleMode: settings.navigationMode == 'Simples');
+      _appMode.update(
+        isSimpleMode: settings.navigationMode == 'Simples',
+        fontScale: settings.fontScale,
+        spacingScale: settings.spacingScale,
+        contrastLevel: settings.contrastLevelEnum,
+        reinforcedVisualFeedback: settings.enhancedVisualFeedback,
+      );
       return true;
     } on FirebaseAuthException catch (e) {
       errorMessage = onAuthError(e.code);

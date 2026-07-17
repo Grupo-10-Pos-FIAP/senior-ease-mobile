@@ -42,6 +42,10 @@ Future<void> initDependencies() async {
     final settings = await sl<GetSettings>()(const NoParams());
     sl<AppModeController>().update(
       isSimpleMode: settings.navigationMode == 'Simples',
+      fontScale: settings.fontScale,
+      spacingScale: settings.spacingScale,
+      contrastLevel: settings.contrastLevelEnum,
+      reinforcedVisualFeedback: settings.enhancedVisualFeedback,
     );
   }
 }

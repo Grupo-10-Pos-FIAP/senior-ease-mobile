@@ -18,8 +18,8 @@ class ActivityCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      margin: const EdgeInsets.only(bottom: AppDesignTokens.spacingLg),
-      padding: const EdgeInsets.all(AppDesignTokens.spacingLg),
+      margin: EdgeInsets.only(bottom: AppDesignTokens.spacingLg),
+      padding: EdgeInsets.all(AppDesignTokens.spacingLg),
       decoration: BoxDecoration(
         color: AppDesignTokens.colorWhite,
         borderRadius: BorderRadius.circular(
@@ -45,7 +45,7 @@ class ActivityCard extends StatelessWidget {
               color: AppDesignTokens.colorContentDefault,
             ),
           ),
-          const SizedBox(height: AppDesignTokens.spacingMd),
+          SizedBox(height: AppDesignTokens.spacingMd),
           Row(
             children: [
               Icon(
@@ -53,7 +53,7 @@ class ActivityCard extends StatelessWidget {
                 size: 18,
                 color: AppDesignTokens.colorContentSecondary,
               ),
-              const SizedBox(width: AppDesignTokens.spacingSm),
+              SizedBox(width: AppDesignTokens.spacingSm),
               Text(
                 activity.dateRange,
                 style: TextStyle(
@@ -63,10 +63,10 @@ class ActivityCard extends StatelessWidget {
               ),
             ],
           ),
-          const SizedBox(height: AppDesignTokens.spacingLg),
+          SizedBox(height: AppDesignTokens.spacingLg),
           if (activity.status != ActivityStatus.active)
             Container(
-              padding: const EdgeInsets.symmetric(
+              padding: EdgeInsets.symmetric(
                 vertical: AppDesignTokens.spacingSm,
                 horizontal: AppDesignTokens.spacingMd,
               ),
@@ -92,7 +92,7 @@ class ActivityCard extends StatelessWidget {
               ),
             ),
           if (activity.status != ActivityStatus.active)
-            const SizedBox(height: AppDesignTokens.spacingLg),
+            SizedBox(height: AppDesignTokens.spacingLg),
           Column(
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
@@ -104,7 +104,7 @@ class ActivityCard extends StatelessWidget {
                 variant: ButtonVariant.primary,
                 icon: const Icon(Icons.check),
               ),
-              const SizedBox(height: AppDesignTokens.spacingMd),
+              SizedBox(height: AppDesignTokens.spacingMd),
               AppButton(
                 label: 'Como fazer essa atividade?',
                 onPressed: onHowTo ?? () {},

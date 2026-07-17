@@ -17,7 +17,7 @@ class ProfileInfoScreen extends StatelessWidget {
           return const SizedBox.shrink();
         }
         return ListView(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
             vertical: AppDesignTokens.spacingLg,
           ),
@@ -31,14 +31,14 @@ class ProfileInfoScreen extends StatelessWidget {
             ),
             InfoRow(label: 'E-mail', value: profile.email),
             InfoRow(label: 'Telefone', value: profile.phone),
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
             AppButton(
               label: 'Editar informações',
               onPressed: () {},
               icon: const Icon(Icons.edit),
               variant: ButtonVariant.primary,
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
               label: 'Excluir conta',
               onPressed: () {},

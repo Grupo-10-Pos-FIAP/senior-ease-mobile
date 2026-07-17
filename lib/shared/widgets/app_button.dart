@@ -1,4 +1,7 @@
 import 'package:flutter/material.dart';
+import 'package:flutter/services.dart';
+import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
 enum ButtonVariant {
@@ -41,6 +44,7 @@ class AppButton extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final isEnabled = enabled && !loading;
+    final reinforced = sl<AppModeController>().reinforcedVisualFeedback;
 
     final child = loading
         ? SizedBox(
@@ -50,23 +54,21 @@ class AppButton extends StatelessWidget {
           )
         : _buildContent();
 
-    final style = _buildStyle(context, isEnabled);
+    final style = _buildStyle(context, isEnabled, reinforced);
 
-    return _buildButton(child, style, isEnabled);
+    return _buildButton(child, style, isEnabled, reinforced);
   }
 
   Widget _buildContent() {
-    final labelWidget = Flexible(
-      child: Text(
-        label,
-        overflow: TextOverflow.ellipsis,
-        maxLines: 1,
-        style: const TextStyle(fontSize: 16),
-      ),
+    final text = Text(
+      label,
+      overflow: TextOverflow.ellipsis,
+      maxLines: 1,
+      style: const TextStyle(fontSize: 16),
     );
 
     if (_isIconOnly) {
-      return Center(child: icon ?? labelWidget);
+      return Center(child: icon ?? text);
     }
 
     if (icon != null) {
@@ -75,20 +77,53 @@ class AppButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           icon!,
-          if (label.isNotEmpty) ...[const SizedBox(width: 8), labelWidget],
+          // Flexible only makes sense here, next to a fixed-size icon in a
+          // Row — Center (below) isn't a Flex, so a bare Flexible under it
+          // throws "Incorrect use of ParentDataWidget".
+          if (label.isNotEmpty) ...[
+            const SizedBox(width: 8),
+            Flexible(child: text),
+          ],
         ],
       );
     }
 
-    return Center(child: labelWidget);
+    return Center(child: text);
   }
 
-  ButtonStyle _buildStyle(BuildContext context, bool isEnabled) {
+  ButtonStyle _buildStyle(
+    BuildContext context,
+    bool isEnabled,
+    bool reinforced,
+  ) {
     const buttonPadding = EdgeInsets.symmetric(horizontal: 16);
     const baseShape = RoundedRectangleBorder(
       borderRadius: BorderRadius.all(Radius.circular(8)),
     );
 
+    final style = _styleForVariant(buttonPadding, baseShape);
+    if (!reinforced) return style;
+
+    // "Feedback visual reforçado": a clearly visible ring on focus/press,
+    // on top of whatever the variant's own style already does.
+    return style.copyWith(
+      side: WidgetStateProperty.resolveWith((states) {
+        if (states.contains(WidgetState.focused) ||
+            states.contains(WidgetState.pressed)) {
+          return const BorderSide(
+            color: AppDesignTokens.colorFeedbackInfo,
+            width: AppDesignTokens.borderWidthMedium,
+          );
+        }
+        return null;
+      }),
+    );
+  }
+
+  ButtonStyle _styleForVariant(
+    EdgeInsets buttonPadding,
+    RoundedRectangleBorder baseShape,
+  ) {
     switch (variant) {
       case ButtonVariant.primaryIcon:
       case ButtonVariant.primaryLeading:
@@ -142,19 +177,36 @@ class AppButton extends StatelessWidget {
     }
   }
 
-  Widget _buildButton(Widget child, ButtonStyle style, bool isEnabled) {
+  Widget _buildButton(
+    Widget child,
+    ButtonStyle style,
+    bool isEnabled,
+    bool reinforced,
+  ) {
+    final effectiveOnPressed = isEnabled
+        ? _withHaptics(onPressed, reinforced)
+        : null;
+
     if (variant == ButtonVariant.outlined) {
       return OutlinedButton(
-        onPressed: isEnabled ? onPressed : null,
+        onPressed: effectiveOnPressed,
         style: style,
         child: child,
       );
     }
 
     return FilledButton(
-      onPressed: isEnabled ? onPressed : null,
+      onPressed: effectiveOnPressed,
       style: style,
       child: child,
     );
+  }
+
+  VoidCallback? _withHaptics(VoidCallback? callback, bool reinforced) {
+    if (callback == null || !reinforced) return callback;
+    return () {
+      HapticFeedback.mediumImpact();
+      callback();
+    };
   }
 }

@@ -55,7 +55,7 @@ class _ProfileShellScreenState extends State<ProfileShellScreen> {
           child: Column(
             children: [
               Padding(
-                padding: const EdgeInsets.fromLTRB(
+                padding: EdgeInsets.fromLTRB(
                   AppDesignTokens.spacingMd,
                   AppDesignTokens.spacingLg,
                   AppDesignTokens.spacingMd,

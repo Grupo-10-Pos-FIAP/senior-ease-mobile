@@ -16,7 +16,7 @@ class AppTabs extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      decoration: const BoxDecoration(
+      decoration: BoxDecoration(
         border: Border(
           bottom: BorderSide(color: AppDesignTokens.colorGray200, width: 1),
         ),
@@ -31,7 +31,7 @@ class AppTabs extends StatelessWidget {
                 mainAxisSize: MainAxisSize.min,
                 children: [
                   Padding(
-                    padding: const EdgeInsets.symmetric(
+                    padding: EdgeInsets.symmetric(
                       vertical: AppDesignTokens.spacingMd,
                     ),
                     child: Text(

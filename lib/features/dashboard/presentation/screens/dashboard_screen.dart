@@ -28,7 +28,7 @@ class DashboardScreen extends StatelessWidget {
             builder: (context, controller, _) {
               final items = controller.filteredActivities;
               return ListView(
-                padding: const EdgeInsets.symmetric(
+                padding: EdgeInsets.symmetric(
                   horizontal: AppDesignTokens.spacingMd,
                   vertical: AppDesignTokens.spacingLg,
                 ),
@@ -38,7 +38,7 @@ class DashboardScreen extends StatelessWidget {
                     selectedIndex: controller.selectedTab,
                     onTabSelected: controller.selectTab,
                   ),
-                  const SizedBox(height: AppDesignTokens.spacingLg),
+                  SizedBox(height: AppDesignTokens.spacingLg),
                   if (!controller.isLoading)
                     ...items.map(
                       (activity) => ActivityCard(
@@ -51,7 +51,7 @@ class DashboardScreen extends StatelessWidget {
                     ),
                   if (!controller.isLoading && items.isEmpty)
                     Padding(
-                      padding: const EdgeInsets.only(
+                      padding: EdgeInsets.only(
                         top: AppDesignTokens.spacingLg,
                       ),
                       child: Text(

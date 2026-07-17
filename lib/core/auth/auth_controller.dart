@@ -69,8 +69,8 @@ class AuthController extends ChangeNotifier {
   /// A brand-new account has no `users/{uid}` document yet, so Dashboard has
   /// no `enrolledCourseId` to look activities up by. Enroll every new user in
   /// the single course this app has today, with the same default shape as
-  /// the rest of the seeded users (fullName placeholder, "-" registration,
-  /// default preferences matching [AppSettings.defaults]).
+  /// the rest of the seeded users (fullName placeholder, registration is the
+  /// Firebase uid, default preferences matching [AppSettings.defaults]).
   Future<void> _seedUserDocument(firebase_auth.User user) {
     return _firestore.collection('users').doc(user.uid).set({
       'id': user.uid,
@@ -79,7 +79,7 @@ class AuthController extends ChangeNotifier {
       'phone': user.phoneNumber ?? '',
       'disability': null,
       'enrolledCourseId': 'default-course',
-      'registrationId': '-',
+      'registrationId': user.uid,
       'preferences': {
         'fontSize': 3,
         'contrast': 1,

@@ -1,6 +1,7 @@
 import 'package:flutter_test/flutter_test.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
+import 'package:senior_ease/core/app_mode/contrast_level.dart';
 import 'package:senior_ease/core/usecase/usecase.dart';
 import 'package:senior_ease/features/dashboard/domain/entities/activity.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/get_activities.dart';
@@ -61,7 +62,13 @@ void main() {
   test('hides the "Expiradas" tab and clamps selectedTab in simple mode', () {
     controller.selectTab(2);
 
-    appMode.update(isSimpleMode: true);
+    appMode.update(
+      isSimpleMode: true,
+      fontScale: 1.0,
+      spacingScale: 1.0,
+      contrastLevel: ContrastLevel.padrao,
+      reinforcedVisualFeedback: false,
+    );
 
     expect(controller.tabLabels, ['Atividades', 'Concluídas']);
     expect(controller.selectedTab, 0);

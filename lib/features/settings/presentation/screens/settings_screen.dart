@@ -22,29 +22,29 @@ class SettingsScreen extends StatelessWidget {
         final draft = controller.draft;
         final isSimpleMode = draft.navigationMode == 'Simples';
         return ListView(
-          padding: const EdgeInsets.symmetric(
+          padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
             vertical: AppDesignTokens.spacingLg,
           ),
           children: [
             AppTitle(text: 'Personalização da experiência'),
-            const SizedBox(height: AppDesignTokens.spacingSm),
+            SizedBox(height: AppDesignTokens.spacingSm),
             const AppInfo(
               'Ajuste como a plataforma aparece para você. As mudanças são '
               'mostradas na hora; toque em Salvar para guardar.',
             ),
             if (controller.hasUnsavedChanges) ...[
-              const SizedBox(height: AppDesignTokens.spacingLg),
+              SizedBox(height: AppDesignTokens.spacingLg),
               _UnsavedChangesBanner(onSaveNow: controller.save),
             ],
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
 
             AppSubtitle(text: 'Tamanho da letra'),
-            const SizedBox(height: AppDesignTokens.spacingXs),
+            SizedBox(height: AppDesignTokens.spacingXs),
             const AppInfo(
               'Deixe o texto no tamanho mais confortável para ler.',
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
               options: AppSettings.fontSizeOptions
                   .map(
@@ -56,14 +56,14 @@ class SettingsScreen extends StatelessWidget {
                   )
                   .toList(),
             ),
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
 
             AppSubtitle(text: 'Nível de contraste'),
-            const SizedBox(height: AppDesignTokens.spacingXs),
+            SizedBox(height: AppDesignTokens.spacingXs),
             const AppInfo(
               'Leitura mais confortável para vista cansada ou idade avançada.',
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
               options: AppSettings.contrastLevelOptions
                   .map(
@@ -75,16 +75,16 @@ class SettingsScreen extends StatelessWidget {
                   )
                   .toList(),
             ),
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
 
             AppSubtitle(text: 'Modo de navegação'),
-            const SizedBox(height: AppDesignTokens.spacingXs),
+            SizedBox(height: AppDesignTokens.spacingXs),
             const AppInfo(
               'No modo Simples, a plataforma mostra menos opções e textos '
               'mais diretos. Já no modo avançado, todas as opções são '
               'visíveis.',
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
               options: AppSettings.navigationModeOptions
                   .map(
@@ -97,14 +97,14 @@ class SettingsScreen extends StatelessWidget {
                   .toList(),
             ),
             if (!isSimpleMode) ...[
-              const SizedBox(height: AppDesignTokens.spacingXl),
+              SizedBox(height: AppDesignTokens.spacingXl),
               AppSubtitle(text: 'Espaçamento entre elementos'),
-              const SizedBox(height: AppDesignTokens.spacingXs),
+              SizedBox(height: AppDesignTokens.spacingXs),
               const AppInfo(
                 'Aumente o espaço entre botões e blocos se tiver dificuldade '
                 'para tocar.',
               ),
-              const SizedBox(height: AppDesignTokens.spacingMd),
+              SizedBox(height: AppDesignTokens.spacingMd),
               AppCard(
                 options: AppSettings.spacingOptions
                     .map(
@@ -116,14 +116,14 @@ class SettingsScreen extends StatelessWidget {
                     )
                     .toList(),
               ),
-              const SizedBox(height: AppDesignTokens.spacingXl),
+              SizedBox(height: AppDesignTokens.spacingXl),
               AppSubtitle(text: 'Feedback visual reforçado'),
-              const SizedBox(height: AppDesignTokens.spacingXs),
+              SizedBox(height: AppDesignTokens.spacingXs),
               const AppInfo(
                 'Destaca botões e foco com contornos mais visíveis ao tocar '
                 'ou navegar.',
               ),
-              const SizedBox(height: AppDesignTokens.spacingMd),
+              SizedBox(height: AppDesignTokens.spacingMd),
               AppCard(
                 options: [
                   AppCardItem(
@@ -138,14 +138,14 @@ class SettingsScreen extends StatelessWidget {
                   ),
                 ],
               ),
-              const SizedBox(height: AppDesignTokens.spacingXl),
+              SizedBox(height: AppDesignTokens.spacingXl),
               AppSubtitle(text: 'Confirmação em ações críticas'),
-              const SizedBox(height: AppDesignTokens.spacingXs),
+              SizedBox(height: AppDesignTokens.spacingXs),
               const AppInfo(
                 'Pede confirmação antes de ações importantes, como restaurar '
                 'configurações.',
               ),
-              const SizedBox(height: AppDesignTokens.spacingMd),
+              SizedBox(height: AppDesignTokens.spacingMd),
               AppCard(
                 options: [
                   AppCardItem(
@@ -163,14 +163,14 @@ class SettingsScreen extends StatelessWidget {
                 ],
               ),
             ],
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
 
             AppButton(
               label: 'Salvar mudanças',
               onPressed: controller.hasUnsavedChanges ? controller.save : null,
               variant: ButtonVariant.primary,
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
               label: 'Retornar configurações padrão',
               onPressed: () => _confirmReset(context, controller),
@@ -223,7 +223,7 @@ class _UnsavedChangesBanner extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Container(
-      padding: const EdgeInsets.all(AppDesignTokens.spacingMd),
+      padding: EdgeInsets.all(AppDesignTokens.spacingMd),
       decoration: BoxDecoration(
         color: AppDesignTokens.colorWhite,
         borderRadius: BorderRadius.circular(
@@ -242,7 +242,7 @@ class _UnsavedChangesBanner extends StatelessWidget {
               color: AppDesignTokens.colorContentDefault,
             ),
           ),
-          const SizedBox(height: AppDesignTokens.spacingMd),
+          SizedBox(height: AppDesignTokens.spacingMd),
           AppButton(
             label: 'Salvar agora',
             onPressed: onSaveNow,

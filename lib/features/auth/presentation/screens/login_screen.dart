@@ -17,9 +17,9 @@ class LoginScreen extends StatelessWidget {
   Widget build(BuildContext context) {
     return ChangeNotifierProvider<LoginController>(
       create: (_) => sl<LoginController>(),
-      child: const Scaffold(
+      child: Scaffold(
         backgroundColor: AppDesignTokens.colorGray100,
-        body: SafeArea(child: _LoginForm()),
+        body: const SafeArea(child: _LoginForm()),
       ),
     );
   }
@@ -54,28 +54,28 @@ class _LoginFormState extends State<_LoginForm> {
       builder: (context, controller, _) {
         final isSignIn = controller.mode == AuthFormMode.signIn;
         return ListView(
-          padding: const EdgeInsets.all(AppDesignTokens.spacingLg),
+          padding: EdgeInsets.all(AppDesignTokens.spacingLg),
           children: [
-            const SizedBox(height: AppDesignTokens.spacing2xl),
+            SizedBox(height: AppDesignTokens.spacing2xl),
             Center(
               child: SvgPicture.asset('lib/assets/logo.svg', height: 64),
             ),
-            const SizedBox(height: AppDesignTokens.spacingXl),
+            SizedBox(height: AppDesignTokens.spacingXl),
             AppTitle(text: isSignIn ? 'Entrar' : 'Criar conta'),
-            const SizedBox(height: AppDesignTokens.spacingSm),
+            SizedBox(height: AppDesignTokens.spacingSm),
             AppSubtitle(
               text: isSignIn
                   ? 'Acesse sua conta para continuar.'
                   : 'Preencha seus dados para começar.',
             ),
-            const SizedBox(height: AppDesignTokens.spacingLg),
+            SizedBox(height: AppDesignTokens.spacingLg),
             AppTextField(
               label: 'E-mail',
               controller: _emailController,
               keyboardType: TextInputType.emailAddress,
               enabled: !controller.isLoading,
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppTextField(
               label: 'Senha',
               controller: _passwordController,
@@ -83,7 +83,7 @@ class _LoginFormState extends State<_LoginForm> {
               enabled: !controller.isLoading,
             ),
             if (controller.errorMessage != null) ...[
-              const SizedBox(height: AppDesignTokens.spacingMd),
+              SizedBox(height: AppDesignTokens.spacingMd),
               Text(
                 controller.errorMessage!,
                 style: TextStyle(
@@ -92,7 +92,7 @@ class _LoginFormState extends State<_LoginForm> {
                 ),
               ),
             ],
-            const SizedBox(height: AppDesignTokens.spacingLg),
+            SizedBox(height: AppDesignTokens.spacingLg),
             AppButton(
               label: isSignIn ? 'Entrar' : 'Criar conta',
               loading: controller.isLoading,
@@ -104,7 +104,7 @@ class _LoginFormState extends State<_LoginForm> {
                 if (success) await _onSuccess();
               },
             ),
-            const SizedBox(height: AppDesignTokens.spacingMd),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
               label: 'Continuar com o Google',
               variant: ButtonVariant.outlined,
@@ -114,7 +114,7 @@ class _LoginFormState extends State<_LoginForm> {
                 if (success) await _onSuccess();
               },
             ),
-            const SizedBox(height: AppDesignTokens.spacingLg),
+            SizedBox(height: AppDesignTokens.spacingLg),
             Center(
               child: TextButton(
                 onPressed: controller.isLoading ? null : controller.toggleMode,

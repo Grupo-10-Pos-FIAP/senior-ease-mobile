@@ -18,7 +18,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       elevation: 0,
       toolbarHeight: preferredSize.height,
       centerTitle: false,
-      shape: const Border(
+      shape: Border(
         bottom: BorderSide(color: AppDesignTokens.colorGray200, width: 1),
       ),
       title: SvgPicture.asset(
@@ -48,7 +48,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
-        const SizedBox(width: AppDesignTokens.spacingSm),
+        SizedBox(width: AppDesignTokens.spacingSm),
         TextButton.icon(
           onPressed: onLogoutTap,
           icon: Icon(
@@ -65,7 +65,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(
+            padding: EdgeInsets.symmetric(
               horizontal: AppDesignTokens.spacingMd,
               vertical: AppDesignTokens.spacingSm,
             ),
@@ -77,7 +77,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-        const SizedBox(width: AppDesignTokens.spacingMd),
+        SizedBox(width: AppDesignTokens.spacingMd),
       ],
     );
   }

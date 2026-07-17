@@ -10,7 +10,7 @@ class InfoRow extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Padding(
-      padding: const EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+      padding: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
@@ -22,7 +22,7 @@ class InfoRow extends StatelessWidget {
               fontWeight: AppDesignTokens.fontWeightBold,
             ),
           ),
-          const SizedBox(height: AppDesignTokens.spacingSm),
+          SizedBox(height: AppDesignTokens.spacingSm),
           Text(
             value,
             style: TextStyle(
