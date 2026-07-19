@@ -74,17 +74,12 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
               ..._buildReadingContent(args.activityId, step)
             else
               ..._buildQuizContent(args.activityId, step),
-            SizedBox(height: AppDesignTokens.spacingXl),
-            TextButton(
-              onPressed: () => Navigator.of(context).pop(),
-              child: Text(
-                'Voltar para o passo-a-passo',
-                style: TextStyle(
-                  color: AppDesignTokens.colorPrimary,
-                  fontSize: AppDesignTokens.fontSizeBody,
-                  fontWeight: AppDesignTokens.fontWeightSemibold,
-                ),
-              ),
+            SizedBox(height: AppDesignTokens.spacingXl),             
+            AppButton(
+              label: 'Voltar para o passo-a-passo',
+              loading: _isSubmitting,
+                            onPressed: () => Navigator.of(context).pop(),
+              variant: ButtonVariant.outlined,
             ),
           ],
         ),
