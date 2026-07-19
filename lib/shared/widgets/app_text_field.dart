@@ -34,7 +34,7 @@ class AppTextField extends StatelessWidget {
         labelText: label,
         errorText: errorText,
         filled: true,
-        fillColor: AppDesignTokens.colorWhite,
+        fillColor: AppDesignTokens.colorBgLight,
         contentPadding: EdgeInsets.symmetric(
           horizontal: AppDesignTokens.spacingMd,
           vertical: AppDesignTokens.spacingMd,

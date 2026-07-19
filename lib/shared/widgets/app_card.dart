@@ -57,7 +57,7 @@ class AppCard extends StatelessWidget {
         decoration: BoxDecoration(
           color: selected
               ? AppDesignTokens.colorPrimarySurface
-              : AppDesignTokens.colorWhite,
+              : AppDesignTokens.colorBgLight,
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
@@ -153,7 +153,7 @@ class _AppCardItemWidget extends StatelessWidget {
         decoration: BoxDecoration(
           color: item.selected
               ? AppDesignTokens.colorPrimarySurface
-              : AppDesignTokens.colorWhite,
+              : AppDesignTokens.colorBgLight,
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
@@ -189,10 +189,12 @@ class _AppCardItemWidget extends StatelessWidget {
   }
 }
 
-/// Wraps card content with a tap handler. In normal mode this is a plain
-/// [GestureDetector] (unchanged behavior); with "Feedback visual reforçado"
-/// on, taps get haptic feedback plus a visible ripple/highlight via
-/// [InkWell], so touch feedback is unmistakable for low-vision users.
+/// Wraps card content with a tap handler — every card gets a visible
+/// press highlight via [InkWell] (using the contrast-adjusted gray scale,
+/// so it stays visible regardless of contrast level, unlike a fixed brand
+/// color would). With "Feedback visual reforçado" on, taps additionally
+/// get haptic feedback, for touch confirmation that's unmistakable for
+/// low-vision users.
 class _TappableCard extends StatelessWidget {
   const _TappableCard({
     required this.onTap,
@@ -208,16 +210,14 @@ class _TappableCard extends StatelessWidget {
   Widget build(BuildContext context) {
     final reinforced = sl<AppModeController>().reinforcedVisualFeedback;
 
-    if (!reinforced) {
-      return GestureDetector(onTap: onTap, child: child);
-    }
-
     final effectiveOnTap = onTap == null
         ? null
-        : () {
+        : reinforced
+        ? () {
             HapticFeedback.mediumImpact();
             onTap!();
-          };
+          }
+        : onTap;
 
     return Material(
       color: Colors.transparent,
@@ -225,10 +225,8 @@ class _TappableCard extends StatelessWidget {
       child: InkWell(
         onTap: effectiveOnTap,
         borderRadius: borderRadius,
-        splashColor: AppDesignTokens.colorFeedbackInfo.withValues(alpha: 0.24),
-        highlightColor: AppDesignTokens.colorFeedbackInfo.withValues(
-          alpha: 0.12,
-        ),
+        splashColor: AppDesignTokens.colorGray500.withValues(alpha: 0.4),
+        highlightColor: AppDesignTokens.colorGray500.withValues(alpha: 0.3),
         child: child,
       ),
     );

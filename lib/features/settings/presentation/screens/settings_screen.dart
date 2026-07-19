@@ -209,6 +209,7 @@ class SettingsScreen extends StatelessWidget {
   ) async {
     if (!controller.draft.criticalActionConfirmation) {
       controller.resetToDefaults();
+      await controller.save();
       return;
     }
     final confirmed = await showDialog<bool>(
@@ -231,7 +232,10 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
     if (confirmed == true) {
+      // Reset should take effect immediately, same as any other change —
+      // no reason to make the user also hit "Salvar mudanças" right after.
       controller.resetToDefaults();
+      await controller.save();
     }
   }
 }
@@ -246,7 +250,7 @@ class _UnsavedChangesBanner extends StatelessWidget {
     return Container(
       padding: EdgeInsets.all(AppDesignTokens.spacingMd),
       decoration: BoxDecoration(
-        color: AppDesignTokens.colorWhite,
+        color: AppDesignTokens.colorBgLight,
         borderRadius: BorderRadius.circular(
           AppDesignTokens.borderRadiusDefault,
         ),

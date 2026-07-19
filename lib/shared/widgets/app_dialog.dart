@@ -56,7 +56,7 @@ class AppDialog extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppDesignTokens.colorWhite,
+      backgroundColor: AppDesignTokens.colorBgLight,
       insetPadding: EdgeInsets.symmetric(
         horizontal: AppDesignTokens.spacingLg,
         vertical: AppDesignTokens.spacingXl,

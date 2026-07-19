@@ -27,22 +27,18 @@ class AppTheme {
       textTheme: textTheme,
       inputDecorationTheme: InputDecorationTheme(
         filled: true,
-        fillColor: AppDesignTokens.colorWhite,
+        fillColor: AppDesignTokens.colorBgLight,
         border: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          borderSide: BorderSide(
-            color: AppDesignTokens.colorBorderDefault,
-          ),
+          borderSide: BorderSide(color: AppDesignTokens.colorBorderDefault),
         ),
         enabledBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          borderSide: BorderSide(
-            color: AppDesignTokens.colorBorderDefault,
-          ),
+          borderSide: BorderSide(color: AppDesignTokens.colorBorderDefault),
         ),
         focusedBorder: OutlineInputBorder(
           borderRadius: BorderRadius.circular(
@@ -152,7 +148,7 @@ class AppTheme {
                     color: AppDesignTokens.buttonOutlinedBorderDisabled,
                   );
                 }
-                return const BorderSide(
+                return BorderSide(
                   color: AppDesignTokens.buttonOutlinedBorderDefault,
                 );
               }),

@@ -89,8 +89,22 @@ class AppDesignTokens {
   static const Color _base = Color(0xFF1A1A1A);
   static Color get colorBase => _adjust(_base);
 
-  static const Color colorPrimary = Color(0xFF1F2D5C);
-  static const Color colorPrimarySurface = Color(0xFFE6E4FF);
+  static const Color _primary = Color(0xFF1F2D5C);
+  // Dark navy on a dark ("Escuro") or heavily-darkened ("Alto"/"Máximo")
+  // surface reads as near-invisible — those levels swap it for white
+  // instead of running it through `_adjust` (which would push an
+  // already-dark color toward black, the opposite of more legible).
+  static Color get colorPrimary => switch (_contrast) {
+    ContrastLevel.alto ||
+    ContrastLevel.maximo ||
+    ContrastLevel.escuro => colorWhite,
+    _ => _primary,
+  };
+  static const Color _primarySurface = Color(0xFFE6E4FF);
+  // Selected-card tint — this one DOES run through `_adjust` (unlike
+  // colorPrimary above): it's a background, so "Escuro" should invert it
+  // dark like every other surface, not swap it for a fixed color.
+  static Color get colorPrimarySurface => _adjust(_primarySurface);
   static const Color colorErrorSurface = Color(0xFFFBE6E4);
   static const Color colorErrorOnSurface = Color(0xFF5C271F);
   static const Color colorSecondary = Color(0xFF42484E);
@@ -102,7 +116,7 @@ class AppDesignTokens {
   static Color get colorBgDefault => _adjust(_bgDefault);
   static Color get colorBgDefaultDark => _adjust(_bgDefaultDark);
   static Color get colorBgLight => _adjust(colorWhite);
-  static const Color colorBgPrimary = colorPrimary;
+  static Color get colorBgPrimary => colorPrimary;
   static const Color colorBgSecondary = colorSecondary;
   static Color get colorBgDisabled => colorGray200;
   static const Color colorBgOverlay = Color(0xCCFFFFFF);
@@ -110,7 +124,7 @@ class AppDesignTokens {
   static const Color colorBgAvatar = Color(0xFFEDF2FE);
 
   static Color get colorContentDefault => colorBase;
-  static const Color colorContentPrimary = colorPrimary;
+  static Color get colorContentPrimary => colorPrimary;
   static const Color _contentSecondary = Color(0xFF42484E);
   static Color get colorContentSecondary => _adjust(_contentSecondary);
   static const Color colorContentInverse = colorWhite;
@@ -120,9 +134,9 @@ class AppDesignTokens {
 
   static Color get colorBorderDefault => colorNeutral;
   static const Color colorBorderDisabled = Color(0x00FFFFFF);
-  static const Color colorBorderFocused = colorPrimary;
+  static Color get colorBorderFocused => colorPrimary;
 
-  static const Color colorLink = colorPrimary;
+  static Color get colorLink => colorPrimary;
   static const Color colorLinkVisited = buttonBrandBgPressed;
 
   static const Color colorFeedbackSuccess = Color(0xFF81BE7F);
@@ -151,8 +165,9 @@ class AppDesignTokens {
       ContrastLevel.suave => 0.10,
       ContrastLevel.conforto => 0.20,
       ContrastLevel.alto => 0.40,
-      ContrastLevel.padrao || ContrastLevel.maximo || ContrastLevel.escuro =>
-        0.0,
+      ContrastLevel.padrao ||
+      ContrastLevel.maximo ||
+      ContrastLevel.escuro => 0.0,
     };
     final target = isLight ? 1.0 : 0.0;
     final nextLightness = hsl.lightness + (target - hsl.lightness) * factor;
@@ -189,9 +204,13 @@ class AppDesignTokens {
   static const int zIndexTooltip = 1070;
   static const int zIndexLoading = 9999;
 
-  static const Color buttonBrandBgDefault = colorPrimary;
+  // Fixed brand navy, not the contrast-reactive [colorPrimary] getter — this
+  // is a filled button's own background, paired with fixed white text
+  // ([buttonBrandContentDefault]); if it followed colorPrimary to white at
+  // high contrast the button would turn invisible (white text on white).
+  static const Color buttonBrandBgDefault = _primary;
   static const Color buttonBrandBgPressed = Color(0xFF141D3D);
-  static const Color buttonBrandBgDisabled = colorPrimarySurface;
+  static Color get buttonBrandBgDisabled => colorPrimarySurface;
   static const Color buttonBrandContentDefault = colorWhite;
   static Color get buttonBrandContentDisabled => colorContentDisabled;
 
@@ -204,9 +223,17 @@ class AppDesignTokens {
   static const Color buttonOutlinedBgDefault = Colors.transparent;
   static const Color buttonOutlinedBgPressed = Color(0xFF3A3C3C);
   static const Color buttonOutlinedBgDisabled = Colors.transparent;
-  static const Color buttonOutlinedBorderDefault = Color(0x331A1A1A);
+  // A translucent near-black border reads fine on the normal light
+  // background but disappears against a dark/high-contrast one — swap to a
+  // solid, fully-opaque border in those modes, same as [colorPrimary].
+  static Color get buttonOutlinedBorderDefault => switch (_contrast) {
+    ContrastLevel.alto ||
+    ContrastLevel.maximo ||
+    ContrastLevel.escuro => colorWhite,
+    _ => const Color(0x331A1A1A),
+  };
   static const Color buttonOutlinedBorderDisabled = Color(0x1A1A1A1A);
-  static const Color buttonOutlinedContentDefault = colorPrimary;
+  static Color get buttonOutlinedContentDefault => colorPrimary;
   static const Color buttonOutlinedContentPressed = colorWhite;
   static const Color buttonOutlinedContentDisabled = Color(0xFFC2C2C2);
 

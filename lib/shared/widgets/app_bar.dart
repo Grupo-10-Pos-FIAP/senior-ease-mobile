@@ -14,7 +14,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   @override
   Widget build(BuildContext context) {
     return AppBar(
-      backgroundColor: AppDesignTokens.colorWhite,
+      backgroundColor: AppDesignTokens.colorBgLight,
       elevation: 0,
       toolbarHeight: preferredSize.height,
       centerTitle: false,

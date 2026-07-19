@@ -23,7 +23,7 @@ class ActivityCard extends StatelessWidget {
       margin: EdgeInsets.only(bottom: AppDesignTokens.spacingLg),
       padding: EdgeInsets.all(AppDesignTokens.spacingLg),
       decoration: BoxDecoration(
-        color: AppDesignTokens.colorWhite,
+        color: AppDesignTokens.colorBgLight,
         borderRadius: BorderRadius.circular(
           AppDesignTokens.borderRadiusDefault,
         ),
