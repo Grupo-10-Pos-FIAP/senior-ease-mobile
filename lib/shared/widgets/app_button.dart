@@ -64,7 +64,7 @@ class AppButton extends StatelessWidget {
       label,
       overflow: TextOverflow.ellipsis,
       maxLines: 1,
-      style: const TextStyle(fontSize: 16),
+      style: TextStyle(fontSize: AppDesignTokens.fontSizeBody),
     );
 
     if (_isIconOnly) {
