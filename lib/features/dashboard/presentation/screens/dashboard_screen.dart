@@ -1,12 +1,13 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
-import 'package:senior_ease/core/auth/auth_controller.dart';
+import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:senior_ease/features/dashboard/presentation/widgets/activity_card.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
+import 'package:senior_ease/shared/widgets/app_dialog.dart';
 import 'package:senior_ease/shared/widgets/app_tabs.dart';
 
 class DashboardScreen extends StatelessWidget {
@@ -21,14 +22,7 @@ class DashboardScreen extends StatelessWidget {
         appBar: SeniorEaseAppBar(
           onProfileTap: () =>
               Navigator.of(context).pushNamed(RouteNames.profile),
-          onLogoutTap: () async {
-            await sl<AuthController>().signOut();
-            if (context.mounted) {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
-            }
-          },
+          onLogoutTap: () => confirmAndSignOut(context),
         ),
         body: SafeArea(
           bottom: false,
@@ -55,12 +49,22 @@ class DashboardScreen extends StatelessWidget {
                         (activity) => ActivityCard(
                           activity: activity,
                           completing: controller.isCompleting(activity.id),
-                          onComplete: () =>
-                              controller.completeActivity(activity.id),
-                          onHowTo: () => Navigator.of(context).pushNamed(
-                            RouteNames.steps,
-                            arguments: activity.id,
-                          ),
+                          onComplete: () async {
+                            final confirmed = await AppDialog.confirm(
+                              context,
+                              title: 'Deseja concluir ${activity.title}?',
+                              description:
+                                  'A atividade será movida para a aba de '
+                                  '"atividades concluídas".',
+                              confirmLabel: 'Concluir atividade',
+                            );
+                            if (confirmed) {
+                              await controller.completeActivity(activity.id);
+                            }
+                          },
+                          onHowTo: () => Navigator.of(
+                            context,
+                          ).pushNamed(RouteNames.steps, arguments: activity.id),
                         ),
                       ),
                     if (!controller.isLoading && items.isEmpty)

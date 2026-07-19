@@ -1,9 +1,14 @@
+import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
+import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/auth/auth_controller.dart';
+import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/profile/domain/entities/user_profile.dart';
 import 'package:senior_ease/features/profile/presentation/controllers/profile_info_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
+import 'package:senior_ease/shared/widgets/app_dialog.dart';
 import 'package:senior_ease/shared/widgets/info_row.dart';
 
 class ProfileInfoScreen extends StatelessWidget {
@@ -46,7 +51,7 @@ class ProfileInfoScreen extends StatelessWidget {
             SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
               label: 'Excluir conta',
-              onPressed: () {},
+              onPressed: () => _deleteAccount(context),
               variant: ButtonVariant.negative,
               icon: const Icon(Icons.delete),
               backgroundColor: AppDesignTokens.colorErrorSurface,
@@ -55,6 +60,41 @@ class ProfileInfoScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _deleteAccount(BuildContext context) async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Tem certeza que deseja excluir sua conta?',
+      description:
+          'Ao fazer isso, você perderá todo o progresso de atividades e não '
+          'poderá mais acessar o SeniorEase com esta conta, pois ela não '
+          'existirá mais.',
+      confirmLabel: 'Excluir conta',
+      destructive: true,
+      // Deleting the account is irreversible — unlike the other confirm
+      // dialogs, this one always shows, even in Simple mode.
+      skipInSimpleMode: false,
+    );
+    if (!confirmed) return;
+
+    try {
+      await sl<AuthController>().deleteAccount();
+      if (context.mounted) {
+        Navigator.of(
+          context,
+        ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+      }
+    } on FirebaseAuthException catch (e) {
+      if (!context.mounted) return;
+      final message = e.code == 'requires-recent-login'
+          ? 'Por segurança, saia e entre novamente antes de excluir sua '
+                'conta.'
+          : 'Não foi possível excluir a conta. Tente novamente.';
+      ScaffoldMessenger.of(
+        context,
+      ).showSnackBar(SnackBar(content: Text(message)));
+    }
   }
 
   String _ageLabel(DateTime? birthDate) {

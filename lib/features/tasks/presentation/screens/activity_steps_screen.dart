@@ -1,7 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
-import 'package:senior_ease/core/auth/auth_controller.dart';
+import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
@@ -22,14 +22,7 @@ class ActivityStepsScreen extends StatelessWidget {
         appBar: SeniorEaseAppBar(
           onProfileTap: () =>
               Navigator.of(context).pushNamed(RouteNames.profile),
-          onLogoutTap: () async {
-            await sl<AuthController>().signOut();
-            if (context.mounted) {
-              Navigator.of(
-                context,
-              ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
-            }
-          },
+          onLogoutTap: () => confirmAndSignOut(context),
         ),
         body: SafeArea(
           bottom: false,
@@ -65,19 +58,13 @@ class ActivityStepsScreen extends StatelessWidget {
                   ...controller.steps.map((step) {
                     return AppCard.simple(
                       title: step.label,
-                      subtitle: step.completed
-                          ? 'Etapa concluída'
-                          : 'Pendente',
+                      subtitle: step.completed ? 'Etapa concluída' : 'Pendente',
                       selected: step.completed,
                       onTap: () async {
-                        final completed = await Navigator.of(context)
-                            .pushNamed(
-                              RouteNames.stage,
-                              arguments: (
-                                activityId: activityId,
-                                step: step,
-                              ),
-                            );
+                        final completed = await Navigator.of(context).pushNamed(
+                          RouteNames.stage,
+                          arguments: (activityId: activityId, step: step),
+                        );
                         if (completed == true) {
                           controller.markCompleted(step.id);
                         }
@@ -87,12 +74,11 @@ class ActivityStepsScreen extends StatelessWidget {
                   SizedBox(height: AppDesignTokens.spacingLg),
                   AppButton(
                     label: 'Concluir atividade',
-                    onPressed: () => Navigator.of(
-                      context,
-                    ).pushNamedAndRemoveUntil(
-                      RouteNames.home,
-                      (route) => false,
-                    ),
+                    onPressed: () =>
+                        Navigator.of(context).pushNamedAndRemoveUntil(
+                          RouteNames.home,
+                          (route) => false,
+                        ),
                     variant: ButtonVariant.primary,
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),

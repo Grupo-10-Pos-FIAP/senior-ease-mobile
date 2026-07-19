@@ -5,6 +5,7 @@ import 'package:senior_ease/features/settings/presentation/controllers/settings_
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_card.dart';
+import 'package:senior_ease/shared/widgets/app_dialog.dart';
 import 'package:senior_ease/shared/widgets/app_info.dart';
 import 'package:senior_ease/shared/widgets/app_subtitle.dart';
 import 'package:senior_ease/shared/widgets/app_title.dart';
@@ -35,7 +36,9 @@ class SettingsScreen extends StatelessWidget {
             ),
             if (controller.hasUnsavedChanges) ...[
               SizedBox(height: AppDesignTokens.spacingLg),
-              _UnsavedChangesBanner(onSaveNow: controller.save),
+              _UnsavedChangesBanner(
+                onSaveNow: () => _confirmSave(context, controller),
+              ),
             ],
             SizedBox(height: AppDesignTokens.spacingXl),
 
@@ -151,8 +154,7 @@ class SettingsScreen extends StatelessWidget {
                   AppCardItem(
                     label: 'Sim',
                     selected: draft.criticalActionConfirmation,
-                    onTap: () =>
-                        controller.setCriticalActionConfirmation(true),
+                    onTap: () => controller.setCriticalActionConfirmation(true),
                   ),
                   AppCardItem(
                     label: 'Não',
@@ -167,7 +169,9 @@ class SettingsScreen extends StatelessWidget {
 
             AppButton(
               label: 'Salvar mudanças',
-              onPressed: controller.hasUnsavedChanges ? controller.save : null,
+              onPressed: controller.hasUnsavedChanges
+                  ? () => _confirmSave(context, controller)
+                  : null,
               variant: ButtonVariant.primary,
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
@@ -180,6 +184,23 @@ class SettingsScreen extends StatelessWidget {
         );
       },
     );
+  }
+
+  Future<void> _confirmSave(
+    BuildContext context,
+    SettingsController controller,
+  ) async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Deseja salvar as mudanças feitas?',
+      description:
+          'A aparência do SeniorEase será adaptada de acordo com as novas '
+          'opções de personalização que você escolheu.',
+      confirmLabel: 'Salvar',
+    );
+    if (confirmed) {
+      await controller.save();
+    }
   }
 
   Future<void> _confirmReset(

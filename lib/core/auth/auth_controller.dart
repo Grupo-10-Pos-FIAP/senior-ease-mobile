@@ -66,6 +66,16 @@ class AuthController extends ChangeNotifier {
     await _firebaseAuth.signOut();
   }
 
+  /// Firebase may reject this with `requires-recent-login` if the session
+  /// is old — callers should surface that to the user rather than treat it
+  /// as a generic failure.
+  Future<void> deleteAccount() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return;
+    await _firestore.collection('users').doc(user.uid).delete();
+    await user.delete();
+  }
+
   /// A brand-new account has no `users/{uid}` document yet, so Dashboard has
   /// no `enrolledCourseId` to look activities up by. Enroll every new user in
   /// the single course this app has today, with the same default shape as
