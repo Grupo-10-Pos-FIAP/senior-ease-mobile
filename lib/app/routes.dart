@@ -10,17 +10,16 @@ import 'package:senior_ease/features/tasks/presentation/screens/activity_steps_s
 
 Map<String, WidgetBuilder> buildRoutes() {
   return {
-    RouteNames.login: _reactiveToAppMode((context) => const LoginScreen()),
-    RouteNames.home: _reactiveToAppMode((context) => const DashboardScreen()),
-    RouteNames.steps: _reactiveToAppMode(
-      (context) => const ActivityStepsScreen(),
-    ),
-    RouteNames.stage: _reactiveToAppMode(
-      (context) => const ActivityStageScreen(),
-    ),
-    RouteNames.profile: _reactiveToAppMode(
-      (context) => const ProfileShellScreen(),
-    ),
+    // Not `const` — a `const` child would be the exact same widget instance
+    // on every rebuild, and Flutter skips rebuilding a subtree entirely
+    // when it gets back an identical const widget. That would silently
+    // defeat _reactiveToAppMode below: notifyListeners() would still fire,
+    // but nothing under it would actually re-render.
+    RouteNames.login: _reactiveToAppMode((context) => LoginScreen()),
+    RouteNames.home: _reactiveToAppMode((context) => DashboardScreen()),
+    RouteNames.steps: _reactiveToAppMode((context) => ActivityStepsScreen()),
+    RouteNames.stage: _reactiveToAppMode((context) => ActivityStageScreen()),
+    RouteNames.profile: _reactiveToAppMode((context) => ProfileShellScreen()),
   };
 }
 
