@@ -11,4 +11,9 @@ class ActivityRepositoryImpl implements ActivityRepository {
   Future<List<Activity>> getActivities() {
     return remoteDataSource.getActivities();
   }
+
+  @override
+  Future<void> completeActivity(String activityId) {
+    return remoteDataSource.completeActivity(activityId);
+  }
 }

@@ -1,5 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/auth/auth_controller.dart';
+import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/complete_step.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
@@ -40,7 +42,17 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
 
     return Scaffold(
       backgroundColor: AppDesignTokens.colorGray100,
-      appBar: SeniorEaseAppBar(onProfileTap: () {}, onLogoutTap: () {}),
+      appBar: SeniorEaseAppBar(
+        onProfileTap: () => Navigator.of(context).pushNamed(RouteNames.profile),
+        onLogoutTap: () async {
+          await sl<AuthController>().signOut();
+          if (context.mounted) {
+            Navigator.of(
+              context,
+            ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+          }
+        },
+      ),
       body: SafeArea(
         bottom: false,
         child: ListView(

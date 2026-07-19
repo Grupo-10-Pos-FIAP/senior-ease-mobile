@@ -9,11 +9,13 @@ class ActivityCard extends StatelessWidget {
     required this.activity,
     this.onComplete,
     this.onHowTo,
+    this.completing = false,
   });
 
   final Activity activity;
   final VoidCallback? onComplete;
   final VoidCallback? onHowTo;
+  final bool completing;
 
   @override
   Widget build(BuildContext context) {
@@ -101,6 +103,7 @@ class ActivityCard extends StatelessWidget {
                 onPressed: activity.status == ActivityStatus.active
                     ? (onComplete ?? () {})
                     : null,
+                loading: completing,
                 variant: ButtonVariant.primary,
                 icon: const Icon(Icons.check),
               ),

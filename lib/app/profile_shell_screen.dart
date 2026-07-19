@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/auth/auth_controller.dart';
+import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/profile/presentation/controllers/profile_info_controller.dart';
 import 'package:senior_ease/features/profile/presentation/screens/profile_info_screen.dart';
 import 'package:senior_ease/features/settings/presentation/controllers/settings_controller.dart';
@@ -49,7 +51,18 @@ class _ProfileShellScreenState extends State<ProfileShellScreen> {
       ],
       child: Scaffold(
         backgroundColor: AppDesignTokens.colorGray100,
-        appBar: SeniorEaseAppBar(onProfileTap: () {}, onLogoutTap: () {}),
+        appBar: SeniorEaseAppBar(
+          onProfileTap: () =>
+              Navigator.of(context).pushNamed(RouteNames.profile),
+          onLogoutTap: () async {
+            await sl<AuthController>().signOut();
+            if (context.mounted) {
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+            }
+          },
+        ),
         body: SafeArea(
           bottom: false,
           child: Column(

@@ -5,6 +5,8 @@ import 'package:senior_ease/features/dashboard/domain/entities/activity.dart';
 
 abstract class ActivityRemoteDataSource {
   Future<List<Activity>> getActivities();
+
+  Future<void> completeActivity(String activityId);
 }
 
 class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
@@ -37,32 +39,41 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
         doc.id: doc.data()['status'] as String?,
     };
 
-    final activities = activitiesSnapshot.docs.map((doc) {
+    return activitiesSnapshot.docs.map((doc) {
       final data = doc.data();
-      final status =
-          progressStatusByActivityId[doc.id] ?? data['status'] as String?;
-      final endDate = data['endDate'] as String?;
-      return (
-        activity: Activity(
-          id: doc.id,
-          title: data['title'] as String? ?? '',
-          dateRange: _formatDateRange(data['startDate'] as String?, endDate),
-          status: _statusFrom(status),
+      // Completion is the only per-user state — once the user completes an
+      // activity that stays true regardless of the course's own status.
+      // Everything else (expired, active) is a property of the course
+      // activity itself, so a leftover/default progress status (e.g.
+      // "active") must never mask the course marking something expired.
+      final progressStatus = progressStatusByActivityId[doc.id];
+      final status = progressStatus == 'completed'
+          ? progressStatus
+          : data['status'] as String?;
+      return Activity(
+        id: doc.id,
+        title: data['title'] as String? ?? '',
+        dateRange: _formatDateRange(
+          data['startDate'] as String?,
+          data['endDate'] as String?,
         ),
-        dueDate: endDate != null ? DateTime.tryParse(endDate) : null,
+        status: _statusFrom(status),
       );
     }).toList();
+  }
 
-    // Nearest due date (vencimento) first; activities with no parseable
-    // end date sort last rather than breaking the ordering.
-    activities.sort((a, b) {
-      if (a.dueDate == null && b.dueDate == null) return 0;
-      if (a.dueDate == null) return 1;
-      if (b.dueDate == null) return -1;
-      return a.dueDate!.compareTo(b.dueDate!);
-    });
-
-    return activities.map((entry) => entry.activity).toList();
+  @override
+  Future<void> completeActivity(String activityId) {
+    final uid = _firebaseAuth.currentUser!.uid;
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('activityProgress')
+        .doc(activityId)
+        .set({
+          'activityId': activityId,
+          'status': 'completed',
+        }, SetOptions(merge: true));
   }
 
   String _formatDateRange(String? startDate, String? endDate) {

@@ -65,7 +65,11 @@ class LoginController extends ChangeNotifier {
     } on FirebaseAuthException catch (e) {
       errorMessage = onAuthError(e.code);
       return false;
-    } catch (_) {
+    } catch (e) {
+      // Surfaced so GoogleSignInException codes (e.g. clientConfigurationError
+      // from a missing Android OAuth client / SHA-1) are visible in the
+      // console instead of being silently swallowed.
+      debugPrint('Auth error: $e');
       errorMessage = 'Não foi possível concluir. Tente novamente.';
       return false;
     } finally {

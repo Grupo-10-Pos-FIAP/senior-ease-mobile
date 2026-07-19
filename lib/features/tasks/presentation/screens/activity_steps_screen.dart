@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/auth/auth_controller.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
@@ -19,8 +20,16 @@ class ActivityStepsScreen extends StatelessWidget {
       child: Scaffold(
         backgroundColor: AppDesignTokens.colorGray100,
         appBar: SeniorEaseAppBar(
-          onProfileTap: () {},
-          onLogoutTap: () => Navigator.of(context).pop(),
+          onProfileTap: () =>
+              Navigator.of(context).pushNamed(RouteNames.profile),
+          onLogoutTap: () async {
+            await sl<AuthController>().signOut();
+            if (context.mounted) {
+              Navigator.of(
+                context,
+              ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
+            }
+          },
         ),
         body: SafeArea(
           bottom: false,
@@ -36,7 +45,7 @@ class ActivityStepsScreen extends StatelessWidget {
                 ),
                 children: [
                   Text(
-                    controller.activityTitle,
+                    " Como fazer: ${controller.activityTitle}",
                     style: TextStyle(
                       fontSize: AppDesignTokens.fontSizeH4,
                       fontWeight: AppDesignTokens.fontWeightBold,

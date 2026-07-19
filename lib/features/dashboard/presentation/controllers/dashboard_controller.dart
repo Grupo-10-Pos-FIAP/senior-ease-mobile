@@ -2,15 +2,22 @@ import 'package:flutter/foundation.dart';
 import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/core/usecase/usecase.dart';
 import 'package:senior_ease/features/dashboard/domain/entities/activity.dart';
+import 'package:senior_ease/features/dashboard/domain/usecases/complete_activity.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/get_activities.dart';
 
 class DashboardController extends ChangeNotifier {
-  DashboardController(this._getActivities, this._appMode) {
+  DashboardController(
+    this._getActivities,
+    this._completeActivity,
+    this._appMode,
+  ) {
     _appMode.addListener(_handleAppModeChanged);
   }
 
   final GetActivities _getActivities;
+  final CompleteActivity _completeActivity;
   final AppModeController _appMode;
+  String? _completingActivityId;
 
   static const List<({String label, ActivityStatus status})> _allTabs = [
     (label: 'Atividades', status: ActivityStatus.active),
@@ -49,6 +56,31 @@ class DashboardController extends ChangeNotifier {
 
   void selectTab(int index) {
     selectedTab = index;
+    notifyListeners();
+  }
+
+  bool isCompleting(String activityId) => _completingActivityId == activityId;
+
+  /// Refetches quietly (no [isLoading] toggle) — this only ever affects one
+  /// card's status, so the full list blanking out while it reloads would
+  /// read as a glitch rather than a completion.
+  Future<void> completeActivity(String activityId) async {
+    _completingActivityId = activityId;
+    notifyListeners();
+    try {
+      await _completeActivity(activityId);
+      _activities = await _getActivities(const NoParams());
+    } finally {
+      _completingActivityId = null;
+      notifyListeners();
+    }
+  }
+
+  /// Pull-to-refresh: [RefreshIndicator] already shows its own spinner, so
+  /// this refetches quietly instead of also blanking the list via
+  /// [isLoading].
+  Future<void> refresh() async {
+    _activities = await _getActivities(const NoParams());
     notifyListeners();
   }
 

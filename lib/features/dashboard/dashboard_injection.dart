@@ -5,6 +5,7 @@ import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/features/dashboard/data/datasources/activity_remote_data_source.dart';
 import 'package:senior_ease/features/dashboard/data/repositories/activity_repository_impl.dart';
 import 'package:senior_ease/features/dashboard/domain/repositories/activity_repository.dart';
+import 'package:senior_ease/features/dashboard/domain/usecases/complete_activity.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/get_activities.dart';
 import 'package:senior_ease/features/dashboard/presentation/controllers/dashboard_controller.dart';
 
@@ -19,5 +20,8 @@ void registerDashboardDependencies(GetIt sl) {
     () => ActivityRepositoryImpl(sl()),
   );
   sl.registerLazySingleton(() => GetActivities(sl()));
-  sl.registerFactory(() => DashboardController(sl(), sl<AppModeController>()));
+  sl.registerLazySingleton(() => CompleteActivity(sl()));
+  sl.registerFactory(
+    () => DashboardController(sl(), sl(), sl<AppModeController>()),
+  );
 }
