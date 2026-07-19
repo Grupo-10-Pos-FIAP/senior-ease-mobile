@@ -24,6 +24,7 @@ class ActivityStageScreen extends StatefulWidget {
 
 class _ActivityStageScreenState extends State<ActivityStageScreen> {
   bool _isSubmitting = false;
+  String? _selectedOptionId;
 
   Future<void> _complete(String activityId, String stepId) async {
     setState(() => _isSubmitting = true);
@@ -74,11 +75,11 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
               ..._buildReadingContent(args.activityId, step)
             else
               ..._buildQuizContent(args.activityId, step),
-            SizedBox(height: AppDesignTokens.spacingXl),             
+            SizedBox(height: AppDesignTokens.spacingXl),
             AppButton(
               label: 'Voltar para o passo-a-passo',
               loading: _isSubmitting,
-                            onPressed: () => Navigator.of(context).pop(),
+              onPressed: () => Navigator.of(context).pop(),
               variant: ButtonVariant.outlined,
             ),
           ],
@@ -101,9 +102,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
       AppButton(
         label: 'Marcar como concluído',
         loading: _isSubmitting,
-        onPressed: step.completed
-            ? null
-            : () => _complete(activityId, step.id),
+        onPressed: step.completed ? null : () => _complete(activityId, step.id),
         variant: ButtonVariant.primary,
       ),
     ];
@@ -127,12 +126,21 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
           padding: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
           child: AppCard.simple(
             title: option.label,
-            selected: false,
+            selected: _selectedOptionId == option.id,
             onTap: _isSubmitting || step.completed
                 ? null
-                : () => _complete(activityId, step.id),
+                : () => setState(() => _selectedOptionId = option.id),
           ),
         ),
+      SizedBox(height: AppDesignTokens.spacingLg),
+      AppButton(
+        label: 'Marcar como concluído',
+        loading: _isSubmitting,
+        onPressed: !step.completed && _selectedOptionId != null
+            ? () => _complete(activityId, step.id)
+            : null,
+        variant: ButtonVariant.primary,
+      ),
     ];
   }
 }

@@ -58,7 +58,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     final id = data['id'] as String;
     final isQuiz = data['type'] == 'multiple_choice';
     final content = data['content'] as Map<String, dynamic>?;
-    final optionsData = data['options'] as List<dynamic>?;
+    final optionsData = content?['options'] as List<dynamic>?;
 
     return TaskStep(
       id: id,
@@ -67,7 +67,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
       kind: isQuiz ? TaskStepKind.multipleChoice : TaskStepKind.contentReading,
       completed: completedStepIds.contains(id),
       body: content?['body'] as String?,
-      question: data['question'] as String?,
+      question: content?['question'] as String?,
       options: optionsData
           ?.map(
             (option) => TaskStepOption(
