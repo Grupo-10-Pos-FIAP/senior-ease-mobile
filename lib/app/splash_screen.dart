@@ -3,6 +3,7 @@ import 'package:flutter_svg/svg.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
 import 'package:senior_ease/core/auth/auth_controller.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
+import 'package:senior_ease/features/settings/presentation/controllers/settings_controller.dart';
 
 class SplashScreen extends StatefulWidget {
   const SplashScreen({super.key});
@@ -17,9 +18,16 @@ class _SplashScreenState extends State<SplashScreen> {
     super.initState();
 
     // Simular carregamento do app
-    Future.delayed(const Duration(seconds: 4), () {
-      if (!mounted) return;
+    Future.delayed(const Duration(seconds: 4), () async {
       final isSignedIn = sl<AuthController>().currentUser != null;
+      // Personalization (contrast, font size, etc.) otherwise only synced
+      // once the Settings screen was visited — load it before the first
+      // screen after splash builds, so Dashboard reflects it immediately
+      // instead of showing default styling until the user opens Settings.
+      if (isSignedIn) {
+        await sl<SettingsController>().load();
+      }
+      if (!mounted) return;
       Navigator.of(
         context,
       ).pushReplacementNamed(isSignedIn ? RouteNames.home : RouteNames.login);

@@ -90,16 +90,13 @@ class AppDesignTokens {
   static Color get colorBase => _adjust(_base);
 
   static const Color _primary = Color(0xFF1F2D5C);
-  // Dark navy on a dark ("Escuro") or heavily-darkened ("Alto"/"Máximo")
-  // surface reads as near-invisible — those levels swap it for white
-  // instead of running it through `_adjust` (which would push an
-  // already-dark color toward black, the opposite of more legible).
-  static Color get colorPrimary => switch (_contrast) {
-    ContrastLevel.alto ||
-    ContrastLevel.maximo ||
-    ContrastLevel.escuro => colorWhite,
-    _ => _primary,
-  };
+  // Only "Escuro" inverts the page to a dark background — "Alto"/"Máximo"
+  // stay light, so the dark navy stays legible (even more so, since
+  // borders/secondary content get darker there too). Swapping to white for
+  // every high level — the previous approach — made text/borders vanish
+  // against those still-light pages.
+  static Color get colorPrimary =>
+      _contrast == ContrastLevel.escuro ? colorWhite : _primary;
   static const Color _primarySurface = Color(0xFFE6E4FF);
   // Selected-card tint — this one DOES run through `_adjust` (unlike
   // colorPrimary above): it's a background, so "Escuro" should invert it
@@ -157,20 +154,27 @@ class AppDesignTokens {
     if (_contrast == ContrastLevel.escuro) {
       return hsl.withLightness((1 - hsl.lightness).clamp(0.0, 1.0)).toColor();
     }
-    final isLight = hsl.lightness >= 0.5;
     if (_contrast == ContrastLevel.maximo) {
-      return isLight ? Colors.white : Colors.black;
+      return hsl.lightness >= 0.5 ? Colors.white : Colors.black;
     }
+    // Suave/Conforto/Alto: structural colors (borders, secondary/muted
+    // text) need to separate further FROM the page, i.e. get darker, as
+    // the level increases — pushing them toward their OWN nearest extreme
+    // instead (the previous approach) sent light grays toward white,
+    // making borders fade out, the opposite of "more contrast." True
+    // backgrounds (≥90% lightness) get the same treatment but with a much
+    // gentler factor, so the page itself visibly shifts tone too instead
+    // of staying frozen at white while everything else darkens.
+    final isBackground = hsl.lightness >= 0.9;
     final factor = switch (_contrast) {
-      ContrastLevel.suave => 0.10,
-      ContrastLevel.conforto => 0.20,
-      ContrastLevel.alto => 0.40,
+      ContrastLevel.suave => isBackground ? 0.04 : 0.20,
+      ContrastLevel.conforto => isBackground ? 0.09 : 0.45,
+      ContrastLevel.alto => isBackground ? 0.16 : 0.75,
       ContrastLevel.padrao ||
       ContrastLevel.maximo ||
       ContrastLevel.escuro => 0.0,
     };
-    final target = isLight ? 1.0 : 0.0;
-    final nextLightness = hsl.lightness + (target - hsl.lightness) * factor;
+    final nextLightness = hsl.lightness * (1 - factor);
     return hsl.withLightness(nextLightness.clamp(0.0, 1.0)).toColor();
   }
 
@@ -223,15 +227,11 @@ class AppDesignTokens {
   static const Color buttonOutlinedBgDefault = Colors.transparent;
   static const Color buttonOutlinedBgPressed = Color(0xFF3A3C3C);
   static const Color buttonOutlinedBgDisabled = Colors.transparent;
-  // A translucent near-black border reads fine on the normal light
-  // background but disappears against a dark/high-contrast one — swap to a
-  // solid, fully-opaque border in those modes, same as [colorPrimary].
-  static Color get buttonOutlinedBorderDefault => switch (_contrast) {
-    ContrastLevel.alto ||
-    ContrastLevel.maximo ||
-    ContrastLevel.escuro => colorWhite,
-    _ => const Color(0x331A1A1A),
-  };
+  // A translucent near-black border reads fine on any light background
+  // (Padrão through Máximo) but disappears against "Escuro"'s inverted
+  // dark one — swap to solid white only there, same as [colorPrimary].
+  static Color get buttonOutlinedBorderDefault =>
+      _contrast == ContrastLevel.escuro ? colorWhite : const Color(0x331A1A1A);
   static const Color buttonOutlinedBorderDisabled = Color(0x1A1A1A1A);
   static Color get buttonOutlinedContentDefault => colorPrimary;
   static const Color buttonOutlinedContentPressed = colorWhite;
