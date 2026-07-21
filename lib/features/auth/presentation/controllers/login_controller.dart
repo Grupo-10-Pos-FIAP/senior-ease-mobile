@@ -62,6 +62,10 @@ class LoginController extends ChangeNotifier {
         reinforcedVisualFeedback: settings.enhancedVisualFeedback,
       );
       return true;
+    } on DeactivatedAccountException {
+      errorMessage =
+          'Esta conta foi excluída e não está mais disponível para acesso.';
+      return false;
     } on FirebaseAuthException catch (e) {
       errorMessage = onAuthError(e.code);
       return false;

@@ -1,4 +1,3 @@
-import 'package:firebase_auth/firebase_auth.dart';
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
@@ -32,15 +31,21 @@ class ProfileInfoScreen extends StatelessWidget {
               const _IncompleteProfileBanner(),
               SizedBox(height: AppDesignTokens.spacingLg),
             ],
-            InfoRow(label: 'Nome completo', value: profile.fullName),
+            InfoRow(
+              label: 'Nome completo',
+              value: _orNotInformed(profile.fullName),
+            ),
             InfoRow(label: 'Idade', value: _ageLabel(profile.birthDate)),
-            InfoRow(label: 'Matrícula', value: profile.registrationId),
+            InfoRow(
+              label: 'Matrícula',
+              value: _orNotInformed(profile.registrationId),
+            ),
             InfoRow(
               label: 'Possui alguma deficiência?',
-              value: profile.disabilityDescription ?? 'Não informado',
+              value: _orNotInformed(profile.disabilityDescription ?? ''),
             ),
-            InfoRow(label: 'E-mail', value: profile.email),
-            InfoRow(label: 'Telefone', value: profile.phone),
+            InfoRow(label: 'E-mail', value: _orNotInformed(profile.email)),
+            InfoRow(label: 'Telefone', value: _orNotInformed(profile.phone)),
             SizedBox(height: AppDesignTokens.spacingXl),
             AppButton(
               label: 'Editar informações',
@@ -62,6 +67,9 @@ class ProfileInfoScreen extends StatelessWidget {
     );
   }
 
+  String _orNotInformed(String value) =>
+      value.trim().isEmpty ? 'Não informado' : value;
+
   Future<void> _deleteAccount(BuildContext context) async {
     final confirmed = await AppDialog.confirm(
       context,
@@ -78,22 +86,13 @@ class ProfileInfoScreen extends StatelessWidget {
     );
     if (!confirmed) return;
 
-    try {
-      await sl<AuthController>().deleteAccount();
-      if (context.mounted) {
-        Navigator.of(
-          context,
-        ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
-      }
-    } on FirebaseAuthException catch (e) {
-      if (!context.mounted) return;
-      final message = e.code == 'requires-recent-login'
-          ? 'Por segurança, saia e entre novamente antes de excluir sua '
-                'conta.'
-          : 'Não foi possível excluir a conta. Tente novamente.';
-      ScaffoldMessenger.of(
+    // Soft delete: flips a flag in Firestore and signs out, nothing more —
+    // see AuthController.deleteAccount for why it's built this way.
+    await sl<AuthController>().deleteAccount();
+    if (context.mounted) {
+      Navigator.of(
         context,
-      ).showSnackBar(SnackBar(content: Text(message)));
+      ).pushNamedAndRemoveUntil(RouteNames.login, (route) => false);
     }
   }
 

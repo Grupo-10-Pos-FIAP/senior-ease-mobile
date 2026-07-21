@@ -19,7 +19,16 @@ class _SplashScreenState extends State<SplashScreen> {
 
     // Simular carregamento do app
     Future.delayed(const Duration(seconds: 4), () async {
-      final isSignedIn = sl<AuthController>().currentUser != null;
+      final auth = sl<AuthController>();
+      var isSignedIn = auth.currentUser != null;
+      // Firebase Auth's own session says nothing about "Excluir conta" —
+      // that only flags Firestore. A device that was already signed in
+      // when the account got deactivated (elsewhere, or in a previous
+      // session) needs to be caught here too, not just at the login form.
+      if (isSignedIn && await auth.isCurrentAccountDeactivated()) {
+        await auth.signOut();
+        isSignedIn = false;
+      }
       // Personalization (contrast, font size, etc.) otherwise only synced
       // once the Settings screen was visited — load it before the first
       // screen after splash builds, so Dashboard reflects it immediately

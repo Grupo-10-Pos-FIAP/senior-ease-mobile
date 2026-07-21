@@ -3,6 +3,11 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
+/// Thrown when sign-in succeeds against Firebase Auth but the account's
+/// Firestore profile is flagged `deactivated` (via "Excluir conta") — the
+/// credential is valid, but the app must refuse the session anyway.
+class DeactivatedAccountException implements Exception {}
+
 /// App-wide session state, driven by Firebase Auth. Any feature can depend
 /// on this (via GetIt) to read the current user id for scoping Firestore
 /// reads/writes — this is the one cross-cutting concern allowed to be
@@ -23,11 +28,12 @@ class AuthController extends ChangeNotifier {
   Stream<firebase_auth.User?> get authStateChanges =>
       _firebaseAuth.authStateChanges();
 
-  Future<void> signInWithEmail(String email, String password) {
-    return _firebaseAuth.signInWithEmailAndPassword(
+  Future<void> signInWithEmail(String email, String password) async {
+    final credential = await _firebaseAuth.signInWithEmailAndPassword(
       email: email,
       password: password,
     );
+    await _rejectIfDeactivated(credential.user);
   }
 
   Future<void> signUpWithEmail(String email, String password) async {
@@ -54,6 +60,7 @@ class AuthController extends ChangeNotifier {
       if (userCredential.additionalUserInfo?.isNewUser ?? false) {
         await _seedUserDocument(userCredential.user!);
       }
+      await _rejectIfDeactivated(userCredential.user);
     } on GoogleSignInException catch (e) {
       // The user backed out of the Google account picker — not an error.
       if (e.code == GoogleSignInExceptionCode.canceled) return;
@@ -66,14 +73,40 @@ class AuthController extends ChangeNotifier {
     await _firebaseAuth.signOut();
   }
 
-  /// Firebase may reject this with `requires-recent-login` if the session
-  /// is old — callers should surface that to the user rather than treat it
-  /// as a generic failure.
+  /// Firebase Auth alone can't tell a deactivated account from an active
+  /// one — the credential is still perfectly valid — so this is also what
+  /// the splash screen calls for an already-persisted session, to catch an
+  /// account that got deactivated on another device without ever calling
+  /// [signInWithEmail]/[signInWithGoogle] again on this one.
+  Future<bool> isCurrentAccountDeactivated() async {
+    final user = _firebaseAuth.currentUser;
+    if (user == null) return false;
+    final doc = await _firestore.collection('users').doc(user.uid).get();
+    return doc.data()?['deactivated'] == true;
+  }
+
+  Future<void> _rejectIfDeactivated(firebase_auth.User? user) async {
+    if (user == null) return;
+    if (await isCurrentAccountDeactivated()) {
+      await signOut();
+      throw DeactivatedAccountException();
+    }
+  }
+
+  /// "Excluir conta" is a soft delete on purpose: it only flags the
+  /// Firestore profile as deactivated and signs the device out. It never
+  /// calls Firebase Auth's `user.delete()` or removes any Firestore data —
+  /// the real account/credential is left completely untouched, so this is
+  /// safe to trigger (including by mistake, or during testing) without any
+  /// risk of actually destroying an account.
   Future<void> deleteAccount() async {
     final user = _firebaseAuth.currentUser;
     if (user == null) return;
-    await _firestore.collection('users').doc(user.uid).delete();
-    await user.delete();
+    await _firestore.collection('users').doc(user.uid).set({
+      'deactivated': true,
+      'deactivatedAt': FieldValue.serverTimestamp(),
+    }, SetOptions(merge: true));
+    await signOut();
   }
 
   /// A brand-new account has no `users/{uid}` document yet, so Dashboard has
