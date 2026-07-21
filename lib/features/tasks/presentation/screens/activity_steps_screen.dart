@@ -8,6 +8,7 @@ import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_card.dart';
+import 'package:senior_ease/shared/widgets/app_dialog.dart';
 
 class ActivityStepsScreen extends StatelessWidget {
   const ActivityStepsScreen({super.key});
@@ -74,11 +75,24 @@ class ActivityStepsScreen extends StatelessWidget {
                   SizedBox(height: AppDesignTokens.spacingLg),
                   AppButton(
                     label: 'Concluir atividade',
-                    onPressed: () =>
+                    onPressed: () async {
+                      final confirmed = await AppDialog.confirm(
+                        context,
+                        title: 'Deseja concluir ${controller.activityTitle}?',
+                        description:
+                            'A atividade será movida para a aba de '
+                            '"atividades concluídas".',
+                        confirmLabel: 'Concluir',
+                      );
+                      if (!confirmed) return;
+                      await controller.completeActivity();
+                      if (context.mounted) {
                         Navigator.of(context).pushNamedAndRemoveUntil(
                           RouteNames.home,
                           (route) => false,
-                        ),
+                        );
+                      }
+                    },
                     variant: ButtonVariant.primary,
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),

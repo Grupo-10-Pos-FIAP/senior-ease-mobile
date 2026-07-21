@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart';
 import 'package:get_it/get_it.dart';
+import 'package:senior_ease/features/dashboard/domain/usecases/complete_activity.dart';
 import 'package:senior_ease/features/tasks/data/datasources/task_remote_data_source.dart';
 import 'package:senior_ease/features/tasks/data/repositories/task_repository_impl.dart';
 import 'package:senior_ease/features/tasks/domain/repositories/task_repository.dart';
@@ -15,5 +16,5 @@ void registerTasksDependencies(GetIt sl) {
   sl.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl(sl()));
   sl.registerLazySingleton(() => GetSteps(sl()));
   sl.registerLazySingleton(() => CompleteStep(sl()));
-  sl.registerFactory(() => TaskStepsController(sl()));
+  sl.registerFactory(() => TaskStepsController(sl(), sl<CompleteActivity>()));
 }
