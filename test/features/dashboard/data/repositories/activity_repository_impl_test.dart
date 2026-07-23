@@ -25,9 +25,7 @@ void main() {
         status: ActivityStatus.active,
       ),
     ];
-    when(
-      () => dataSource.getActivities(),
-    ).thenAnswer((_) async => activities);
+    when(() => dataSource.getActivities()).thenAnswer((_) async => activities);
 
     final result = await repository.getActivities();
 
