@@ -154,10 +154,7 @@ class AppDesignTokens {
     if (_contrast == ContrastLevel.escuro) {
       return hsl.withLightness((1 - hsl.lightness).clamp(0.0, 1.0)).toColor();
     }
-    if (_contrast == ContrastLevel.maximo) {
-      return hsl.lightness >= 0.5 ? Colors.white : Colors.black;
-    }
-    // Suave/Conforto/Alto: structural colors (borders, secondary/muted
+    // Suave/Conforto/Alto/Máximo: structural colors (borders, secondary/muted
     // text) need to separate further FROM the page, i.e. get darker, as
     // the level increases — pushing them toward their OWN nearest extreme
     // instead (the previous approach) sent light grays toward white,
@@ -166,13 +163,19 @@ class AppDesignTokens {
     // gentler factor, so the page itself visibly shifts tone too instead
     // of staying frozen at white while everything else darkens.
     final isBackground = hsl.lightness >= 0.9;
+    if (_contrast == ContrastLevel.maximo && !isBackground) {
+      // Foreground/structural colors go all the way to pure black/white for
+      // maximum text contrast — only backgrounds fall through to the
+      // gentler factor below, since snapping an already near-white page to
+      // white too left "Máximo" looking identical to no change at all.
+      return hsl.lightness >= 0.5 ? Colors.white : Colors.black;
+    }
     final factor = switch (_contrast) {
       ContrastLevel.suave => isBackground ? 0.04 : 0.20,
       ContrastLevel.conforto => isBackground ? 0.09 : 0.45,
       ContrastLevel.alto => isBackground ? 0.16 : 0.75,
-      ContrastLevel.padrao ||
-      ContrastLevel.maximo ||
-      ContrastLevel.escuro => 0.0,
+      ContrastLevel.maximo => 0.24,
+      ContrastLevel.padrao || ContrastLevel.escuro => 0.0,
     };
     final nextLightness = hsl.lightness * (1 - factor);
     return hsl.withLightness(nextLightness.clamp(0.0, 1.0)).toColor();

@@ -24,32 +24,37 @@ class SettingsController extends ChangeNotifier {
     _persisted = await _getSettings(const NoParams());
     draft = _persisted;
     isLoading = false;
-    _syncAppMode();
+    _applyDraftLive();
     notifyListeners();
   }
 
   void selectFontSize(String fontSize) {
     draft = draft.copyWith(fontSize: fontSize);
+    _applyDraftLive();
     notifyListeners();
   }
 
   void selectContrastLevel(String contrastLevel) {
     draft = draft.copyWith(contrastLevel: contrastLevel);
+    _applyDraftLive();
     notifyListeners();
   }
 
   void selectNavigationMode(String navigationMode) {
     draft = draft.copyWith(navigationMode: navigationMode);
+    _applyDraftLive();
     notifyListeners();
   }
 
   void selectSpacing(String spacing) {
     draft = draft.copyWith(spacing: spacing);
+    _applyDraftLive();
     notifyListeners();
   }
 
   void setEnhancedVisualFeedback(bool value) {
     draft = draft.copyWith(enhancedVisualFeedback: value);
+    _applyDraftLive();
     notifyListeners();
   }
 
@@ -59,11 +64,11 @@ class SettingsController extends ChangeNotifier {
   }
 
   /// Persists [draft] as the current settings (in the signed-in user's
-  /// Firestore document).
+  /// Firestore document). The app's appearance already matches [draft] (see
+  /// [_applyDraftLive]) — this only needs to update what counts as "saved".
   Future<void> save() async {
     await _saveSettings(draft);
     _persisted = draft;
-    _syncAppMode();
     notifyListeners();
   }
 
@@ -71,16 +76,23 @@ class SettingsController extends ChangeNotifier {
   /// it does not touch whatever was last persisted via [save].
   void resetToDefaults() {
     draft = AppSettings.defaults();
+    _applyDraftLive();
     notifyListeners();
   }
 
-  void _syncAppMode() {
+  /// Pushes [draft] (not [_persisted]) to [AppModeController], so the whole
+  /// app reflects each option as soon as it's picked — matching the
+  /// screen's own "As mudanças são mostradas na hora" copy. Firestore only
+  /// gets [draft] on [save]; until then, an unsaved preview is exactly as
+  /// reversible as it looks (a fresh [load] — e.g. next app launch — falls
+  /// back to whatever was last actually saved).
+  void _applyDraftLive() {
     _appMode.update(
-      isSimpleMode: _persisted.navigationMode == 'Simples',
-      fontScale: _persisted.fontScale,
-      spacingScale: _persisted.spacingScale,
-      contrastLevel: _persisted.contrastLevelEnum,
-      reinforcedVisualFeedback: _persisted.enhancedVisualFeedback,
+      isSimpleMode: draft.navigationMode == 'Simples',
+      fontScale: draft.fontScale,
+      spacingScale: draft.spacingScale,
+      contrastLevel: draft.contrastLevelEnum,
+      reinforcedVisualFeedback: draft.enhancedVisualFeedback,
     );
   }
 }
