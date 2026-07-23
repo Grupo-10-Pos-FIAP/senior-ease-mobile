@@ -11,4 +11,9 @@ class ProfileRepositoryImpl implements ProfileRepository {
   Future<UserProfile> getProfile() {
     return remoteDataSource.getProfile();
   }
+
+  @override
+  Future<void> updateProfile(UserProfile profile) {
+    return remoteDataSource.updateProfile(profile);
+  }
 }

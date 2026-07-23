@@ -5,6 +5,7 @@ import 'package:senior_ease/features/profile/data/datasources/profile_remote_dat
 import 'package:senior_ease/features/profile/data/repositories/profile_repository_impl.dart';
 import 'package:senior_ease/features/profile/domain/repositories/profile_repository.dart';
 import 'package:senior_ease/features/profile/domain/usecases/get_user_profile.dart';
+import 'package:senior_ease/features/profile/domain/usecases/update_user_profile.dart';
 import 'package:senior_ease/features/profile/presentation/controllers/profile_info_controller.dart';
 
 void registerProfileDependencies(GetIt sl) {
@@ -18,7 +19,8 @@ void registerProfileDependencies(GetIt sl) {
     () => ProfileRepositoryImpl(sl()),
   );
   sl.registerLazySingleton(() => GetUserProfile(sl()));
+  sl.registerLazySingleton(() => UpdateUserProfile(sl()));
   // Singleton (not factory): ProfileShellScreen creates this once and keeps
   // both tabs mounted via IndexedStack, so a single shared instance is correct.
-  sl.registerLazySingleton(() => ProfileInfoController(sl()));
+  sl.registerLazySingleton(() => ProfileInfoController(sl(), sl()));
 }

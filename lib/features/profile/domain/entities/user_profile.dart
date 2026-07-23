@@ -14,4 +14,21 @@ class UserProfile {
   final String? disabilityDescription;
   final String email;
   final String phone;
+
+  UserProfile copyWith({
+    String? fullName,
+    DateTime? birthDate,
+    String? disabilityDescription,
+    String? phone,
+  }) {
+    return UserProfile(
+      fullName: fullName ?? this.fullName,
+      birthDate: birthDate ?? this.birthDate,
+      registrationId: registrationId,
+      disabilityDescription:
+          disabilityDescription ?? this.disabilityDescription,
+      email: email,
+      phone: phone ?? this.phone,
+    );
+  }
 }

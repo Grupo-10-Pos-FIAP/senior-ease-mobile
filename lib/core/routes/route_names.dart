@@ -6,4 +6,5 @@ class RouteNames {
   static const String steps = '/steps';
   static const String stage = '/stage';
   static const String profile = '/profile';
+  static const String editProfile = '/edit-profile';
 }

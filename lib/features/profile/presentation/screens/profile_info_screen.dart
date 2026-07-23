@@ -8,6 +8,7 @@ import 'package:senior_ease/features/profile/presentation/controllers/profile_in
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_dialog.dart';
+import 'package:senior_ease/shared/widgets/app_warning_banner.dart';
 import 'package:senior_ease/shared/widgets/info_row.dart';
 
 class ProfileInfoScreen extends StatelessWidget {
@@ -28,12 +29,17 @@ class ProfileInfoScreen extends StatelessWidget {
           ),
           children: [
             if (_isIncomplete(profile)) ...[
-              const _IncompleteProfileBanner(),
+              const AppWarningBanner(
+                title: 'Complete seu perfil',
+                message:
+                    'Algumas informações suas ainda estão faltando. Toque '
+                    'em "Editar informações" abaixo para preenchê-las.',
+              ),
               SizedBox(height: AppDesignTokens.spacingLg),
             ],
             InfoRow(
               label: 'Nome completo',
-              value: _orNotInformed(profile.fullName),
+              value: _nameOrNotInformed(profile.fullName),
             ),
             InfoRow(label: 'Idade', value: _ageLabel(profile.birthDate)),
             InfoRow(
@@ -49,7 +55,8 @@ class ProfileInfoScreen extends StatelessWidget {
             SizedBox(height: AppDesignTokens.spacingXl),
             AppButton(
               label: 'Editar informações',
-              onPressed: () {},
+              onPressed: () =>
+                  Navigator.of(context).pushNamed(RouteNames.editProfile),
               icon: const Icon(Icons.edit),
               variant: ButtonVariant.primary,
             ),
@@ -69,6 +76,16 @@ class ProfileInfoScreen extends StatelessWidget {
 
   String _orNotInformed(String value) =>
       value.trim().isEmpty ? 'Não informado' : value;
+
+  /// Older accounts still carry the literal "Complete seu perfil" seed
+  /// placeholder as their fullName (current signups seed an empty string
+  /// instead) — display both cases the same way, as not actually informed.
+  String _nameOrNotInformed(String value) {
+    if (value.trim().isEmpty || value.trim() == 'Complete seu perfil') {
+      return 'Não informado';
+    }
+    return value;
+  }
 
   Future<void> _deleteAccount(BuildContext context) async {
     final confirmed = await AppDialog.confirm(
@@ -97,7 +114,7 @@ class ProfileInfoScreen extends StatelessWidget {
   }
 
   String _ageLabel(DateTime? birthDate) {
-    if (birthDate == null) return 'Não informada';
+    if (birthDate == null) return 'Não informado';
     final now = DateTime.now();
     var age = now.year - birthDate.year;
     if (now.month < birthDate.month ||
@@ -111,61 +128,9 @@ class ProfileInfoScreen extends StatelessWidget {
   /// nudge the person to fill those in rather than leaving them silently
   /// blank in "Minhas informações".
   bool _isIncomplete(UserProfile profile) {
-    return profile.fullName.isEmpty ||
+    return profile.fullName.trim().isEmpty ||
         profile.fullName == 'Complete seu perfil' ||
         profile.phone.isEmpty ||
         profile.birthDate == null;
-  }
-}
-
-class _IncompleteProfileBanner extends StatelessWidget {
-  const _IncompleteProfileBanner();
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.all(AppDesignTokens.spacingMd),
-      decoration: BoxDecoration(
-        color: AppDesignTokens.colorFeedbackWarning.withValues(alpha: 0.16),
-        borderRadius: BorderRadius.circular(
-          AppDesignTokens.borderRadiusDefault,
-        ),
-        border: Border.all(color: AppDesignTokens.colorFeedbackWarning),
-      ),
-      child: Row(
-        crossAxisAlignment: CrossAxisAlignment.start,
-        children: [
-          Icon(
-            Icons.warning_amber_rounded,
-            color: AppDesignTokens.colorFeedbackWarning,
-          ),
-          SizedBox(width: AppDesignTokens.spacingSm),
-          Expanded(
-            child: Column(
-              crossAxisAlignment: CrossAxisAlignment.start,
-              children: [
-                Text(
-                  'Complete seu perfil',
-                  style: TextStyle(
-                    fontSize: AppDesignTokens.fontSizeBody,
-                    fontWeight: AppDesignTokens.fontWeightSemibold,
-                    color: AppDesignTokens.colorContentDefault,
-                  ),
-                ),
-                SizedBox(height: AppDesignTokens.spacingXs),
-                Text(
-                  'Algumas informações suas ainda estão faltando. Toque em '
-                  '"Editar informações" abaixo para preenchê-las.',
-                  style: TextStyle(
-                    fontSize: AppDesignTokens.fontSizeBody,
-                    color: AppDesignTokens.colorContentSecondary,
-                  ),
-                ),
-              ],
-            ),
-          ),
-        ],
-      ),
-    );
   }
 }

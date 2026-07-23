@@ -117,7 +117,7 @@ class AuthController extends ChangeNotifier {
   Future<void> _seedUserDocument(firebase_auth.User user) {
     return _firestore.collection('users').doc(user.uid).set({
       'id': user.uid,
-      'fullName': user.displayName ?? 'Complete seu perfil',
+      'fullName': user.displayName ?? '',
       'email': user.email ?? '',
       'phone': user.phoneNumber ?? '',
       'disability': null,
