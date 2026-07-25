@@ -19,6 +19,7 @@ class AppCardItem {
 class AppCard extends StatelessWidget {
   const AppCard({super.key, required this.options, this.title})
     : subtitle = null,
+      overline = null,
       onTap = null,
       selected = false,
       _isSimple = false;
@@ -27,6 +28,7 @@ class AppCard extends StatelessWidget {
     super.key,
     required this.title,
     this.subtitle,
+    this.overline,
     this.selected = false,
     this.onTap,
   }) : options = const [],
@@ -34,7 +36,8 @@ class AppCard extends StatelessWidget {
 
   final List<AppCardItem> options;
   final String? title;
-  final String? subtitle;
+  final Object? subtitle;
+  final String? overline;
   final bool selected;
   final VoidCallback? onTap;
   final bool _isSimple;
@@ -60,7 +63,7 @@ class AppCard extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          border: Border.all(color: AppDesignTokens.colorGray200),
+          border: Border.all(color: AppDesignTokens.colorBorderDefault),
         ),
         child: Padding(
           padding: EdgeInsets.symmetric(
@@ -74,6 +77,17 @@ class AppCard extends StatelessWidget {
                 child: Column(
                   crossAxisAlignment: CrossAxisAlignment.start,
                   children: [
+                    if (overline != null) ...[
+                      Text(
+                        overline!,
+                        style: TextStyle(
+                          fontSize: AppDesignTokens.fontSizeSmall,
+                          fontWeight: AppDesignTokens.fontWeightSemibold,
+                          color: AppDesignTokens.colorContentSecondary,
+                        ),
+                      ),
+                      SizedBox(height: AppDesignTokens.spacingXs),
+                    ],
                     Text(
                       title ?? '',
                       style: TextStyle(
@@ -84,14 +98,17 @@ class AppCard extends StatelessWidget {
                     ),
                     if (subtitle != null) ...[
                       SizedBox(height: AppDesignTokens.spacingXs),
-                      Text(
-                        subtitle!,
-                        style: TextStyle(
-                          fontSize: AppDesignTokens.fontSizeCaption,
-                          fontWeight: AppDesignTokens.fontWeightMedium,
-                          color: AppDesignTokens.colorContentSecondary,
+                      if (subtitle is Widget)
+                        subtitle as Widget
+                      else
+                        Text(
+                          subtitle as String,
+                          style: TextStyle(
+                            fontSize: AppDesignTokens.fontSizeCaption,
+                            fontWeight: AppDesignTokens.fontWeightMedium,
+                            color: AppDesignTokens.colorContentSecondary,
+                          ),
                         ),
-                      ),
                     ],
                   ],
                 ),
@@ -156,7 +173,7 @@ class _AppCardItemWidget extends StatelessWidget {
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          border: Border.all(color: AppDesignTokens.colorGray200),
+          border: Border.all(color: AppDesignTokens.colorBorderDefault),
         ),
         padding: EdgeInsets.symmetric(
           horizontal: AppDesignTokens.spacingMd,

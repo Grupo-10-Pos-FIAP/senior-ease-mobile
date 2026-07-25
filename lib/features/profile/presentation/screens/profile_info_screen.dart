@@ -57,7 +57,7 @@ class ProfileInfoScreen extends StatelessWidget {
               label: 'Editar informações',
               onPressed: () =>
                   Navigator.of(context).pushNamed(RouteNames.editProfile),
-              icon: const Icon(Icons.edit),
+              leadingIcon: const Icon(Icons.edit),
               variant: ButtonVariant.primary,
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
@@ -65,7 +65,7 @@ class ProfileInfoScreen extends StatelessWidget {
               label: 'Excluir conta',
               onPressed: () => _deleteAccount(context),
               variant: ButtonVariant.negative,
-              icon: const Icon(Icons.delete),
+              leadingIcon: const Icon(Icons.delete),
               backgroundColor: AppDesignTokens.colorErrorSurface,
             ),
           ],

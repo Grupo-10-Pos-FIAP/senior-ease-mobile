@@ -141,7 +141,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
-                  _StepTag(kind: step.kind),
+                  
                   SizedBox(height: AppDesignTokens.spacingSm),
                   Text(
                     step.label,
@@ -159,7 +159,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                   SizedBox(height: AppDesignTokens.spacingLg),
                   AppButton(
                     label: 'Sair e voltar depois',
-                    icon: const Icon(Icons.schedule),
+                    leadingIcon: const Icon(Icons.schedule),
                     variant: ButtonVariant.outlined,
                     onPressed: _isSubmitting
                         ? null
@@ -169,7 +169,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                     SizedBox(height: AppDesignTokens.spacingMd),
                     AppButton(
                       label: 'Passo anterior',
-                      icon: const Icon(Icons.chevron_left),
+                      leadingIcon: const Icon(Icons.chevron_left),
                       variant: ButtonVariant.outlined,
                       onPressed: _isSubmitting ? null : _goPrevious,
                     ),
@@ -244,34 +244,3 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
   }
 }
 
-class _StepTag extends StatelessWidget {
-  const _StepTag({required this.kind});
-
-  final TaskStepKind kind;
-
-  @override
-  Widget build(BuildContext context) {
-    return Container(
-      padding: EdgeInsets.symmetric(
-        horizontal: AppDesignTokens.spacingSm,
-        vertical: AppDesignTokens.spacingXs,
-      ),
-      decoration: BoxDecoration(
-        color: AppDesignTokens.colorPrimarySurface,
-        borderRadius: BorderRadius.circular(
-          AppDesignTokens.borderRadiusDefault,
-        ),
-      ),
-      child: Text(
-        kind == TaskStepKind.contentReading
-            ? 'Leitura de conteúdo'
-            : 'Múltipla escolha',
-        style: TextStyle(
-          fontSize: AppDesignTokens.fontSizeSmall,
-          fontWeight: AppDesignTokens.fontWeightSemibold,
-          color: AppDesignTokens.colorPrimary,
-        ),
-      ),
-    );
-  }
-}

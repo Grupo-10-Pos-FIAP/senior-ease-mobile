@@ -113,7 +113,7 @@ class ActivityCard extends StatelessWidget {
                     : null,
                 loading: completing,
                 variant: ButtonVariant.primary,
-                icon: const Icon(Icons.play_arrow),
+                leadingIcon: const Icon(Icons.play_arrow),
               ),
             ],
           ),

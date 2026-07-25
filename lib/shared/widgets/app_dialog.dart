@@ -10,8 +10,10 @@ class AppDialog extends StatelessWidget {
     required this.title,
     required this.description,
     required this.confirmLabel,
-    required this.cancelLabel,
+    this.cancelLabel = '',
     this.destructive = false,
+    this.warning = false,
+    this.isSuccess = false,
   });
 
   final String title;
@@ -19,6 +21,8 @@ class AppDialog extends StatelessWidget {
   final String confirmLabel;
   final String cancelLabel;
   final bool destructive;
+  final bool warning;
+  final bool isSuccess;
 
   static Future<bool> confirm(
     BuildContext context, {
@@ -45,10 +49,56 @@ class AppDialog extends StatelessWidget {
     return confirmed ?? false;
   }
 
+  /// Same as [confirm], but renders the confirm button in the warning color
+  /// and stacks the actions in a column instead of a row.
+  static Future<bool> warn(
+    BuildContext context, {
+    required String title,
+    required String description,
+    required String confirmLabel,
+    required String cancelLabel,
+    bool skipInSimpleMode = true,
+  }) async {
+    if (skipInSimpleMode && sl<AppModeController>().isSimpleMode) {
+      return true;
+    }
+    final confirmed = await showDialog<bool>(
+      context: context,
+      builder: (context) => AppDialog(
+        title: title,
+        description: description,
+        confirmLabel: confirmLabel,
+        cancelLabel: cancelLabel,
+        warning: true,
+      ),
+    );
+    return confirmed ?? false;
+  }
+
+  /// Acknowledgement dialog with a single close button, styled green.
+  static Future<void> success(
+    BuildContext context, {
+    required String title,
+    required String description,
+    String closeLabel = 'Entendi',
+  }) {
+    return showDialog<void>(
+      context: context,
+      builder: (context) => AppDialog(
+        title: title,
+        description: description,
+        confirmLabel: closeLabel,
+        isSuccess: true,
+      ),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Dialog(
-      backgroundColor: AppDesignTokens.colorBgLight,
+      backgroundColor: isSuccess
+          ? AppDesignTokens.colorSuccessSurface
+          : AppDesignTokens.colorBgLight,
       insetPadding: EdgeInsets.symmetric(
         horizontal: AppDesignTokens.spacingLg,
         vertical: AppDesignTokens.spacingXl,
@@ -57,6 +107,9 @@ class AppDialog extends StatelessWidget {
         borderRadius: BorderRadius.circular(
           AppDesignTokens.borderRadiusDefault * 2,
         ),
+        side: isSuccess
+            ? BorderSide(color: AppDesignTokens.colorSuccessBorder, width: 3)
+            : BorderSide.none,
       ),
       child: SizedBox(
         width: MediaQuery.sizeOf(context).width - AppDesignTokens.spacingLg * 2,
@@ -71,7 +124,9 @@ class AppDialog extends StatelessWidget {
                 style: TextStyle(
                   fontSize: AppDesignTokens.fontSizeH4,
                   fontWeight: AppDesignTokens.fontWeightBold,
-                  color: AppDesignTokens.colorContentDefault,
+                  color: isSuccess
+                      ? AppDesignTokens.colorSuccessOnSurface
+                      : AppDesignTokens.colorContentDefault,
                 ),
               ),
               SizedBox(height: AppDesignTokens.spacingMd),
@@ -80,34 +135,56 @@ class AppDialog extends StatelessWidget {
                 style: TextStyle(
                   fontSize: AppDesignTokens.fontSizeBody,
                   height: AppDesignTokens.lineHeightBody,
-                  color: AppDesignTokens.colorContentSecondary,
+                  color: isSuccess
+                      ? AppDesignTokens.colorSuccessOnSurface
+                      : AppDesignTokens.colorContentSecondary,
                 ),
               ),
               SizedBox(height: AppDesignTokens.spacingLg),
-              Row(
-                mainAxisAlignment: MainAxisAlignment.end,
-                children: [
-                  Flexible(
-                    child: AppButton(
-                      label: cancelLabel,
-                      variant: ButtonVariant.outlined,
-                      backgroundColor: AppDesignTokens.colorPrimarySurface,
-                      onPressed: () => Navigator.of(context).pop(false),
+              if (isSuccess)
+                AppButton(
+                  label: confirmLabel,
+                  variant: ButtonVariant.primary,
+                  onPressed: () => Navigator.of(context).pop(),
+                )
+              else if (warning) ...[
+                AppButton(
+                  label: confirmLabel,
+                  variant: ButtonVariant.warning,
+                  onPressed: () => Navigator.of(context).pop(true),
+                ),
+                SizedBox(height: AppDesignTokens.spacingMd),
+                AppButton(
+                  label: cancelLabel,
+                  variant: ButtonVariant.outlined,
+                  backgroundColor: AppDesignTokens.colorPrimarySurface,
+                  onPressed: () => Navigator.of(context).pop(false),
+                ),
+              ] else
+                Row(
+                  mainAxisAlignment: MainAxisAlignment.end,
+                  children: [
+                    Flexible(
+                      child: AppButton(
+                        label: cancelLabel,
+                        variant: ButtonVariant.outlined,
+                        backgroundColor: AppDesignTokens.colorPrimarySurface,
+                        onPressed: () => Navigator.of(context).pop(false),
+                      ),
                     ),
-                  ),
-                  SizedBox(width: AppDesignTokens.spacingMd),
-                  Flexible(
-                    child: AppButton(
-                      label: confirmLabel,
-                      variant: ButtonVariant.primary,
-                      backgroundColor: destructive
-                          ? AppDesignTokens.colorErrorOnSurface
-                          : null,
-                      onPressed: () => Navigator.of(context).pop(true),
+                    SizedBox(width: AppDesignTokens.spacingMd),
+                    Flexible(
+                      child: AppButton(
+                        label: confirmLabel,
+                        variant: ButtonVariant.primary,
+                        backgroundColor: destructive
+                            ? AppDesignTokens.colorErrorOnSurface
+                            : null,
+                        onPressed: () => Navigator.of(context).pop(true),
+                      ),
                     ),
-                  ),
-                ],
-              ),
+                  ],
+                ),
             ],
           ),
         ),

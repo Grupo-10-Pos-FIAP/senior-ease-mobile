@@ -3,6 +3,7 @@ import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
 import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
+import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
@@ -39,26 +40,54 @@ class ActivityStepsScreen extends StatelessWidget {
                 ),
                 children: [
                   Text(
-                    " Como fazer: ${controller.activityTitle}",
+                    "Como fazer: ${controller.activityTitle}",
                     style: TextStyle(
                       fontSize: AppDesignTokens.fontSizeH4,
                       fontWeight: AppDesignTokens.fontWeightBold,
-                      color: AppDesignTokens.colorContentDefault,
+                      color: AppDesignTokens.colorContentPrimary,
+                    ),
+                  ),
+                  SizedBox(height: AppDesignTokens.spacingMd),
+                  Text.rich(
+                    TextSpan(
+                      style: TextStyle(
+                        fontSize: AppDesignTokens.fontSizeBody,
+                        fontWeight: AppDesignTokens.fontWeightRegular,
+                        color: AppDesignTokens.colorContentSecondary,
+                      ),
+                      children: [
+                        const TextSpan(text: 'Esta atividade tem '),
+                        TextSpan(
+                          text:
+                              '${controller.steps.length} '
+                              '${controller.steps.length == 1 ? "tarefa" : "tarefas"}',
+                          style: TextStyle(
+                            fontWeight: AppDesignTokens.fontWeightBold,
+                          ),
+                        ),
+                        const TextSpan(
+                          text:
+                              ' para você estudar. Em cada uma abaixo, toque '
+                              'no cartão para aprender como fazer antes de '
+                              'começar.',
+                        ),
+                      ],
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),
                   Text(
-                    'Etapas concluídas',
+                    'Tarefas desta atividade',
                     style: TextStyle(
                       fontSize: AppDesignTokens.fontSizeBody,
                       fontWeight: AppDesignTokens.fontWeightSemibold,
-                      color: AppDesignTokens.colorContentSecondary,
+                      color: AppDesignTokens.colorContentPrimary,
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
                   ...controller.steps.asMap().entries.map((entry) {
                     final step = entry.value;
                     return AppCard.simple(
+
                       title: step.label,
                       subtitle: step.completed ? 'Etapa concluída' : 'Pendente',
                       selected: step.completed,
@@ -103,6 +132,7 @@ class ActivityStepsScreen extends StatelessWidget {
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),
                   AppButton(
+                    leadingIcon: const Icon(Icons.arrow_back),
                     label: 'Voltar para minhas atividades',
                     onPressed: () {
                       Navigator.of(context).pop();
@@ -113,6 +143,38 @@ class ActivityStepsScreen extends StatelessWidget {
               );
             },
           ),
+        ),
+      ),
+    );
+  }
+}
+
+class _StepTag extends StatelessWidget {
+  const _StepTag({required this.kind});
+
+  final TaskStepKind kind;
+
+  @override
+  Widget build(BuildContext context) {
+    return Container(
+      padding: EdgeInsets.symmetric(
+        horizontal: AppDesignTokens.spacingSm,
+        vertical: AppDesignTokens.spacingXs,
+      ),
+      decoration: BoxDecoration(
+        color: AppDesignTokens.colorPrimarySurface,
+        borderRadius: BorderRadius.circular(
+          AppDesignTokens.borderRadiusDefault,
+        ),
+      ),
+      child: Text(
+        kind == TaskStepKind.contentReading
+            ? 'Leitura de conteúdo'
+            : 'Múltipla escolha',
+        style: TextStyle(
+          fontSize: AppDesignTokens.fontSizeSmall,
+          fontWeight: AppDesignTokens.fontWeightSemibold,
+          color: AppDesignTokens.colorPrimary,
         ),
       ),
     );

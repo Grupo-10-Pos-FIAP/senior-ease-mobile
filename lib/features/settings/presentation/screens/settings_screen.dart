@@ -211,31 +211,33 @@ class SettingsScreen extends StatelessWidget {
     if (!controller.draft.criticalActionConfirmation) {
       controller.resetToDefaults();
       await controller.save();
+      if (!context.mounted) return;
+      await _showResetSuccess(context);
       return;
     }
-    final confirmed = await showDialog<bool>(
-      context: context,
-      builder: (context) => AlertDialog(
-        title: const Text('Restaurar configurações padrão?'),
-        content: const Text(
-          'As opções de personalização voltarão para os valores padrão.',
-        ),
-        actions: [
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(false),
-            child: const Text('Cancelar'),
-          ),
-          TextButton(
-            onPressed: () => Navigator.of(context).pop(true),
-            child: const Text('Retornar configurações padrão'),
-          ),
-        ],
-      ),
+    final confirmed = await AppDialog.warn(
+      context,
+      title: 'Restaurar configurações padrões?',
+      description:
+          'Todas as preferências de personalização serão restauradas aos valores iniciais. Esta ação não pode ser desfeita.',
+      confirmLabel: 'Sim, restaurar padrões',
+      cancelLabel: 'Não, manter como está',
     );
-    if (confirmed == true) {
+    if (confirmed) {
       controller.resetToDefaults();
       await controller.save();
+      if (!context.mounted) return;
+      await _showResetSuccess(context);
     }
+  }
+
+  Future<void> _showResetSuccess(BuildContext context) {
+    return AppDialog.success(
+      context,
+      title: 'Salvo com sucesso!',
+      description:
+          'Configurações padrões restauradas.',
+    );
   }
 }
 

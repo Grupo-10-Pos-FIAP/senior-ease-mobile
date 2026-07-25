@@ -13,6 +13,7 @@ enum ButtonVariant {
   negative,
   negativeLeading,
   secondary,
+  warning,
 }
 
 class AppButton extends StatelessWidget {
@@ -24,7 +25,7 @@ class AppButton extends StatelessWidget {
     this.enabled = true,
     this.variant = ButtonVariant.primary,
     this.backgroundColor,
-    this.icon,
+    this.leadingIcon,
     this.trailingIcon,
   });
 
@@ -34,7 +35,7 @@ class AppButton extends StatelessWidget {
   final bool enabled;
   final ButtonVariant variant;
   final Color? backgroundColor;
-  final Widget? icon;
+  final Widget? leadingIcon;
   final Widget? trailingIcon;
 
   static const double _buttonHeight = 48;
@@ -70,17 +71,17 @@ class AppButton extends StatelessWidget {
     );
 
     if (_isIconOnly) {
-      return Center(child: icon ?? text);
+      return Center(child: leadingIcon ?? text);
     }
 
-    if (icon != null || trailingIcon != null) {
+    if (leadingIcon != null || trailingIcon != null) {
       return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          ?icon,
+          ?leadingIcon,
           if (label.isNotEmpty) ...[
-            if (icon != null) const SizedBox(width: 8),
+            if (leadingIcon != null) const SizedBox(width: 8),
             Flexible(child: text),
             if (trailingIcon != null) const SizedBox(width: 8),
           ],
@@ -174,6 +175,19 @@ class AppButton extends StatelessWidget {
           backgroundColor:
               backgroundColor ?? AppDesignTokens.buttonSecondaryBgDefault,
           foregroundColor: AppDesignTokens.buttonSecondaryContentDefault,
+          shape: baseShape,
+        );
+      case ButtonVariant.warning:
+        return FilledButton.styleFrom(
+          minimumSize: const Size.fromHeight(_buttonHeight),
+          padding: buttonPadding,
+          backgroundColor:
+              backgroundColor ?? AppDesignTokens.colorWarningSurface,
+          foregroundColor: AppDesignTokens.colorWarningOnSurface,
+          side: BorderSide(
+            color: AppDesignTokens.colorWarningBorder,
+            width: 2.0,
+          ),
           shape: baseShape,
         );
     }

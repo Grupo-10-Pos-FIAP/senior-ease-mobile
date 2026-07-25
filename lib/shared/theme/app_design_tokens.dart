@@ -84,6 +84,14 @@ class AppDesignTokens {
   static Color get colorPrimarySurface => _adjust(_primarySurface);
   static const Color colorErrorSurface = Color(0xFFFFEBEE);
   static const Color colorErrorOnSurface = Color(0xFFC62828);
+  // Derived from --se-warning-bg/-text/-border: color-mix(in srgb,
+  // colorFeedbackWarning 22%/45%, transparent) and #6b4e0a.
+  static const Color colorWarningSurface = Color(0x38C49A1A);
+  static const Color colorWarningOnSurface = Color(0xFF6B4E0A);
+  static const Color colorWarningBorder = Color(0x73C49A1A);
+  static const Color colorSuccessSurface = Color(0xFFE8F5E9);
+  static const Color colorSuccessOnSurface = Color(0xFF1B5E20);
+  static const Color colorSuccessBorder = Color(0xFF43A047);
   static const Color colorSecondary = Color(0xFF42484E);
   static const Color colorSoft = Color(0xFFE1F0FB);
 
