@@ -25,7 +25,6 @@ void main() {
     expect(updated.birthDate, birthDate);
     expect(updated.disabilityDescription, 'Baixa visão');
     expect(updated.phone, '11999999999');
-    // registrationId and email are never overridable via copyWith.
     expect(updated.registrationId, 'uid-1');
     expect(updated.email, 'maria@gmail.com');
   });

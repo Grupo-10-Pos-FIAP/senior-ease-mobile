@@ -25,9 +25,6 @@ class TaskStepsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Marks [stepId] as completed locally. The Firestore write itself happens
-  /// in the stage screen (which has the ids in scope via route arguments) —
-  /// this just reflects that back into the steps list once we return to it.
   void markCompleted(String stepId) {
     steps = steps
         .map(
@@ -37,9 +34,6 @@ class TaskStepsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Marks the whole activity — not just one step — completed, persisted to
-  /// `activityProgress` in Firestore (same usecase the Dashboard card's own
-  /// "Concluir atividade" button uses).
   Future<void> completeActivity() async {
     final id = activityId;
     if (id == null) return;

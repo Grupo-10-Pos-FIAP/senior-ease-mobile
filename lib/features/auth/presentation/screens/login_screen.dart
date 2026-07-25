@@ -8,7 +8,6 @@ import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_subtitle.dart';
 import 'package:senior_ease/shared/widgets/app_text_field.dart';
-import 'package:senior_ease/shared/widgets/app_title.dart';
 
 class LoginScreen extends StatelessWidget {
   const LoginScreen({super.key});
@@ -57,11 +56,8 @@ class _LoginFormState extends State<_LoginForm> {
           padding: EdgeInsets.all(AppDesignTokens.spacingLg),
           children: [
             SizedBox(height: AppDesignTokens.spacing2xl),
-            Center(
-              child: SvgPicture.asset('lib/assets/logo.svg', height: 64),
-            ),
+            Center(child: SvgPicture.asset('lib/assets/logo.svg', height: 64)),
             SizedBox(height: AppDesignTokens.spacingXl),
-            AppTitle(text: isSignIn ? 'Entrar' : 'Criar conta'),
             SizedBox(height: AppDesignTokens.spacingSm),
             AppSubtitle(
               text: isSignIn
@@ -94,8 +90,9 @@ class _LoginFormState extends State<_LoginForm> {
             ],
             SizedBox(height: AppDesignTokens.spacingLg),
             AppButton(
-              label: isSignIn ? 'Entrar' : 'Criar conta',
-              loading: controller.isLoading,
+              label: isSignIn ? 'Acessar minha conta' : 'Criar minha conta',
+              loading: controller.isEmailLoading,
+              enabled: !controller.isLoading,
               onPressed: () async {
                 final success = await controller.submitEmailPassword(
                   _emailController.text.trim(),
@@ -106,9 +103,10 @@ class _LoginFormState extends State<_LoginForm> {
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
-              label: 'Continuar com o Google',
+              label: 'Entrar com Google',
               variant: ButtonVariant.outlined,
-              loading: controller.isLoading,
+              loading: controller.isGoogleLoading,
+              enabled: !controller.isLoading,
               onPressed: () async {
                 final success = await controller.submitGoogle();
                 if (success) await _onSuccess();

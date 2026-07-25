@@ -11,10 +11,6 @@ import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_text_field.dart';
 
-/// Edit form for the fields "Minhas informações" can show as missing —
-/// pre-filled with whatever is already saved. Email and matrícula aren't
-/// editable here: email changes need Firebase Auth re-verification, and
-/// matrícula is just the account's own uid, not user data.
 class EditProfileScreen extends StatefulWidget {
   const EditProfileScreen({super.key});
 
@@ -46,8 +42,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void _initFromProfile(UserProfile profile) {
     if (_initialized) return;
     _initialized = true;
-    // Covers both the current seed (empty string) and the older placeholder
-    // text some existing accounts still carry from before that changed.
     final isPlaceholderName =
         profile.fullName.isEmpty || profile.fullName == 'Complete seu perfil';
     _nameController = TextEditingController(
@@ -97,17 +91,10 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       phone: _phoneController.text.trim(),
     );
     try {
-      // Must be the Consumer builder's context (below the ChangeNotifierProvider
-      // created in this same build() call) — `this.context` (the State's own
-      // element) sits ABOVE that provider, so context.read from it never finds it.
       await context.read<ProfileInfoController>().save(updated);
       if (!context.mounted) return;
       Navigator.of(context).pop();
     } catch (e) {
-      // Without this, any failure here (e.g. a Firestore write rejected by
-      // security rules) left the button stuck spinning forever with no
-      // indication anything went wrong — indistinguishable from "not
-      // saving" from the user's side.
       debugPrint('Erro ao salvar perfil: $e');
       if (!context.mounted) return;
       ScaffoldMessenger.of(context).showSnackBar(
@@ -122,9 +109,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   @override
   Widget build(BuildContext context) {
-    // A separate route, not nested under ProfileShellScreen's own
-    // MultiProvider — provide the (GetIt-shared) controller here too, or
-    // Consumer below finds no ancestor Provider<ProfileInfoController>.
     return ChangeNotifierProvider<ProfileInfoController>.value(
       value: sl<ProfileInfoController>(),
       child: Consumer<ProfileInfoController>(

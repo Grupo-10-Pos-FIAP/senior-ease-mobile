@@ -65,9 +65,6 @@ void main() {
 
       controller.selectContrastLevel('Escuro');
 
-      // The whole point of the fix: AppModeController (and therefore every
-      // screen reading AppDesignTokens) reflects the new choice right away —
-      // it must not wait for save().
       expect(appMode.contrastLevel, ContrastLevel.escuro);
       expect(controller.hasUnsavedChanges, isTrue);
       verifyNever(() => saveSettings(any()));

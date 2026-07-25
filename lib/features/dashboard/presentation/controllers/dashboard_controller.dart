@@ -31,8 +31,6 @@ class DashboardController extends ChangeNotifier {
 
   bool get isSimpleMode => _appMode.isSimpleMode;
 
-  /// "Expiradas" is hidden in Simple mode — it's not something the user
-  /// needs to act on, so it's one less tab to scan.
   List<({String label, ActivityStatus status})> get tabs => isSimpleMode
       ? _allTabs.where((tab) => tab.status != ActivityStatus.expired).toList()
       : _allTabs;
@@ -61,9 +59,6 @@ class DashboardController extends ChangeNotifier {
 
   bool isCompleting(String activityId) => _completingActivityId == activityId;
 
-  /// Refetches quietly (no [isLoading] toggle) — this only ever affects one
-  /// card's status, so the full list blanking out while it reloads would
-  /// read as a glitch rather than a completion.
   Future<void> completeActivity(String activityId) async {
     _completingActivityId = activityId;
     notifyListeners();
@@ -76,9 +71,6 @@ class DashboardController extends ChangeNotifier {
     }
   }
 
-  /// Pull-to-refresh: [RefreshIndicator] already shows its own spinner, so
-  /// this refetches quietly instead of also blanking the list via
-  /// [isLoading].
   Future<void> refresh() async {
     _activities = await _getActivities(const NoParams());
     notifyListeners();

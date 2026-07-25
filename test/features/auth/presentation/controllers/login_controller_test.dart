@@ -165,6 +165,21 @@ void main() {
       await future;
       expect(controller.isLoading, isFalse);
     });
+
+    test('only spins isEmailLoading, never isGoogleLoading', () async {
+      final completer = Completer<void>();
+      when(
+        () => authController.signInWithEmail(any(), any()),
+      ).thenAnswer((_) => completer.future);
+
+      final future = controller.submitEmailPassword('a@b.com', 'secret');
+
+      expect(controller.isEmailLoading, isTrue);
+      expect(controller.isGoogleLoading, isFalse);
+
+      completer.complete();
+      await future;
+    });
   });
 
   group('submitGoogle', () {
@@ -198,10 +213,22 @@ void main() {
 
       final result = await controller.submitGoogle();
 
-      // AuthController itself swallows a cancel; if something upstream ever
-      // threw it anyway, LoginController still shouldn't crash — it just
-      // reports failure through the generic path.
       expect(result, isFalse);
+    });
+
+    test('only spins isGoogleLoading, never isEmailLoading', () async {
+      final completer = Completer<void>();
+      when(
+        () => authController.signInWithGoogle(),
+      ).thenAnswer((_) => completer.future);
+
+      final future = controller.submitGoogle();
+
+      expect(controller.isGoogleLoading, isTrue);
+      expect(controller.isEmailLoading, isFalse);
+
+      completer.complete();
+      await future;
     });
   });
 }

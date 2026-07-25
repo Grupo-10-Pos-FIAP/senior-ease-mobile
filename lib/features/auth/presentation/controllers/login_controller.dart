@@ -15,8 +15,11 @@ class LoginController extends ChangeNotifier {
   final AppModeController _appMode;
 
   AuthFormMode mode = AuthFormMode.signIn;
-  bool isLoading = false;
+  bool isEmailLoading = false;
+  bool isGoogleLoading = false;
   String? errorMessage;
+
+  bool get isLoading => isEmailLoading || isGoogleLoading;
 
   void toggleMode() {
     mode = mode == AuthFormMode.signIn
@@ -27,32 +30,35 @@ class LoginController extends ChangeNotifier {
   }
 
   Future<bool> submitEmailPassword(String email, String password) {
-    return _submit(() {
-      return mode == AuthFormMode.signIn
-          ? _authController.signInWithEmail(email, password)
-          : _authController.signUpWithEmail(email, password);
-    }, onAuthError: _messageForCode);
+    return _submit(
+      () {
+        return mode == AuthFormMode.signIn
+            ? _authController.signInWithEmail(email, password)
+            : _authController.signUpWithEmail(email, password);
+      },
+      onAuthError: _messageForCode,
+      setLoading: (value) => isEmailLoading = value,
+    );
   }
 
   Future<bool> submitGoogle() {
     return _submit(
       _authController.signInWithGoogle,
       onAuthError: (_) => 'Não foi possível entrar com o Google.',
+      setLoading: (value) => isGoogleLoading = value,
     );
   }
 
   Future<bool> _submit(
     Future<void> Function() action, {
     required String Function(String code) onAuthError,
+    required void Function(bool value) setLoading,
   }) async {
-    isLoading = true;
+    setLoading(true);
     errorMessage = null;
     notifyListeners();
     try {
       await action();
-      // The persisted personalization otherwise only syncs once the
-      // Settings screen is opened — sync it now so Dashboard reflects it
-      // immediately after login, same as on a warm app start.
       final settings = await _getSettings(const NoParams());
       _appMode.update(
         isSimpleMode: settings.navigationMode == 'Simples',
@@ -70,14 +76,11 @@ class LoginController extends ChangeNotifier {
       errorMessage = onAuthError(e.code);
       return false;
     } catch (e) {
-      // Surfaced so GoogleSignInException codes (e.g. clientConfigurationError
-      // from a missing Android OAuth client / SHA-1) are visible in the
-      // console instead of being silently swallowed.
       debugPrint('Auth error: $e');
       errorMessage = 'Não foi possível concluir. Tente novamente.';
       return false;
     } finally {
-      isLoading = false;
+      setLoading(false);
       notifyListeners();
     }
   }

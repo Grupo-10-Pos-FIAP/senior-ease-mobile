@@ -20,7 +20,5 @@ void registerProfileDependencies(GetIt sl) {
   );
   sl.registerLazySingleton(() => GetUserProfile(sl()));
   sl.registerLazySingleton(() => UpdateUserProfile(sl()));
-  // Singleton (not factory): ProfileShellScreen creates this once and keeps
-  // both tabs mounted via IndexedStack, so a single shared instance is correct.
   sl.registerLazySingleton(() => ProfileInfoController(sl(), sl()));
 }

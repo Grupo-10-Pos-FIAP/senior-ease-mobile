@@ -11,9 +11,6 @@ import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_tabs.dart';
 
-/// Pure navigation/composition — hosts the "Personalização"/"Informações"
-/// tabs and renders the profile and settings feature screens. No
-/// business logic lives here.
 class ProfileShellScreen extends StatefulWidget {
   const ProfileShellScreen({super.key});
 
@@ -29,11 +26,6 @@ class _ProfileShellScreenState extends State<ProfileShellScreen> {
   @override
   void initState() {
     super.initState();
-    // sl<SettingsController>()/sl<ProfileInfoController>() are GetIt
-    // singletons shared for the app's lifetime, not owned by this screen —
-    // load() is kicked off once per visit here (not via Provider's `create`,
-    // which would dispose the shared instance when this screen is popped,
-    // breaking every later visit).
     sl<SettingsController>().load();
     sl<ProfileInfoController>().load();
   }

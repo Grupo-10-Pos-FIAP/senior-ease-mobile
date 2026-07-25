@@ -11,10 +11,6 @@ import 'package:senior_ease/shared/widgets/app_card.dart';
 
 typedef ActivityStageArgs = ({String activityId, TaskStep step});
 
-/// Per-step detail view: renders the step's reading content or quiz
-/// question/options (from Firestore, via route arguments), and marks the
-/// step complete on Firestore when the user acts on it — no right/wrong
-/// checking for quiz steps, picking an option is enough (reflection-style).
 class ActivityStageScreen extends StatefulWidget {
   const ActivityStageScreen({super.key});
 

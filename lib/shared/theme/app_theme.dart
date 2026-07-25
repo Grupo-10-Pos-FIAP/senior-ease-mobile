@@ -5,7 +5,6 @@ import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 class AppTheme {
   AppTheme._();
 
-  /// Light theme aligned with web design system (bg-default white, content base).
   static ThemeData get lightTheme {
     final baseTextTheme = _buildBaseTextTheme();
     final textTheme = GoogleFonts.robotoTextTheme(baseTextTheme);
@@ -166,7 +165,6 @@ class AppTheme {
     );
   }
 
-  /// Base TextTheme with design token sizes, weights, heights (no font family).
   static TextTheme _buildBaseTextTheme() {
     return TextTheme(
       displayLarge: TextStyle(

@@ -20,8 +20,6 @@ void main() {
     final controller = sl<ProfileInfoController>();
 
     expect(controller, isA<ProfileInfoController>());
-    // Singleton on purpose (see the registration's own comment) — both
-    // profile tabs must share the same instance under IndexedStack.
     expect(identical(controller, sl<ProfileInfoController>()), isTrue);
   });
 }

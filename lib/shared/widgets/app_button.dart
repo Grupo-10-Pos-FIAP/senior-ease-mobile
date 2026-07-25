@@ -77,9 +77,6 @@ class AppButton extends StatelessWidget {
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
           icon!,
-          // Flexible only makes sense here, next to a fixed-size icon in a
-          // Row — Center (below) isn't a Flex, so a bare Flexible under it
-          // throws "Incorrect use of ParentDataWidget".
           if (label.isNotEmpty) ...[
             const SizedBox(width: 8),
             Flexible(child: text),
@@ -104,8 +101,6 @@ class AppButton extends StatelessWidget {
     final style = _styleForVariant(buttonPadding, baseShape);
     if (!reinforced) return style;
 
-    // "Feedback visual reforçado": a clearly visible ring on focus/press,
-    // on top of whatever the variant's own style already does.
     return style.copyWith(
       side: WidgetStateProperty.resolveWith((states) {
         if (states.contains(WidgetState.focused) ||
@@ -150,8 +145,11 @@ class AppButton extends StatelessWidget {
           padding: buttonPadding,
           backgroundColor: AppDesignTokens.buttonOutlinedBgDefault,
           foregroundColor: AppDesignTokens.buttonOutlinedContentDefault,
-          side: BorderSide(color: AppDesignTokens.buttonOutlinedBorderDefault),
+          side: BorderSide(color: AppDesignTokens.buttonOutlinedBorderDefault,
+            width: 2.0,
+          ),
           shape: baseShape,
+          
         );
       case ButtonVariant.negativeLeading:
       case ButtonVariant.negative:

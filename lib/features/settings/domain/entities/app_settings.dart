@@ -19,9 +19,6 @@ class AppSettings {
     criticalActionConfirmation: true,
   );
 
-  // Single source of truth for the selectable labels — shared between the
-  // Settings screen's option cards and the Firestore data source's
-  // label <-> 1-based-index mapping (preferences are stored as ints there).
   static const List<String> fontSizeOptions = [
     'Pequena',
     'Reduzida',
@@ -56,8 +53,6 @@ class AppSettings {
   final bool enhancedVisualFeedback;
   final bool criticalActionConfirmation;
 
-  // Scales are centered on "Normal" == 1.0, symmetric around it, so the
-  // reactive AppDesignTokens getters can just multiply the base values.
   static const List<double> _fontScales = [0.85, 0.925, 1.0, 1.15, 1.3];
   static const List<double> _spacingScales = [0.75, 0.875, 1.0, 1.25, 1.5];
   static const List<ContrastLevel> _contrastLevels = [

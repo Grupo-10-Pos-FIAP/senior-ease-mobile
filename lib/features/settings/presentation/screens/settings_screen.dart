@@ -232,8 +232,6 @@ class SettingsScreen extends StatelessWidget {
       ),
     );
     if (confirmed == true) {
-      // Reset should take effect immediately, same as any other change —
-      // no reason to make the user also hit "Salvar mudanças" right after.
       controller.resetToDefaults();
       await controller.save();
     }

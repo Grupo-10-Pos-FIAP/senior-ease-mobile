@@ -63,29 +63,18 @@ class SettingsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Persists [draft] as the current settings (in the signed-in user's
-  /// Firestore document). The app's appearance already matches [draft] (see
-  /// [_applyDraftLive]) — this only needs to update what counts as "saved".
   Future<void> save() async {
     await _saveSettings(draft);
     _persisted = draft;
     notifyListeners();
   }
 
-  /// Resets only the on-screen draft, mirroring the old screen's behavior —
-  /// it does not touch whatever was last persisted via [save].
   void resetToDefaults() {
     draft = AppSettings.defaults();
     _applyDraftLive();
     notifyListeners();
   }
 
-  /// Pushes [draft] (not [_persisted]) to [AppModeController], so the whole
-  /// app reflects each option as soon as it's picked — matching the
-  /// screen's own "As mudanças são mostradas na hora" copy. Firestore only
-  /// gets [draft] on [save]; until then, an unsaved preview is exactly as
-  /// reversible as it looks (a fresh [load] — e.g. next app launch — falls
-  /// back to whatever was last actually saved).
   void _applyDraftLive() {
     _appMode.update(
       isSimpleMode: draft.navigationMode == 'Simples',

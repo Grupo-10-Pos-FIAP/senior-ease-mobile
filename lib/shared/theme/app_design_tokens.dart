@@ -8,9 +8,6 @@ class AppDesignTokens {
   static double _spacingScale = 1.0;
   static ContrastLevel _contrast = ContrastLevel.padrao;
 
-  /// Called from the app root whenever AppModeController's derived
-  /// personalization state changes, so every widget rebuilt after this
-  /// point reads the updated scale/contrast through the getters below.
   static void configure({
     required double fontScale,
     required double spacingScale,
@@ -21,7 +18,6 @@ class AppDesignTokens {
     _contrast = contrast;
   }
 
-  // ---- Font sizes (scaled by the "Tamanho da letra" setting) ----
   static double get fontSizeCaption => 12 * _fontScale;
   static double get fontSizeSmall => 14 * _fontScale;
   static double get fontSizeBody => 16 * _fontScale;
@@ -55,14 +51,6 @@ class AppDesignTokens {
   static double letterSpacingWide(double fontSize) => fontSize * 0.03;
   static double letterSpacingWider(double fontSize) => fontSize * 0.05;
 
-  // ---- Colors ----
-  // Brand/status colors stay fixed — "Nível de contraste" is about
-  // background/text/border legibility, not brand identity. The semantic
-  // tokens below (grays, backgrounds, content, borders) run through
-  // `_adjust`, which pushes each color toward its nearest extreme
-  // (white for light/background-leaning colors, black for dark/text-leaning
-  // ones) by an increasing factor per level, and inverts lightness entirely
-  // for "Escuro".
   static const Color colorWhite = Color(0xFFFFFFFF);
   static const Color colorBlack = Color(0xFF000000);
 
@@ -89,26 +77,19 @@ class AppDesignTokens {
   static const Color _base = Color(0xFF1A1A1A);
   static Color get colorBase => _adjust(_base);
 
-  static const Color _primary = Color(0xFF1F2D5C);
-  // Only "Escuro" inverts the page to a dark background — "Alto"/"Máximo"
-  // stay light, so the dark navy stays legible (even more so, since
-  // borders/secondary content get darker there too). Swapping to white for
-  // every high level — the previous approach — made text/borders vanish
-  // against those still-light pages.
+  static const Color _primary = Color(0xFF1D2D50);
   static Color get colorPrimary =>
       _contrast == ContrastLevel.escuro ? colorWhite : _primary;
   static const Color _primarySurface = Color(0xFFE6E4FF);
-  // Selected-card tint — this one DOES run through `_adjust` (unlike
-  // colorPrimary above): it's a background, so "Escuro" should invert it
-  // dark like every other surface, not swap it for a fixed color.
   static Color get colorPrimarySurface => _adjust(_primarySurface);
-  static const Color colorErrorSurface = Color(0xFFFBE6E4);
-  static const Color colorErrorOnSurface = Color(0xFF5C271F);
+  static const Color colorErrorSurface = Color(0xFFFFEBEE);
+  static const Color colorErrorOnSurface = Color(0xFFC62828);
   static const Color colorSecondary = Color(0xFF42484E);
-  static Color get colorNeutral => colorGray300;
   static const Color colorSoft = Color(0xFFE1F0FB);
 
-  static const Color _bgDefault = Color(0xFFF5F5F5);
+  static const Color _borderDefault = Color(0xFFD8DEE9);
+
+  static const Color _bgDefault = Color(0xFFF4F6F9);
   static const Color _bgDefaultDark = Color(0xFF374151);
   static Color get colorBgDefault => _adjust(_bgDefault);
   static Color get colorBgDefaultDark => _adjust(_bgDefaultDark);
@@ -122,31 +103,31 @@ class AppDesignTokens {
 
   static Color get colorContentDefault => colorBase;
   static Color get colorContentPrimary => colorPrimary;
-  static const Color _contentSecondary = Color(0xFF42484E);
+
+  static const Color _contentSecondary = Color(0xFF5A6478);
   static Color get colorContentSecondary => _adjust(_contentSecondary);
   static const Color colorContentInverse = colorWhite;
   static Color get colorContentDisabled => colorGray500;
-  static const Color _contentMuted = Color(0xFF555555);
+  static const Color _contentMuted = Color(0xFF5A6478);
   static Color get colorContentMuted => _adjust(_contentMuted);
 
-  static Color get colorBorderDefault => colorNeutral;
+  static Color get colorBorderDefault => _adjust(_borderDefault);
   static const Color colorBorderDisabled = Color(0x00FFFFFF);
   static Color get colorBorderFocused => colorPrimary;
 
   static Color get colorLink => colorPrimary;
   static const Color colorLinkVisited = buttonBrandBgPressed;
 
-  static const Color colorFeedbackSuccess = Color(0xFF81BE7F);
-  static const Color colorFeedbackWarning = Color(0xFFDEBB51);
-  static const Color colorFeedbackError = Color(0xFFE53935);
-  static const Color colorFeedbackInfo = Color(0xFF1C6EA4);
+  static const Color colorFeedbackSuccess = Color(0xFF2E7D32);
+  static const Color colorFeedbackWarning = Color(0xFFC49A1A);
+  static const Color colorFeedbackError = Color(0xFFC0392B);
+  static const Color colorFeedbackInfo = Color(0xFF949494);
   static const Color colorFeedbackAlert = Color(0xFFD32F2F);
   static const Color colorFeedbackFavorite = Colors.red;
   static Color get colorFeedbackMuted => colorGray100;
 
-  /// Badge “Agendada” no extrato (lavanda — distinto de Pendente/azul e Completa/verde).
-  static const Color colorBadgeScheduledBackground = Color(0xFFEDE7F6);
-  static const Color colorBadgeScheduledForeground = Color(0xFF5E35B1);
+  static const Color colorBadgeScheduledBackground = Color(0xFFE8F5E9);
+  static const Color colorBadgeScheduledForeground = Color(0xFF2E7D32);
 
   static Color _adjust(Color base) {
     if (_contrast == ContrastLevel.padrao) return base;
@@ -154,20 +135,8 @@ class AppDesignTokens {
     if (_contrast == ContrastLevel.escuro) {
       return hsl.withLightness((1 - hsl.lightness).clamp(0.0, 1.0)).toColor();
     }
-    // Suave/Conforto/Alto/Máximo: structural colors (borders, secondary/muted
-    // text) need to separate further FROM the page, i.e. get darker, as
-    // the level increases — pushing them toward their OWN nearest extreme
-    // instead (the previous approach) sent light grays toward white,
-    // making borders fade out, the opposite of "more contrast." True
-    // backgrounds (≥90% lightness) get the same treatment but with a much
-    // gentler factor, so the page itself visibly shifts tone too instead
-    // of staying frozen at white while everything else darkens.
     final isBackground = hsl.lightness >= 0.9;
     if (_contrast == ContrastLevel.maximo && !isBackground) {
-      // Foreground/structural colors go all the way to pure black/white for
-      // maximum text contrast — only backgrounds fall through to the
-      // gentler factor below, since snapping an already near-white page to
-      // white too left "Máximo" looking identical to no change at all.
       return hsl.lightness >= 0.5 ? Colors.white : Colors.black;
     }
     final factor = switch (_contrast) {
@@ -181,7 +150,6 @@ class AppDesignTokens {
     return hsl.withLightness(nextLightness.clamp(0.0, 1.0)).toColor();
   }
 
-  // ---- Spacing (scaled by the "Espaçamento entre elementos" setting) ----
   static double get spacingXs => 4 * _spacingScale;
   static double get spacingSm => 8 * _spacingScale;
   static double get spacingMd => 16 * _spacingScale;
@@ -211,12 +179,8 @@ class AppDesignTokens {
   static const int zIndexTooltip = 1070;
   static const int zIndexLoading = 9999;
 
-  // Fixed brand navy, not the contrast-reactive [colorPrimary] getter — this
-  // is a filled button's own background, paired with fixed white text
-  // ([buttonBrandContentDefault]); if it followed colorPrimary to white at
-  // high contrast the button would turn invisible (white text on white).
   static const Color buttonBrandBgDefault = _primary;
-  static const Color buttonBrandBgPressed = Color(0xFF141D3D);
+  static const Color buttonBrandBgPressed = Color(0xFF152340);
   static Color get buttonBrandBgDisabled => colorPrimarySurface;
   static const Color buttonBrandContentDefault = colorWhite;
   static Color get buttonBrandContentDisabled => colorContentDisabled;
@@ -230,11 +194,8 @@ class AppDesignTokens {
   static const Color buttonOutlinedBgDefault = Colors.transparent;
   static const Color buttonOutlinedBgPressed = Color(0xFF3A3C3C);
   static const Color buttonOutlinedBgDisabled = Colors.transparent;
-  // A translucent near-black border reads fine on any light background
-  // (Padrão through Máximo) but disappears against "Escuro"'s inverted
-  // dark one — swap to solid white only there, same as [colorPrimary].
   static Color get buttonOutlinedBorderDefault =>
-      _contrast == ContrastLevel.escuro ? colorWhite : const Color(0x331A1A1A);
+      _contrast == ContrastLevel.escuro ? colorWhite : colorPrimary;
   static const Color buttonOutlinedBorderDisabled = Color(0x1A1A1A1A);
   static Color get buttonOutlinedContentDefault => colorPrimary;
   static const Color buttonOutlinedContentPressed = colorWhite;

@@ -74,7 +74,6 @@ void main() {
       throwsA(isA<Exception>()),
     );
 
-    // A failed save must not silently reload (and thus mask) stale data.
     verifyNever(() => getUserProfile(const NoParams()));
   });
 }

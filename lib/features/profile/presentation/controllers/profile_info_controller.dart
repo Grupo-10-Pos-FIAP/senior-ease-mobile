@@ -21,9 +21,6 @@ class ProfileInfoController extends ChangeNotifier {
     notifyListeners();
   }
 
-  /// Persists the edited profile, then re-reads it from Firestore so
-  /// [profile] (and anything derived from it, like the incomplete-profile
-  /// warning) reflects the save immediately.
   Future<void> save(UserProfile updated) async {
     await _updateUserProfile(updated);
     await load();

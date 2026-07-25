@@ -11,9 +11,6 @@ class MainApp extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    // Rebuilds the whole app whenever personalization changes (Settings
-    // save, or the post-login/startup sync), so every screen re-reads the
-    // just-updated AppDesignTokens getters immediately — no restart needed.
     return ListenableBuilder(
       listenable: sl<AppModeController>(),
       builder: (context, _) {

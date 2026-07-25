@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
-/// Standard inline warning banner — icon, bold title and a message below.
 class AppWarningBanner extends StatelessWidget {
   const AppWarningBanner({
     super.key,

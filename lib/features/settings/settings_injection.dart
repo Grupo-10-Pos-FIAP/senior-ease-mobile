@@ -21,8 +21,6 @@ void registerSettingsDependencies(GetIt sl) {
   );
   sl.registerLazySingleton(() => GetSettings(sl()));
   sl.registerLazySingleton(() => SaveSettings(sl()));
-  // Singleton (not factory): ProfileShellScreen creates this once and keeps
-  // both tabs mounted via IndexedStack, so a single shared instance is correct.
   sl.registerLazySingleton(
     () => SettingsController(sl(), sl(), sl<AppModeController>()),
   );

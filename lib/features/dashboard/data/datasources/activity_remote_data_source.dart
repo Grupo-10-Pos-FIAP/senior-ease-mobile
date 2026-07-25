@@ -41,11 +41,6 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
 
     final activities = activitiesSnapshot.docs.map((doc) {
       final data = doc.data();
-      // Completion is the only per-user state — once the user completes an
-      // activity that stays true regardless of the course's own status.
-      // Everything else (expired, active) is a property of the course
-      // activity itself, so a leftover/default progress status (e.g.
-      // "active") must never mask the course marking something expired.
       final progressStatus = progressStatusByActivityId[doc.id];
       final status = progressStatus == 'completed'
           ? progressStatus
@@ -63,8 +58,6 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
       );
     }).toList();
 
-    // Nearest due date (vencimento) first; activities with no parseable
-    // end date sort last rather than breaking the ordering.
     activities.sort((a, b) {
       if (a.dueDate == null && b.dueDate == null) return 0;
       if (a.dueDate == null) return 1;
@@ -103,8 +96,6 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
       case 'expired':
         return ActivityStatus.expired;
       default:
-        // No explicit status past its due date still counts as expired,
-        // even if progress/course data was never updated to say so.
         if (dueDate != null && _isBeforeToday(dueDate)) {
           return ActivityStatus.expired;
         }

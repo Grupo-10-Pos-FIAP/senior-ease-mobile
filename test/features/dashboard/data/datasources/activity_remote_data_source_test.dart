@@ -43,9 +43,6 @@ void main() {
   const uid = 'uid-1';
   const courseId = 'course-1';
 
-  // Kept as separate statements (never inlined into a when(...).thenReturn
-  // argument list) — mocktail's `when` recording gets corrupted if another
-  // `when` call (here, inside buildDoc) runs while one is still "open".
   MockQueryDocumentSnapshot buildDoc(String id, Map<String, dynamic> data) {
     final doc = MockQueryDocumentSnapshot();
     when(() => doc.id).thenReturn(id);

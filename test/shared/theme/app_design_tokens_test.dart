@@ -28,7 +28,7 @@ void main() {
 
       expect(AppDesignTokens.colorGray100, const Color(0xFFF8F9FA));
       expect(AppDesignTokens.colorBase, const Color(0xFF1A1A1A));
-      expect(AppDesignTokens.colorPrimary, const Color(0xFF1F2D5C));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
       expect(
         AppDesignTokens.buttonOutlinedBorderDefault,
         const Color(0x331A1A1A),
@@ -84,7 +84,7 @@ void main() {
       ]) {
         configure(contrast: level);
 
-        expect(AppDesignTokens.colorPrimary, const Color(0xFF1F2D5C));
+        expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
         expect(
           AppDesignTokens.buttonOutlinedBorderDefault,
           const Color(0x331A1A1A),
@@ -102,10 +102,9 @@ void main() {
       configure(contrast: ContrastLevel.alto);
       final alto = HSLColor.fromColor(AppDesignTokens.colorGray100).lightness;
 
-      expect(suave, lessThan(0.976)); // original _gray100 lightness
+      expect(suave, lessThan(0.976));
       expect(conforto, lessThan(suave));
       expect(alto, lessThan(conforto));
-      // Still meant to read as a light page, not a dark one.
       expect(alto, greaterThan(0.5));
     });
 
@@ -119,7 +118,7 @@ void main() {
       configure(contrast: ContrastLevel.alto);
       final alto = HSLColor.fromColor(AppDesignTokens.colorGray500).lightness;
 
-      expect(suave, lessThan(0.5)); // original _gray500 lightness
+      expect(suave, lessThan(0.5));
       expect(conforto, lessThan(suave));
       expect(alto, lessThan(conforto));
     });
@@ -136,8 +135,6 @@ void main() {
     test('snaps a light-but-not-background structural color to pure white', () {
       configure(contrast: ContrastLevel.maximo);
 
-      // _gray300 (0xFFC0C0C0) has lightness ~0.75 — light, but well below the
-      // ≥90% threshold that marks an actual page background.
       expect(AppDesignTokens.colorGray300, Colors.white);
     });
 
@@ -151,10 +148,6 @@ void main() {
         configure(contrast: ContrastLevel.alto);
         final alto = HSLColor.fromColor(AppDesignTokens.colorGray100).lightness;
 
-        // This is the exact regression this covers: Máximo used to map any
-        // already-light background straight to white (i.e. no visible change
-        // at all). It must now be strictly darker than Alto's own shift, and
-        // clearly not pure white.
         expect(AppDesignTokens.colorGray100, isNot(Colors.white));
         expect(maximo, lessThan(alto));
       },
@@ -163,7 +156,7 @@ void main() {
     test('colorPrimary is not affected — only Escuro swaps it', () {
       configure(contrast: ContrastLevel.maximo);
 
-      expect(AppDesignTokens.colorPrimary, const Color(0xFF1F2D5C));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
     });
   });
 
@@ -172,7 +165,7 @@ void main() {
     () {
       for (final level in ContrastLevel.values) {
         configure(contrast: level);
-        expect(AppDesignTokens.buttonBrandBgDefault, const Color(0xFF1F2D5C));
+        expect(AppDesignTokens.buttonBrandBgDefault, const Color(0xFF1D2D50));
       }
     },
   );

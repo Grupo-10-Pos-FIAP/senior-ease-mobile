@@ -24,9 +24,6 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     return UserProfile(
       fullName: data['fullName'] as String? ?? '',
       birthDate: birthDateRaw != null ? DateTime.tryParse(birthDateRaw) : null,
-      // "Matrícula" is the Firebase uid itself — read from auth, not the
-      // Firestore field, so it's always correct even for accounts created
-      // before registrationId was seeded (or seeded with a placeholder).
       registrationId: uid,
       disabilityDescription: data['disability'] as String?,
       email: data['email'] as String? ?? '',
@@ -37,8 +34,6 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
   @override
   Future<void> updateProfile(UserProfile profile) {
     final uid = _firebaseAuth.currentUser!.uid;
-    // registrationId (the uid) and email are read from Auth, never written
-    // back here — this only touches the fields the edit form can change.
     return _firestore.collection('users').doc(uid).set({
       'fullName': profile.fullName,
       'birthDate': profile.birthDate?.toIso8601String(),

@@ -23,7 +23,6 @@ class AppCard extends StatelessWidget {
       selected = false,
       _isSimple = false;
 
-  /// Construtor para card simples (estilo de seleção antiga)
   const AppCard.simple({
     super.key,
     required this.title,
@@ -189,12 +188,6 @@ class _AppCardItemWidget extends StatelessWidget {
   }
 }
 
-/// Wraps card content with a tap handler — every card gets a visible
-/// press highlight via [InkWell] (using the contrast-adjusted gray scale,
-/// so it stays visible regardless of contrast level, unlike a fixed brand
-/// color would). With "Feedback visual reforçado" on, taps additionally
-/// get haptic feedback, for touch confirmation that's unmistakable for
-/// low-vision users.
 class _TappableCard extends StatelessWidget {
   const _TappableCard({
     required this.onTap,

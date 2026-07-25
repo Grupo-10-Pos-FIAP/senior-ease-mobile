@@ -77,9 +77,6 @@ class ProfileInfoScreen extends StatelessWidget {
   String _orNotInformed(String value) =>
       value.trim().isEmpty ? 'Não informado' : value;
 
-  /// Older accounts still carry the literal "Complete seu perfil" seed
-  /// placeholder as their fullName (current signups seed an empty string
-  /// instead) — display both cases the same way, as not actually informed.
   String _nameOrNotInformed(String value) {
     if (value.trim().isEmpty || value.trim() == 'Complete seu perfil') {
       return 'Não informado';
@@ -97,14 +94,10 @@ class ProfileInfoScreen extends StatelessWidget {
           'existirá mais.',
       confirmLabel: 'Excluir conta',
       destructive: true,
-      // Deleting the account is irreversible — unlike the other confirm
-      // dialogs, this one always shows, even in Simple mode.
       skipInSimpleMode: false,
     );
     if (!confirmed) return;
 
-    // Soft delete: flips a flag in Firestore and signs out, nothing more —
-    // see AuthController.deleteAccount for why it's built this way.
     await sl<AuthController>().deleteAccount();
     if (context.mounted) {
       Navigator.of(
@@ -124,9 +117,6 @@ class ProfileInfoScreen extends StatelessWidget {
     return '$age anos';
   }
 
-  /// New accounts start with a placeholder name and no phone/birth date —
-  /// nudge the person to fill those in rather than leaving them silently
-  /// blank in "Minhas informações".
   bool _isIncomplete(UserProfile profile) {
     return profile.fullName.trim().isEmpty ||
         profile.fullName == 'Complete seu perfil' ||

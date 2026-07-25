@@ -24,8 +24,6 @@ void main() {
     final controller = sl<TaskStepsController>();
 
     expect(controller, isA<TaskStepsController>());
-    // Factory (not singleton): each visit to the steps screen should get a
-    // fresh controller instead of reusing another activity's stale state.
     expect(identical(controller, sl<TaskStepsController>()), isFalse);
   });
 }
