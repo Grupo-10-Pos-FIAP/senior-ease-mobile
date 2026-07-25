@@ -9,8 +9,7 @@ class GetStepsParams {
 }
 
 class GetSteps
-    implements
-        UseCase<({String title, List<TaskStep> steps}), GetStepsParams> {
+    implements UseCase<({String title, List<TaskStep> steps}), GetStepsParams> {
   const GetSteps(this.repository);
 
   final TaskRepository repository;

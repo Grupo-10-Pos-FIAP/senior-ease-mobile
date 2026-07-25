@@ -48,19 +48,33 @@ class DashboardScreen extends StatelessWidget {
                       ...items.map(
                         (activity) => ActivityCard(
                           activity: activity,
-                          completing: controller.isCompleting(activity.id),
                           onComplete: () async {
                             final confirmed = await AppDialog.confirm(
                               context,
-                              title: 'Deseja concluir ${activity.title}?',
-                              description:
-                                  'A atividade será movida para a aba de '
-                                  '"atividades concluídas".',
-                              confirmLabel: 'Concluir atividade',
+                              title: activity.started
+                                  ? 'Continuar esta atividade?'
+                                  : 'Iniciar esta atividade?',
+                              description: activity.started
+                                  ? 'Você vai continuar "${activity.title}" a partir do primeiro passo pendente. Deseja continuar agora?'
+                                  : 'Você vai iniciar "${activity.title}" a partir do primeiro passo. Deseja começar agora?',
+                              confirmLabel: activity.started
+                                  ? 'Sim, continuar'
+                                  : 'Sim, iniciar',
+                              cancelLabel: 'Não, ainda não',
                             );
-                            if (confirmed) {
-                              await controller.completeActivity(activity.id);
-                            }
+                            if (!confirmed) return;
+                            if (!context.mounted) return;
+                            // Opens the guided flow — it must never mark the
+                            // activity as done outright. Resume right after
+                            // the last completed step, or from the start if
+                            // the activity has never been opened.
+                            await Navigator.of(context).pushNamed(
+                              RouteNames.stage,
+                              arguments: (
+                                activityId: activity.id,
+                                initialStepIndex: activity.completedStepsCount,
+                              ),
+                            );
                           },
                           onHowTo: () => Navigator.of(
                             context,

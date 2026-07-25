@@ -56,19 +56,24 @@ class ActivityStepsScreen extends StatelessWidget {
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
-                  ...controller.steps.map((step) {
+                  ...controller.steps.asMap().entries.map((entry) {
+                    final step = entry.value;
                     return AppCard.simple(
                       title: step.label,
                       subtitle: step.completed ? 'Etapa concluída' : 'Pendente',
                       selected: step.completed,
                       onTap: () async {
-                        final completed = await Navigator.of(context).pushNamed(
+                        await Navigator.of(context).pushNamed(
                           RouteNames.stage,
-                          arguments: (activityId: activityId, step: step),
+                          arguments: (
+                            activityId: activityId,
+                            initialStepIndex: entry.key,
+                          ),
                         );
-                        if (completed == true) {
-                          controller.markCompleted(step.id);
-                        }
+                        // The stage screen owns its own TaskStepsController
+                        // instance — reload this one to pick up whatever
+                        // got completed while the user was in there.
+                        if (context.mounted) controller.load(activityId);
                       },
                     );
                   }),
@@ -83,6 +88,7 @@ class ActivityStepsScreen extends StatelessWidget {
                             'A atividade será movida para a aba de '
                             '"atividades concluídas".',
                         confirmLabel: 'Concluir',
+                        cancelLabel: 'Não, ainda não',
                       );
                       if (!confirmed) return;
                       await controller.completeActivity();

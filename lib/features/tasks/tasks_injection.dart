@@ -7,6 +7,7 @@ import 'package:senior_ease/features/tasks/data/repositories/task_repository_imp
 import 'package:senior_ease/features/tasks/domain/repositories/task_repository.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/complete_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/get_steps.dart';
+import 'package:senior_ease/features/tasks/domain/usecases/mark_activity_started.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
 
 void registerTasksDependencies(GetIt sl) {
@@ -16,5 +17,12 @@ void registerTasksDependencies(GetIt sl) {
   sl.registerLazySingleton<TaskRepository>(() => TaskRepositoryImpl(sl()));
   sl.registerLazySingleton(() => GetSteps(sl()));
   sl.registerLazySingleton(() => CompleteStep(sl()));
-  sl.registerFactory(() => TaskStepsController(sl(), sl<CompleteActivity>()));
+  sl.registerLazySingleton(() => MarkActivityStarted(sl()));
+  sl.registerFactory(
+    () => TaskStepsController(
+      sl(),
+      sl<CompleteActivity>(),
+      sl<MarkActivityStarted>(),
+    ),
+  );
 }

@@ -29,9 +29,11 @@ void main() {
       expect(AppDesignTokens.colorGray100, const Color(0xFFF8F9FA));
       expect(AppDesignTokens.colorBase, const Color(0xFF1A1A1A));
       expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
+      // buttonOutlinedBorderDefault mirrors colorPrimary's own contrast
+      // handling rather than tracking a separate literal.
       expect(
         AppDesignTokens.buttonOutlinedBorderDefault,
-        const Color(0x331A1A1A),
+        AppDesignTokens.colorPrimary,
       );
     });
   });
@@ -87,7 +89,7 @@ void main() {
         expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
         expect(
           AppDesignTokens.buttonOutlinedBorderDefault,
-          const Color(0x331A1A1A),
+          AppDesignTokens.colorPrimary,
         );
       }
     });

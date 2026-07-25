@@ -3,17 +3,21 @@ import 'package:mocktail/mocktail.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/complete_activity.dart';
 import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/get_steps.dart';
+import 'package:senior_ease/features/tasks/domain/usecases/mark_activity_started.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
 
 class MockGetSteps extends Mock implements GetSteps {}
 
 class MockCompleteActivity extends Mock implements CompleteActivity {}
 
+class MockMarkActivityStarted extends Mock implements MarkActivityStarted {}
+
 class FakeGetStepsParams extends Fake implements GetStepsParams {}
 
 void main() {
   late MockGetSteps getSteps;
   late MockCompleteActivity completeActivity;
+  late MockMarkActivityStarted markActivityStarted;
   late TaskStepsController controller;
 
   const steps = [
@@ -46,7 +50,13 @@ void main() {
   setUp(() {
     getSteps = MockGetSteps();
     completeActivity = MockCompleteActivity();
-    controller = TaskStepsController(getSteps, completeActivity);
+    markActivityStarted = MockMarkActivityStarted();
+    when(() => markActivityStarted(any())).thenAnswer((_) async {});
+    controller = TaskStepsController(
+      getSteps,
+      completeActivity,
+      markActivityStarted,
+    );
   });
 
   test('load() fetches the steps and title for the given activity', () async {
@@ -61,6 +71,7 @@ void main() {
     expect(controller.activityId, 'activity-1');
     expect(controller.activityTitle, 'Oficina');
     expect(controller.steps, steps);
+    verify(() => markActivityStarted('activity-1')).called(1);
   });
 
   test('markCompleted flips only the matching step', () async {

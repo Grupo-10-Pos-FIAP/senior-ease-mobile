@@ -93,6 +93,7 @@ class ProfileInfoScreen extends StatelessWidget {
           'poderá mais acessar o SeniorEase com esta conta, pois ela não '
           'existirá mais.',
       confirmLabel: 'Excluir conta',
+      cancelLabel: 'Cancelar',
       destructive: true,
       skipInSimpleMode: false,
     );

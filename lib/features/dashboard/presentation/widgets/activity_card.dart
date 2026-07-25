@@ -99,19 +99,21 @@ class ActivityCard extends StatelessWidget {
             crossAxisAlignment: CrossAxisAlignment.stretch,
             children: [
               AppButton(
-                label: 'Concluir atividade',
+                label: 'Como fazer essa atividade?',
+                onPressed: onHowTo ?? () {},
+                variant: ButtonVariant.outlined,
+              ),
+              SizedBox(height: AppDesignTokens.spacingMd),
+              AppButton(
+                label: activity.started
+                    ? 'Continuar atividade'
+                    : 'Iniciar atividade',
                 onPressed: activity.status == ActivityStatus.active
                     ? (onComplete ?? () {})
                     : null,
                 loading: completing,
                 variant: ButtonVariant.primary,
-                icon: const Icon(Icons.check),
-              ),
-              SizedBox(height: AppDesignTokens.spacingMd),
-              AppButton(
-                label: 'Como fazer essa atividade?',
-                onPressed: onHowTo ?? () {},
-                variant: ButtonVariant.outlined,
+                icon: const Icon(Icons.play_arrow),
               ),
             ],
           ),

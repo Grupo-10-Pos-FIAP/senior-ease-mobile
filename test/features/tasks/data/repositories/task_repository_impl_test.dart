@@ -45,4 +45,12 @@ void main() {
 
     verify(() => dataSource.completeStep('activity-1', 'step-1')).called(1);
   });
+
+  test('markStarted delegates to TaskRemoteDataSource.markStarted', () async {
+    when(() => dataSource.markStarted('activity-1')).thenAnswer((_) async {});
+
+    await repository.markStarted('activity-1');
+
+    verify(() => dataSource.markStarted('activity-1')).called(1);
+  });
 }

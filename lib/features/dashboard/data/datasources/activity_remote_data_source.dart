@@ -34,17 +34,22 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
         .doc(uid)
         .collection('activityProgress')
         .get();
-    final progressStatusByActivityId = {
-      for (final doc in progressSnapshot.docs)
-        doc.id: doc.data()['status'] as String?,
+    final progressByActivityId = {
+      for (final doc in progressSnapshot.docs) doc.id: doc.data(),
     };
 
     final activities = activitiesSnapshot.docs.map((doc) {
       final data = doc.data();
-      final progressStatus = progressStatusByActivityId[doc.id];
+      final progress = progressByActivityId[doc.id];
+      final progressStatus = progress?['status'] as String?;
       final status = progressStatus == 'completed'
           ? progressStatus
           : data['status'] as String?;
+      final completedStepIds = List<String>.from(
+        (progress?['completedStepIds'] as List<dynamic>?) ?? [],
+      );
+      final started =
+          progress?['started'] == true || completedStepIds.isNotEmpty;
       final endDate = data['endDate'] as String?;
       final dueDate = endDate != null ? DateTime.tryParse(endDate) : null;
       return (
@@ -53,6 +58,8 @@ class ActivityRemoteDataSourceImpl implements ActivityRemoteDataSource {
           title: data['title'] as String? ?? '',
           dateRange: _formatDateRange(data['startDate'] as String?, endDate),
           status: _statusFrom(status, dueDate),
+          started: started,
+          completedStepsCount: completedStepIds.length,
         ),
         dueDate: dueDate,
       );

@@ -197,6 +197,7 @@ class SettingsScreen extends StatelessWidget {
           'A aparência do SeniorEase será adaptada de acordo com as novas '
           'opções de personalização que você escolheu.',
       confirmLabel: 'Salvar',
+      cancelLabel: 'Cancelar',
     );
     if (confirmed) {
       await controller.save();

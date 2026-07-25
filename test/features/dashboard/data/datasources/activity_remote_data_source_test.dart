@@ -216,6 +216,49 @@ void main() {
       },
     );
 
+    test(
+      'computes completedStepsCount from the progress doc, defaulting to 0',
+      () async {
+        when(
+          () => userDocSnapshot.data(),
+        ).thenReturn({'enrolledCourseId': courseId});
+        final startedDoc = buildDoc('started', {'title': 'Iniciada'});
+        final freshDoc = buildDoc('fresh', {'title': 'Nova'});
+        stubActivityDocs([startedDoc, freshDoc]);
+        final progressDoc = buildDoc('started', {
+          'completedStepIds': ['step-1', 'step-2'],
+        });
+        stubProgressDocs([progressDoc]);
+
+        final result = await dataSource.getActivities();
+
+        final started = result.firstWhere((a) => a.id == 'started');
+        final fresh = result.firstWhere((a) => a.id == 'fresh');
+        expect(started.completedStepsCount, 2);
+        expect(started.started, isTrue);
+        expect(fresh.completedStepsCount, 0);
+        expect(fresh.started, isFalse);
+      },
+    );
+
+    test(
+      'an activity opened but with no step completed yet is still "started"',
+      () async {
+        when(
+          () => userDocSnapshot.data(),
+        ).thenReturn({'enrolledCourseId': courseId});
+        final activityDoc = buildDoc('activity-1', {'title': 'Curso X'});
+        stubActivityDocs([activityDoc]);
+        final progressDoc = buildDoc('activity-1', {'started': true});
+        stubProgressDocs([progressDoc]);
+
+        final result = await dataSource.getActivities();
+
+        expect(result.single.started, isTrue);
+        expect(result.single.completedStepsCount, 0);
+      },
+    );
+
     test('formats the date range as dd/MM/yyyy - dd/MM/yyyy', () async {
       when(
         () => userDocSnapshot.data(),

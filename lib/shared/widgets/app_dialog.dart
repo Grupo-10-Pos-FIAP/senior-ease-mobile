@@ -10,7 +10,7 @@ class AppDialog extends StatelessWidget {
     required this.title,
     required this.description,
     required this.confirmLabel,
-    this.cancelLabel = 'Cancelar',
+    required this.cancelLabel,
     this.destructive = false,
   });
 
@@ -20,13 +20,12 @@ class AppDialog extends StatelessWidget {
   final String cancelLabel;
   final bool destructive;
 
-
   static Future<bool> confirm(
     BuildContext context, {
     required String title,
     required String description,
     required String confirmLabel,
-    String cancelLabel = 'Cancelar',
+    required String cancelLabel,
     bool destructive = false,
     bool skipInSimpleMode = true,
   }) async {
@@ -75,7 +74,7 @@ class AppDialog extends StatelessWidget {
                   color: AppDesignTokens.colorContentDefault,
                 ),
               ),
-              SizedBox(height: AppDesignTokens.spacingSm),
+              SizedBox(height: AppDesignTokens.spacingMd),
               Text(
                 description,
                 style: TextStyle(
@@ -91,7 +90,7 @@ class AppDialog extends StatelessWidget {
                   Flexible(
                     child: AppButton(
                       label: cancelLabel,
-                      variant: ButtonVariant.lightIcon,
+                      variant: ButtonVariant.outlined,
                       backgroundColor: AppDesignTokens.colorPrimarySurface,
                       onPressed: () => Navigator.of(context).pop(false),
                     ),

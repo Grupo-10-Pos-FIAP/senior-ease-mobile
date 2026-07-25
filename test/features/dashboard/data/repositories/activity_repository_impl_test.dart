@@ -23,6 +23,8 @@ void main() {
         title: 'Test',
         dateRange: '01/01/2026',
         status: ActivityStatus.active,
+        started: false,
+        completedStepsCount: 0,
       ),
     ];
     when(() => dataSource.getActivities()).thenAnswer((_) async => activities);

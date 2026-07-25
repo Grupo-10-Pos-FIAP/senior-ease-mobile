@@ -1,13 +1,21 @@
+import 'dart:async';
+
 import 'package:flutter/foundation.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/complete_activity.dart';
 import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/get_steps.dart';
+import 'package:senior_ease/features/tasks/domain/usecases/mark_activity_started.dart';
 
 class TaskStepsController extends ChangeNotifier {
-  TaskStepsController(this._getSteps, this._completeActivity);
+  TaskStepsController(
+    this._getSteps,
+    this._completeActivity,
+    this._markStarted,
+  );
 
   final GetSteps _getSteps;
   final CompleteActivity _completeActivity;
+  final MarkActivityStarted _markStarted;
 
   bool isLoading = true;
   String? activityId;
@@ -23,6 +31,7 @@ class TaskStepsController extends ChangeNotifier {
     steps = result.steps;
     isLoading = false;
     notifyListeners();
+    unawaited(_markStarted(activityId));
   }
 
   void markCompleted(String stepId) {

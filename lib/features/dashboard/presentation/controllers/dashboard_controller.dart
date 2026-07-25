@@ -2,22 +2,15 @@ import 'package:flutter/foundation.dart';
 import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/core/usecase/usecase.dart';
 import 'package:senior_ease/features/dashboard/domain/entities/activity.dart';
-import 'package:senior_ease/features/dashboard/domain/usecases/complete_activity.dart';
 import 'package:senior_ease/features/dashboard/domain/usecases/get_activities.dart';
 
 class DashboardController extends ChangeNotifier {
-  DashboardController(
-    this._getActivities,
-    this._completeActivity,
-    this._appMode,
-  ) {
+  DashboardController(this._getActivities, this._appMode) {
     _appMode.addListener(_handleAppModeChanged);
   }
 
   final GetActivities _getActivities;
-  final CompleteActivity _completeActivity;
   final AppModeController _appMode;
-  String? _completingActivityId;
 
   static const List<({String label, ActivityStatus status})> _allTabs = [
     (label: 'Atividades', status: ActivityStatus.active),
@@ -39,9 +32,7 @@ class DashboardController extends ChangeNotifier {
 
   List<Activity> get filteredActivities {
     final status = tabs[selectedTab].status;
-    return _activities
-        .where((activity) => activity.status == status)
-        .toList();
+    return _activities.where((activity) => activity.status == status).toList();
   }
 
   Future<void> load() async {
@@ -55,20 +46,6 @@ class DashboardController extends ChangeNotifier {
   void selectTab(int index) {
     selectedTab = index;
     notifyListeners();
-  }
-
-  bool isCompleting(String activityId) => _completingActivityId == activityId;
-
-  Future<void> completeActivity(String activityId) async {
-    _completingActivityId = activityId;
-    notifyListeners();
-    try {
-      await _completeActivity(activityId);
-      _activities = await _getActivities(const NoParams());
-    } finally {
-      _completingActivityId = null;
-      notifyListeners();
-    }
   }
 
   Future<void> refresh() async {

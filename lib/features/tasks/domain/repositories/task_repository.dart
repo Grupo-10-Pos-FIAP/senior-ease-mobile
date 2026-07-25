@@ -4,4 +4,6 @@ abstract class TaskRepository {
   Future<({String title, List<TaskStep> steps})> getSteps(String activityId);
 
   Future<void> completeStep(String activityId, String stepId);
+
+  Future<void> markStarted(String activityId);
 }

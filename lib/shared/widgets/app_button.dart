@@ -25,6 +25,7 @@ class AppButton extends StatelessWidget {
     this.variant = ButtonVariant.primary,
     this.backgroundColor,
     this.icon,
+    this.trailingIcon,
   });
 
   final String label;
@@ -34,6 +35,7 @@ class AppButton extends StatelessWidget {
   final ButtonVariant variant;
   final Color? backgroundColor;
   final Widget? icon;
+  final Widget? trailingIcon;
 
   static const double _buttonHeight = 48;
 
@@ -71,16 +73,18 @@ class AppButton extends StatelessWidget {
       return Center(child: icon ?? text);
     }
 
-    if (icon != null) {
+    if (icon != null || trailingIcon != null) {
       return Row(
         mainAxisSize: MainAxisSize.max,
         mainAxisAlignment: MainAxisAlignment.center,
         children: [
-          icon!,
+          ?icon,
           if (label.isNotEmpty) ...[
-            const SizedBox(width: 8),
+            if (icon != null) const SizedBox(width: 8),
             Flexible(child: text),
+            if (trailingIcon != null) const SizedBox(width: 8),
           ],
+          ?trailingIcon,
         ],
       );
     }
@@ -145,11 +149,11 @@ class AppButton extends StatelessWidget {
           padding: buttonPadding,
           backgroundColor: AppDesignTokens.buttonOutlinedBgDefault,
           foregroundColor: AppDesignTokens.buttonOutlinedContentDefault,
-          side: BorderSide(color: AppDesignTokens.buttonOutlinedBorderDefault,
+          side: BorderSide(
+            color: AppDesignTokens.buttonOutlinedBorderDefault,
             width: 2.0,
           ),
           shape: baseShape,
-          
         );
       case ButtonVariant.negativeLeading:
       case ButtonVariant.negative:

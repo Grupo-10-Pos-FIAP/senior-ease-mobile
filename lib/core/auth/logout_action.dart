@@ -8,8 +8,10 @@ Future<void> confirmAndSignOut(BuildContext context) async {
   final confirmed = await AppDialog.confirm(
     context,
     title: 'Sair da sua conta?',
-    description: 'Você precisará entrar novamente para acessar suas atividades e preferências salvas.',
+    description:
+        'Você precisará entrar novamente para acessar suas atividades e preferências salvas.',
     confirmLabel: 'Sair',
+    cancelLabel: 'Cancelar',
   );
   if (!confirmed) return;
 

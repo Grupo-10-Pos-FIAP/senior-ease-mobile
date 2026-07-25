@@ -6,6 +6,8 @@ abstract class TaskRemoteDataSource {
   Future<({String title, List<TaskStep> steps})> getSteps(String activityId);
 
   Future<void> completeStep(String activityId, String stepId);
+
+  Future<void> markStarted(String activityId);
 }
 
 class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
@@ -45,8 +47,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     final steps =
         stepsData
             .map(
-              (raw) =>
-                  _mapStep(raw as Map<String, dynamic>, completedStepIds),
+              (raw) => _mapStep(raw as Map<String, dynamic>, completedStepIds),
             )
             .toList()
           ..sort((a, b) => a.order.compareTo(b.order));
@@ -90,6 +91,20 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
         .set({
           'activityId': activityId,
           'completedStepIds': FieldValue.arrayUnion([stepId]),
+        }, SetOptions(merge: true));
+  }
+
+  @override
+  Future<void> markStarted(String activityId) {
+    final uid = _firebaseAuth.currentUser!.uid;
+    return _firestore
+        .collection('users')
+        .doc(uid)
+        .collection('activityProgress')
+        .doc(activityId)
+        .set({
+          'activityId': activityId,
+          'started': true,
         }, SetOptions(merge: true));
   }
 }
