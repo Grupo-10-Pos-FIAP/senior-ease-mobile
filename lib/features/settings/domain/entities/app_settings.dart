@@ -36,7 +36,7 @@ class AppSettings {
     'Escuro',
   ];
 
-  static const List<String> navigationModeOptions = ['Simples', 'Avançado'];
+  static const List<String> navigationModeOptions = ['Básico', 'Avançado'];
 
   static const List<String> spacingOptions = [
     'Compacto',

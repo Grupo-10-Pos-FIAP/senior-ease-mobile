@@ -63,9 +63,7 @@ class SettingsScreen extends StatelessWidget {
 
             AppSubtitle(text: 'Nível de contraste'),
             SizedBox(height: AppDesignTokens.spacingXs),
-            const AppInfo(
-              'Leitura mais confortável para vista cansada ou idade avançada.',
-            ),
+            const AppInfo('Constraste padrão para uso diário.'),
             SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
               options: AppSettings.contrastLevelOptions
@@ -83,9 +81,8 @@ class SettingsScreen extends StatelessWidget {
             AppSubtitle(text: 'Modo de navegação'),
             SizedBox(height: AppDesignTokens.spacingXs),
             const AppInfo(
-              'No modo Simples, a plataforma mostra menos opções e textos '
-              'mais diretos. Já no modo avançado, todas as opções são '
-              'visíveis.',
+              'No modo básico, a plataforma oferece mais orientações e texto didáticos.'
+              'Já no modo avançado, a inferface fica mais enxuta, com menos ajuda na tela.',
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(
@@ -145,8 +142,7 @@ class SettingsScreen extends StatelessWidget {
               AppSubtitle(text: 'Confirmação em ações críticas'),
               SizedBox(height: AppDesignTokens.spacingXs),
               const AppInfo(
-                'Pede confirmação antes de ações importantes, como restaurar '
-                'configurações.',
+                'Pede confirmação antes de ações importantes, como sair da conta.',
               ),
               SizedBox(height: AppDesignTokens.spacingMd),
               AppCard(
@@ -166,19 +162,23 @@ class SettingsScreen extends StatelessWidget {
               ),
             ],
             SizedBox(height: AppDesignTokens.spacingXl),
-
+            AppButton(
+              label: 'Retornar configurações padrão',
+              leadingIcon: Transform.scale(
+                scaleX: -1,
+                child: const Icon(Icons.refresh),
+              ),
+              onPressed: () => _confirmReset(context, controller),
+              variant: ButtonVariant.outlined,
+            ),
+            SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
               label: 'Salvar mudanças',
+              leadingIcon: Icon(Icons.save),
               onPressed: controller.hasUnsavedChanges
                   ? () => _confirmSave(context, controller)
                   : null,
               variant: ButtonVariant.primary,
-            ),
-            SizedBox(height: AppDesignTokens.spacingMd),
-            AppButton(
-              label: 'Retornar configurações padrão',
-              onPressed: () => _confirmReset(context, controller),
-              variant: ButtonVariant.outlined,
             ),
           ],
         );
@@ -235,8 +235,7 @@ class SettingsScreen extends StatelessWidget {
     return AppDialog.success(
       context,
       title: 'Salvo com sucesso!',
-      description:
-          'Configurações padrões restauradas.',
+      description: 'Configurações padrões restauradas.',
     );
   }
 }
