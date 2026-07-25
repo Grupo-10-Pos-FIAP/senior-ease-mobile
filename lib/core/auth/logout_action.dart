@@ -5,13 +5,13 @@ import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/shared/widgets/app_dialog.dart';
 
 Future<void> confirmAndSignOut(BuildContext context) async {
-  final confirmed = await AppDialog.confirm(
+  final confirmed = await AppDialog.warn(
     context,
     title: 'Sair da sua conta?',
     description:
         'Você precisará entrar novamente para acessar suas atividades e preferências salvas.',
-    confirmLabel: 'Sair',
-    cancelLabel: 'Cancelar',
+    confirmLabel: 'Sim, sair da conta',
+    cancelLabel: 'Não, continuar aqui',
   );
   if (!confirmed) return;
 
