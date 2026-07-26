@@ -62,10 +62,10 @@ class AppCard extends StatelessWidget {
       builder: (context, _) {
         final highlighted = selected;
         final contentColor = highlighted
-            ? AppDesignTokens.colorPrimary
+            ? AppDesignTokens.colorCardSelectedContent
             : AppDesignTokens.colorContentDefault;
         final secondaryContentColor = highlighted
-            ? AppDesignTokens.colorPrimary
+            ? AppDesignTokens.colorCardSelectedContent
             : AppDesignTokens.colorContentSecondary;
         return Padding(
           padding: EdgeInsets.symmetric(
@@ -119,7 +119,7 @@ class AppCard extends StatelessWidget {
               if (selected)
                 Icon(
                   Icons.check_circle,
-                  color: AppDesignTokens.colorPrimary,
+                  color: AppDesignTokens.colorCardSelectedContent,
                   size: 20,
                 ),
             ],
@@ -171,7 +171,7 @@ Color _cardPressedColorFor(bool selected) {
 Border _cardBorderFor(bool selected) {
   return Border.all(
     color: selected
-        ? AppDesignTokens.colorPrimary
+        ? AppDesignTokens.colorCardSelectedContent
         : AppDesignTokens.colorBorderDefault,
         width: selected ? 1.5 : 1.0,
   );
@@ -206,7 +206,7 @@ class _AppCardItemWidget extends StatelessWidget {
                   fontSize: AppDesignTokens.fontSizeBody,
                   fontWeight: item.selected ? AppDesignTokens.fontWeightSemibold : AppDesignTokens.fontWeightMedium,
                   color: item.selected
-                      ? AppDesignTokens.colorPrimary
+                      ? AppDesignTokens.colorCardSelectedContent
                       : AppDesignTokens.colorContentDefault,
                 ),
               ),
@@ -214,7 +214,7 @@ class _AppCardItemWidget extends StatelessWidget {
             if (item.selected)
               Icon(
                 Icons.check_circle,
-                color: AppDesignTokens.colorPrimary,
+                color: AppDesignTokens.colorCardSelectedContent,
                 size: 20,
               ),
           ],
