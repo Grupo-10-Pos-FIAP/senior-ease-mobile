@@ -15,6 +15,7 @@ class AppDialog extends StatelessWidget {
     this.warning = false,
     this.isSuccess = false,
     this.stackedActions = false,
+    this.confirmFirst = false,
   });
 
   final String title;
@@ -25,6 +26,7 @@ class AppDialog extends StatelessWidget {
   final bool warning;
   final bool isSuccess;
   final bool stackedActions;
+  final bool confirmFirst;
 
   static Future<bool> confirm(
     BuildContext context, {
@@ -35,6 +37,7 @@ class AppDialog extends StatelessWidget {
     bool destructive = false,
     bool onlyInBasicMode = false,
     bool stackedActions = false,
+    bool confirmFirst = false,
   }) async {
     if (onlyInBasicMode && !sl<AppModeController>().isSimpleMode) {
       return true;
@@ -48,13 +51,12 @@ class AppDialog extends StatelessWidget {
         cancelLabel: cancelLabel,
         destructive: destructive,
         stackedActions: stackedActions,
+        confirmFirst: confirmFirst,
       ),
     );
     return confirmed ?? false;
   }
 
-  /// Same as [confirm], but renders the confirm button in the warning color
-  /// and stacks the actions in a column instead of a row.
   static Future<bool> warn(
     BuildContext context, {
     required String title,
@@ -79,7 +81,6 @@ class AppDialog extends StatelessWidget {
     return confirmed ?? false;
   }
 
-  /// Acknowledgement dialog with a single close button, styled green.
   static Future<void> success(
     BuildContext context, {
     required String title,
@@ -99,6 +100,10 @@ class AppDialog extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    // At large font sizes the side-by-side buttons crowd/overflow, so stack
+    // them like [stackedActions] already does, even when it wasn't passed.
+    final stacked =
+        stackedActions || sl<AppModeController>().fontScale >= 1.15;
     return Dialog(
       backgroundColor: isSuccess
           ? AppDesignTokens.colorSuccessSurface
@@ -151,8 +156,24 @@ class AppDialog extends StatelessWidget {
                   variant: ButtonVariant.primary,
                   onPressed: () => Navigator.of(context).pop(),
                 )
-              else if (warning || stackedActions) ...[
-                if (stackedActions && !warning) ...[
+              else if (warning || stacked) ...[
+                if (stacked && !warning && confirmFirst) ...[
+                  AppButton(
+                    label: confirmLabel,
+                    variant: ButtonVariant.primary,
+                    backgroundColor: destructive
+                        ? AppDesignTokens.colorErrorOnSurface
+                        : null,
+                    onPressed: () => Navigator.of(context).pop(true),
+                  ),
+                  SizedBox(height: AppDesignTokens.spacingMd),
+                  AppButton(
+                    label: cancelLabel,
+                    variant: ButtonVariant.outlined,
+                    backgroundColor: AppDesignTokens.colorPrimarySurface,
+                    onPressed: () => Navigator.of(context).pop(false),
+                  ),
+                ] else if (stacked && !warning) ...[
                   AppButton(
                     label: cancelLabel,
                     variant: ButtonVariant.outlined,

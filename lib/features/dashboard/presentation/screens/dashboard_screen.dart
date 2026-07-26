@@ -65,9 +65,6 @@ class DashboardScreen extends StatelessWidget {
                             );
                             if (!confirmed) return;
                             if (!context.mounted) return;
-                            // Opens the real activity flow — never the
-                            // pedagogical guide. Resume after the last
-                            // completed step, or from the start.
                             await Navigator.of(context).pushNamed(
                               RouteNames.stage,
                               arguments: (

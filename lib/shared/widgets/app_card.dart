@@ -156,24 +156,18 @@ class AppCard extends StatelessWidget {
   }
 }
 
-/// Resting background: selected items get a light lavender tint so the
-/// marked option stands out at all times, not just while being touched.
 Color _cardColorFor(bool selected) {
   return selected
       ? AppDesignTokens.colorCardSelectedBackground
       : AppDesignTokens.colorBgLight;
 }
 
-/// Background shown while the card is being pressed. Selected items stay on
-/// their strong resting color; unselected items get a light preview tint.
 Color _cardPressedColorFor(bool selected) {
   return selected
       ? AppDesignTokens.colorCardSelectedBackground
       : AppDesignTokens.colorPrimarySurface;
 }
 
-/// Border: selected items get the brand primary color to reinforce the
-/// selection alongside the lavender background.
 Border _cardBorderFor(bool selected) {
   return Border.all(
     color: selected

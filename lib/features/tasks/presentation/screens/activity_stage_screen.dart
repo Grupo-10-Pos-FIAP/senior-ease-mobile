@@ -14,10 +14,6 @@ import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_card.dart';
 import 'package:senior_ease/shared/widgets/app_dialog.dart';
 
-/// [initialStepIndex] lets an entry point that already knows which step to
-/// open skip ahead — the Dashboard passes the number of already-completed
-/// steps (0 for a never-started activity), while the overview list passes
-/// the exact index the user tapped.
 typedef ActivityStageArgs = ({String activityId, int initialStepIndex});
 
 class ActivityStageScreen extends StatefulWidget {

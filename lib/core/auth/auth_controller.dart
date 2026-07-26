@@ -1,18 +1,13 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 
 class DeactivatedAccountException implements Exception {}
 
-// Web (client_type 3) OAuth client from android/app/google-services.json.
-// Required as serverClientId so GoogleSignIn returns an idToken on Android;
-// if the Firebase project is ever recreated, update this from the new
-// google-services.json.
-const _googleServerClientId =
-    '201174810090-k6dmb8j8nu38tfiapp617ei7dl9dqhg4.apps.googleusercontent.com';
+class DeactivatedAccountFoundException implements Exception {}
 
-// Matches the "90 dias" window promised in the deactivation and login copy.
 const _reactivationWindow = Duration(days: 90);
 
 class AuthController extends ChangeNotifier {
@@ -36,13 +31,9 @@ class AuthController extends ChangeNotifier {
       email: email,
       password: password,
     );
-    await _rejectIfDeactivated(credential.user);
+    await _checkDeactivated(credential.user);
   }
 
-  /// If [email] belongs to a deactivated account, this reactivates it
-  /// (within [_reactivationWindow]) instead of creating a duplicate — Firebase
-  /// Auth won't let us recreate the account, so we sign back in with the
-  /// given credentials instead.
   Future<void> signUpWithEmail(String email, String password) async {
     try {
       final credential = await _firebaseAuth.createUserWithEmailAndPassword(
@@ -50,39 +41,26 @@ class AuthController extends ChangeNotifier {
         password: password,
       );
       await _seedUserDocument(credential.user!);
-    } on firebase_auth.FirebaseAuthException catch (e) {
-      if (e.code != 'email-already-in-use') rethrow;
-      await _reactivateOrRethrow(email, password, e);
+    } on firebase_auth.FirebaseAuthException catch (emailInUse) {
+      if (emailInUse.code != 'email-already-in-use') rethrow;
+      final firebase_auth.UserCredential credential;
+      try {
+        credential = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } catch (_) {
+        throw emailInUse;
+      }
+      await _checkDeactivated(credential.user);
     }
-  }
-
-  /// Only a deactivated account gets reactivated here; an active account
-  /// with matching credentials still surfaces the original [emailInUse]
-  /// error instead of silently logging the caller in via the sign-up form.
-  Future<void> _reactivateOrRethrow(
-    String email,
-    String password,
-    firebase_auth.FirebaseAuthException emailInUse,
-  ) async {
-    final firebase_auth.UserCredential credential;
-    try {
-      credential = await _firebaseAuth.signInWithEmailAndPassword(
-        email: email,
-        password: password,
-      );
-    } catch (_) {
-      throw emailInUse;
-    }
-    if (!(await isCurrentAccountDeactivated())) {
-      await signOut();
-      throw emailInUse;
-    }
-    await _rejectIfDeactivated(credential.user);
   }
 
   Future<void> signInWithGoogle() async {
     if (!_googleSignInInitialized) {
-      await _googleSignIn.initialize(serverClientId: _googleServerClientId);
+      await _googleSignIn.initialize(
+        serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
+      );
       _googleSignInInitialized = true;
     }
     try {
@@ -96,7 +74,7 @@ class AuthController extends ChangeNotifier {
       if (userCredential.additionalUserInfo?.isNewUser ?? false) {
         await _seedUserDocument(userCredential.user!);
       }
-      await _rejectIfDeactivated(userCredential.user);
+      await _checkDeactivated(userCredential.user);
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) return;
       rethrow;
@@ -115,14 +93,19 @@ class AuthController extends ChangeNotifier {
     return doc.data()?['deactivated'] == true;
   }
 
-  /// A deactivated account is reactivated automatically on any successful
-  /// sign-in (login or sign-up, email or Google) within [_reactivationWindow]
-  /// of `deactivatedAt`; after that it's rejected permanently, matching the
-  /// notice shown at deactivation.
-  Future<void> _rejectIfDeactivated(firebase_auth.User? user) async {
+  Future<void> confirmReactivation() async {
+    final user = _firebaseAuth.currentUser;
     if (user == null) return;
-    final ref = _firestore.collection('users').doc(user.uid);
-    final data = (await ref.get()).data();
+    await _firestore.collection('users').doc(user.uid).set({
+      'deactivated': false,
+      'deactivatedAt': FieldValue.delete(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> _checkDeactivated(firebase_auth.User? user) async {
+    if (user == null) return;
+    final data = (await _firestore.collection('users').doc(user.uid).get())
+        .data();
     if (data?['deactivated'] != true) return;
 
     final deactivatedAt = data?['deactivatedAt'];
@@ -131,11 +114,7 @@ class AuthController extends ChangeNotifier {
         DateTime.now().difference(deactivatedAt.toDate()) <=
             _reactivationWindow;
     if (withinWindow) {
-      await ref.set({
-        'deactivated': false,
-        'deactivatedAt': FieldValue.delete(),
-      }, SetOptions(merge: true));
-      return;
+      throw DeactivatedAccountFoundException();
     }
 
     await signOut();

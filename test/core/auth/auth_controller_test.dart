@@ -1,5 +1,6 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mocktail/mocktail.dart';
@@ -42,9 +43,14 @@ void main() {
 
   const uid = 'uid-123';
 
-  setUpAll(() {
+  setUpAll(() async {
     registerFallbackValue(FakeAuthCredential());
     registerFallbackValue(SetOptions(merge: true));
+    await dotenv.load(
+      fileName: 'no_such_file',
+      isOptional: true,
+      mergeWith: {'GOOGLE_SERVER_CLIENT_ID': 'test-client-id'},
+    );
   });
 
   setUp(() {
@@ -128,6 +134,30 @@ void main() {
     );
   });
 
+  group('confirmReactivation', () {
+    test('does nothing when nobody is signed in', () async {
+      when(() => firebaseAuth.currentUser).thenReturn(null);
+
+      await controller.confirmReactivation();
+
+      verifyNever(() => docRef.set(any(), any()));
+    });
+
+    test('clears the deactivated flag for the signed-in user', () async {
+      final user = MockUser();
+      when(() => user.uid).thenReturn(uid);
+      when(() => firebaseAuth.currentUser).thenReturn(user);
+
+      await controller.confirmReactivation();
+
+      final captured =
+          verify(() => docRef.set(captureAny(), any())).captured.single
+              as Map<String, dynamic>;
+      expect(captured['deactivated'], isFalse);
+      expect(captured.containsKey('deactivatedAt'), isTrue);
+    });
+  });
+
   group('signInWithEmail', () {
     test('signs in normally when the account is not deactivated', () async {
       final user = MockUser();
@@ -178,7 +208,8 @@ void main() {
     });
 
     test(
-      'reactivates and lets the sign-in through when deactivated within 90 days',
+      'throws DeactivatedAccountFoundException without signing out, '
+      'when deactivated within 90 days',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -198,13 +229,13 @@ void main() {
           ),
         });
 
-        await controller.signInWithEmail('a@b.com', 'secret');
+        await expectLater(
+          controller.signInWithEmail('a@b.com', 'secret'),
+          throwsA(isA<DeactivatedAccountFoundException>()),
+        );
 
-        final captured =
-            verify(() => docRef.set(captureAny(), any())).captured.single
-                as Map<String, dynamic>;
-        expect(captured['deactivated'], isFalse);
         verifyNever(() => firebaseAuth.signOut());
+        verifyNever(() => docRef.set(any(), any()));
       },
     );
 
@@ -274,7 +305,8 @@ void main() {
     );
 
     test(
-      'reactivates a deactivated account instead of creating a duplicate',
+      'falls back to signing in, and surfaces DeactivatedAccountFoundException '
+      'when that account is deactivated within 90 days',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -302,18 +334,19 @@ void main() {
           ),
         });
 
-        await controller.signUpWithEmail('old@user.com', 'secret');
+        await expectLater(
+          controller.signUpWithEmail('old@user.com', 'secret'),
+          throwsA(isA<DeactivatedAccountFoundException>()),
+        );
 
-        final captured =
-            verify(() => docRef.set(captureAny(), any())).captured.single
-                as Map<String, dynamic>;
-        expect(captured['deactivated'], isFalse);
         verifyNever(() => firebaseAuth.signOut());
+        verifyNever(() => docRef.set(any(), any()));
       },
     );
 
     test(
-      'rethrows email-already-in-use when the existing account is active',
+      'falls back to signing in when the existing account is active and the '
+      'password matches — no error, just logs the caller in',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -335,21 +368,10 @@ void main() {
         ).thenAnswer((_) async => credential);
         when(() => firebaseAuth.currentUser).thenReturn(user);
         when(() => docSnapshot.data()).thenReturn({});
-        when(() => googleSignIn.signOut()).thenAnswer((_) async {});
-        when(() => firebaseAuth.signOut()).thenAnswer((_) async {});
 
-        await expectLater(
-          controller.signUpWithEmail('active@user.com', 'secret'),
-          throwsA(
-            isA<firebase_auth.FirebaseAuthException>().having(
-              (e) => e.code,
-              'code',
-              'email-already-in-use',
-            ),
-          ),
-        );
+        await controller.signUpWithEmail('active@user.com', 'secret');
 
-        verify(() => firebaseAuth.signOut()).called(1);
+        verifyNever(() => firebaseAuth.signOut());
       },
     );
 
@@ -462,7 +484,8 @@ void main() {
     });
 
     test(
-      'reactivates when deactivated within 90 days',
+      'throws DeactivatedAccountFoundException without signing out, '
+      'when deactivated within 90 days',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -478,12 +501,13 @@ void main() {
           ),
         });
 
-        await controller.signInWithGoogle();
+        await expectLater(
+          controller.signInWithGoogle(),
+          throwsA(isA<DeactivatedAccountFoundException>()),
+        );
 
-        final captured =
-            verify(() => docRef.set(captureAny(), any())).captured.single
-                as Map<String, dynamic>;
-        expect(captured['deactivated'], isFalse);
+        verifyNever(() => firebaseAuth.signOut());
+        verifyNever(() => docRef.set(any(), any()));
       },
     );
 

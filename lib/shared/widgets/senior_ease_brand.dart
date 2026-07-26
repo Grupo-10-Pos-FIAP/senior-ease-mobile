@@ -1,7 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
-/// Marca textual alinhada ao web (`.app-header__logo`): acompanha o nível de contraste.
 class SeniorEaseBrand extends StatelessWidget {
   const SeniorEaseBrand({
     super.key,
@@ -9,7 +8,6 @@ class SeniorEaseBrand extends StatelessWidget {
     this.onTap,
   });
 
-  /// No header web: `font-size * 1.25` (= [AppDesignTokens.fontSizeTitle] com escala 1).
   final double? fontSize;
   final VoidCallback? onTap;
 
