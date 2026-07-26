@@ -50,6 +50,8 @@ flutter:
     - .env
     - lib/assets/img-loading-initial.svg
     - lib/assets/logo.svg
+    - lib/assets/logo-seniorease.png
+    - lib/assets/background-login.png
     - lib/assets/back.svg
     - lib/assets/bin.svg
     - lib/assets/check.svg

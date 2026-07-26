@@ -1,6 +1,6 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/flutter_svg.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
+import 'package:senior_ease/shared/widgets/senior_ease_brand.dart';
 
 class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
   const SeniorEaseAppBar({
@@ -27,13 +27,13 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       shape: Border(
         bottom: BorderSide(color: AppDesignTokens.colorGray200, width: 1),
       ),
-      title: GestureDetector(
-        onTap: onLogoTap,
-        behavior: HitTestBehavior.opaque,
-        child: SvgPicture.asset(
-          'lib/assets/logo.svg',
-          height: 32,
-          fit: BoxFit.contain,
+      titleSpacing: 8,
+      title: FittedBox(
+        fit: BoxFit.scaleDown,
+        alignment: Alignment.centerLeft,
+        child: SeniorEaseBrand(
+          fontSize: AppDesignTokens.fontSizeH4,
+          onTap: onLogoTap,
         ),
       ),
       actions: [
@@ -45,7 +45,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             size: 20,
           ),
           label: Text(
-            'Meu perfil',
+            'Perfil',
             style: TextStyle(
               color: AppDesignTokens.colorContentDefault,
               fontSize: AppDesignTokens.fontSizeBody,
@@ -53,12 +53,12 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
           style: TextButton.styleFrom(
-            padding: const EdgeInsets.symmetric(horizontal: 12),
+            padding: const EdgeInsets.symmetric(horizontal: 8),
             minimumSize: const Size(0, 0),
             tapTargetSize: MaterialTapTargetSize.shrinkWrap,
           ),
         ),
-        SizedBox(width: AppDesignTokens.spacingSm),
+        SizedBox(width: AppDesignTokens.spacingXs),
         TextButton.icon(
           onPressed: onLogoutTap,
           icon: Icon(
@@ -76,7 +76,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
           ),
           style: TextButton.styleFrom(
             padding: EdgeInsets.symmetric(
-              horizontal: AppDesignTokens.spacingMd,
+              horizontal: AppDesignTokens.spacingSm,
               vertical: AppDesignTokens.spacingSm,
             ),
             backgroundColor: AppDesignTokens.colorGray100,
@@ -87,7 +87,7 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
             ),
           ),
         ),
-        SizedBox(width: AppDesignTokens.spacingMd),
+        SizedBox(width: AppDesignTokens.spacingSm),
       ],
     );
   }

@@ -1,5 +1,4 @@
 import 'package:flutter/material.dart';
-import 'package:flutter_svg/svg.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
@@ -18,8 +17,15 @@ class LoginScreen extends StatelessWidget {
     return ChangeNotifierProvider<LoginController>(
       create: (_) => sl<LoginController>(),
       child: Scaffold(
-        backgroundColor: AppDesignTokens.colorGray100,
-        body: const SafeArea(child: _LoginForm()),
+        body: Container(
+          decoration: const BoxDecoration(
+            image: DecorationImage(
+              image: AssetImage('lib/assets/background-login.png'),
+              fit: BoxFit.cover,
+            ),
+          ),
+          child: const SafeArea(child: _LoginForm()),
+        ),
       ),
     );
   }
@@ -78,7 +84,13 @@ class _LoginFormState extends State<_LoginForm> {
           padding: EdgeInsets.all(AppDesignTokens.spacingLg),
           children: [
             SizedBox(height: AppDesignTokens.spacing2xl),
-            Center(child: SvgPicture.asset('lib/assets/logo.svg', height: 64)),
+            Center(
+              child: Image.asset(
+                'lib/assets/logo-seniorease.png',
+                height: 180,
+                fit: BoxFit.contain,
+              ),
+            ),
             SizedBox(height: AppDesignTokens.spacingXl),
             SizedBox(height: AppDesignTokens.spacingSm),
             AppSubtitle(
