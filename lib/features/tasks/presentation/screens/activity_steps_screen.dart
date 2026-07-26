@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
@@ -86,10 +87,12 @@ class ActivityStepsScreen extends StatelessWidget {
                   SizedBox(height: AppDesignTokens.spacingLg),
                   ...controller.steps.asMap().entries.map((entry) {
                     final step = entry.value;
+                    final isSimpleMode = sl<AppModeController>().isSimpleMode;
                     return AppCard.simple(
-
                       title: step.label,
-                      subtitle: step.completed ? 'Etapa concluída' : 'Pendente',
+                      subtitle: step.completed
+                          ? 'Etapa concluída'
+                          : (isSimpleMode ? 'Pendente' : 'Como fazer?'),
                       selected: step.completed,
                       onTap: () async {
                         await Navigator.of(context).pushNamed(
@@ -110,16 +113,19 @@ class ActivityStepsScreen extends StatelessWidget {
                   AppButton(
                     label: 'Concluir atividade',
                     onPressed: () async {
-                      final confirmed = await AppDialog.confirm(
-                        context,
-                        title: 'Deseja concluir ${controller.activityTitle}?',
-                        description:
-                            'A atividade será movida para a aba de '
-                            '"atividades concluídas".',
-                        confirmLabel: 'Concluir',
-                        cancelLabel: 'Não, ainda não',
-                      );
-                      if (!confirmed) return;
+                      if (sl<AppModeController>().criticalActionConfirmation) {
+                        final confirmed = await AppDialog.confirm(
+                          context,
+                          title:
+                              'Deseja concluir ${controller.activityTitle}?',
+                          description:
+                              'A atividade será movida para a aba de '
+                              '"atividades concluídas".',
+                          confirmLabel: 'Concluir',
+                          cancelLabel: 'Não, ainda não',
+                        );
+                        if (!confirmed) return;
+                      }
                       await controller.completeActivity();
                       if (context.mounted) {
                         Navigator.of(context).pushNamedAndRemoveUntil(
@@ -133,7 +139,9 @@ class ActivityStepsScreen extends StatelessWidget {
                   SizedBox(height: AppDesignTokens.spacingMd),
                   AppButton(
                     leadingIcon: const Icon(Icons.arrow_back),
-                    label: 'Voltar para minhas atividades',
+                    label: sl<AppModeController>().isSimpleMode
+                        ? 'Voltar para minhas atividades'
+                        : 'Voltar',
                     onPressed: () {
                       Navigator.of(context).pop();
                     },

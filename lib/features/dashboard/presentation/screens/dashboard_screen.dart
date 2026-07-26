@@ -61,6 +61,7 @@ class DashboardScreen extends StatelessWidget {
                                   ? 'Sim, continuar'
                                   : 'Sim, iniciar',
                               cancelLabel: 'Não, ainda não',
+                              onlyInBasicMode: true,
                             );
                             if (!confirmed) return;
                             if (!context.mounted) return;

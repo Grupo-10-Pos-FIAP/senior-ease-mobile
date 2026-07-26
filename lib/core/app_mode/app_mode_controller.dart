@@ -7,6 +7,7 @@ class AppModeController extends ChangeNotifier {
   double spacingScale = 1.0;
   ContrastLevel contrastLevel = ContrastLevel.padrao;
   bool reinforcedVisualFeedback = false;
+  bool criticalActionConfirmation = false;
 
   void update({
     required bool isSimpleMode,
@@ -14,12 +15,14 @@ class AppModeController extends ChangeNotifier {
     required double spacingScale,
     required ContrastLevel contrastLevel,
     required bool reinforcedVisualFeedback,
+    required bool criticalActionConfirmation,
   }) {
     if (this.isSimpleMode == isSimpleMode &&
         this.fontScale == fontScale &&
         this.spacingScale == spacingScale &&
         this.contrastLevel == contrastLevel &&
-        this.reinforcedVisualFeedback == reinforcedVisualFeedback) {
+        this.reinforcedVisualFeedback == reinforcedVisualFeedback &&
+        this.criticalActionConfirmation == criticalActionConfirmation) {
       return;
     }
     this.isSimpleMode = isSimpleMode;
@@ -27,6 +30,7 @@ class AppModeController extends ChangeNotifier {
     this.spacingScale = spacingScale;
     this.contrastLevel = contrastLevel;
     this.reinforcedVisualFeedback = reinforcedVisualFeedback;
+    this.criticalActionConfirmation = criticalActionConfirmation;
     notifyListeners();
   }
 }

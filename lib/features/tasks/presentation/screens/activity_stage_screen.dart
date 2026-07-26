@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:provider/provider.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
@@ -10,6 +11,7 @@ import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_card.dart';
+import 'package:senior_ease/shared/widgets/app_dialog.dart';
 
 /// [initialStepIndex] lets an entry point that already knows which step to
 /// open skip ahead — the Dashboard passes the number of already-completed
@@ -69,7 +71,33 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
     });
   }
 
+  Future<void> _exitActivity() async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Sair e voltar depois?',
+      description:
+          'Você pode retomar esta atividade de onde parou a qualquer momento.',
+      confirmLabel: 'Sim, sair',
+      cancelLabel: 'Não, continuar aqui',
+      onlyInBasicMode: true,
+    );
+    if (!confirmed) return;
+    if (!mounted) return;
+    Navigator.of(context).pop();
+  }
+
   Future<void> _finishActivity(String activityId, TaskStep step) async {
+    if (sl<AppModeController>().criticalActionConfirmation) {
+      final confirmed = await AppDialog.confirm(
+        context,
+        title: 'Deseja concluir ${_controller.activityTitle}?',
+        description:
+            'A atividade será movida para a aba de "atividades concluídas".',
+        confirmLabel: 'Concluir',
+        cancelLabel: 'Não, ainda não',
+      );
+      if (!confirmed) return;
+    }
     setState(() => _isSubmitting = true);
     try {
       if (!step.completed) {
@@ -161,14 +189,14 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                     label: 'Sair e voltar depois',
                     leadingIcon: const Icon(Icons.schedule),
                     variant: ButtonVariant.outlined,
-                    onPressed: _isSubmitting
-                        ? null
-                        : () => Navigator.of(context).pop(),
+                    onPressed: _isSubmitting ? null : _exitActivity,
                   ),
                   if (!isFirst) ...[
                     SizedBox(height: AppDesignTokens.spacingMd),
                     AppButton(
-                      label: 'Passo anterior',
+                      label: sl<AppModeController>().isSimpleMode
+                          ? 'Passo anterior'
+                          : 'Anterior',
                       leadingIcon: const Icon(Icons.chevron_left),
                       variant: ButtonVariant.outlined,
                       onPressed: _isSubmitting ? null : _goPrevious,
@@ -177,7 +205,9 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                   SizedBox(height: AppDesignTokens.spacingMd),
                   if (!isLast)
                     AppButton(
-                      label: 'Próximo passo',
+                      label: sl<AppModeController>().isSimpleMode
+                          ? 'Próximo passo'
+                          : 'Próximo',
                       trailingIcon: const Icon(Icons.chevron_right),
                       loading: _isSubmitting,
                       onPressed: _canAdvance(step)

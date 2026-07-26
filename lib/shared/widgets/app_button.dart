@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
 import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
+import 'package:senior_ease/shared/widgets/reinforced_focus_ring.dart';
 
 enum ButtonVariant {
   primary,
@@ -57,9 +58,19 @@ class AppButton extends StatelessWidget {
           )
         : _buildContent();
 
-    final style = _buildStyle(context, isEnabled, reinforced);
+    final style = _styleForVariant(
+      const EdgeInsets.symmetric(horizontal: 16),
+      const RoundedRectangleBorder(
+        borderRadius: BorderRadius.all(Radius.circular(8)),
+      ),
+    );
 
-    return _buildButton(child, style, isEnabled, reinforced);
+    return ReinforcedFocusRing(
+      enabled: reinforced,
+      borderRadius: BorderRadius.circular(9),
+      builder: (context, focusNode) =>
+          _buildButton(child, style, isEnabled, reinforced, focusNode),
+    );
   }
 
   Widget _buildContent() {
@@ -93,39 +104,11 @@ class AppButton extends StatelessWidget {
     return Center(child: text);
   }
 
-  ButtonStyle _buildStyle(
-    BuildContext context,
-    bool isEnabled,
-    bool reinforced,
-  ) {
-    const buttonPadding = EdgeInsets.symmetric(horizontal: 16);
-    const baseShape = RoundedRectangleBorder(
-      borderRadius: BorderRadius.all(Radius.circular(8)),
-    );
-
-    final style = _styleForVariant(buttonPadding, baseShape);
-    if (!reinforced) return style;
-
-    return style.copyWith(
-      side: WidgetStateProperty.resolveWith((states) {
-        if (states.contains(WidgetState.focused) ||
-            states.contains(WidgetState.pressed)) {
-          return const BorderSide(
-            color: AppDesignTokens.colorFeedbackInfo,
-            width: AppDesignTokens.borderWidthMedium,
-          );
-        }
-        return null;
-      }),
-    );
-  }
-
   ButtonStyle _styleForVariant(
     EdgeInsets buttonPadding,
     RoundedRectangleBorder baseShape,
   ) {
     switch (variant) {
-      case ButtonVariant.primaryIcon:
       case ButtonVariant.primaryLeading:
       case ButtonVariant.primary:
         return FilledButton.styleFrom(
@@ -136,10 +119,19 @@ class AppButton extends StatelessWidget {
           foregroundColor: AppDesignTokens.buttonBrandContentDefault,
           shape: baseShape,
         );
+      case ButtonVariant.primaryIcon:
+        return FilledButton.styleFrom(
+          minimumSize: const Size.square(_buttonHeight),
+          padding: EdgeInsets.zero,
+          backgroundColor:
+              backgroundColor ?? AppDesignTokens.buttonBrandBgDefault,
+          foregroundColor: AppDesignTokens.buttonBrandContentDefault,
+          shape: baseShape,
+        );
       case ButtonVariant.lightIcon:
         return FilledButton.styleFrom(
-          minimumSize: const Size.fromHeight(_buttonHeight),
-          padding: buttonPadding,
+          minimumSize: const Size.square(_buttonHeight),
+          padding: EdgeInsets.zero,
           backgroundColor: backgroundColor ?? AppDesignTokens.colorSoft,
           foregroundColor: AppDesignTokens.colorPrimary,
           shape: baseShape,
@@ -198,6 +190,7 @@ class AppButton extends StatelessWidget {
     ButtonStyle style,
     bool isEnabled,
     bool reinforced,
+    FocusNode focusNode,
   ) {
     final effectiveOnPressed = isEnabled
         ? _withHaptics(onPressed, reinforced)
@@ -207,6 +200,7 @@ class AppButton extends StatelessWidget {
       return OutlinedButton(
         onPressed: effectiveOnPressed,
         style: style,
+        focusNode: focusNode,
         child: child,
       );
     }
@@ -214,6 +208,7 @@ class AppButton extends StatelessWidget {
     return FilledButton(
       onPressed: effectiveOnPressed,
       style: style,
+      focusNode: focusNode,
       child: child,
     );
   }

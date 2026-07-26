@@ -31,9 +31,9 @@ class AppDialog extends StatelessWidget {
     required String confirmLabel,
     required String cancelLabel,
     bool destructive = false,
-    bool skipInSimpleMode = true,
+    bool onlyInBasicMode = false,
   }) async {
-    if (skipInSimpleMode && sl<AppModeController>().isSimpleMode) {
+    if (onlyInBasicMode && !sl<AppModeController>().isSimpleMode) {
       return true;
     }
     final confirmed = await showDialog<bool>(
@@ -57,9 +57,9 @@ class AppDialog extends StatelessWidget {
     required String description,
     required String confirmLabel,
     required String cancelLabel,
-    bool skipInSimpleMode = true,
+    bool onlyInBasicMode = false,
   }) async {
-    if (skipInSimpleMode && sl<AppModeController>().isSimpleMode) {
+    if (onlyInBasicMode && !sl<AppModeController>().isSimpleMode) {
       return true;
     }
     final confirmed = await showDialog<bool>(

@@ -22,7 +22,7 @@ class SettingsController extends ChangeNotifier {
     isLoading = true;
     notifyListeners();
     _persisted = await _getSettings(const NoParams());
-    draft = _persisted;
+    draft = _normalizeForMode(_persisted);
     isLoading = false;
     _applyDraftLive();
     notifyListeners();
@@ -41,7 +41,7 @@ class SettingsController extends ChangeNotifier {
   }
 
   void selectNavigationMode(String navigationMode) {
-    draft = draft.copyWith(navigationMode: navigationMode);
+    draft = _normalizeForMode(draft.copyWith(navigationMode: navigationMode));
     _applyDraftLive();
     notifyListeners();
   }
@@ -60,6 +60,7 @@ class SettingsController extends ChangeNotifier {
 
   void setCriticalActionConfirmation(bool value) {
     draft = draft.copyWith(criticalActionConfirmation: value);
+    _applyDraftLive();
     notifyListeners();
   }
 
@@ -77,11 +78,20 @@ class SettingsController extends ChangeNotifier {
 
   void _applyDraftLive() {
     _appMode.update(
-      isSimpleMode: draft.navigationMode == 'Simples',
+      isSimpleMode: draft.navigationMode == 'Básico',
       fontScale: draft.fontScale,
       spacingScale: draft.spacingScale,
       contrastLevel: draft.contrastLevelEnum,
       reinforcedVisualFeedback: draft.enhancedVisualFeedback,
+      criticalActionConfirmation: draft.criticalActionConfirmation,
+    );
+  }
+
+  AppSettings _normalizeForMode(AppSettings settings) {
+    if (settings.navigationMode == 'Básico') return settings;
+    return settings.copyWith(
+      enhancedVisualFeedback: false,
+      criticalActionConfirmation: false,
     );
   }
 }

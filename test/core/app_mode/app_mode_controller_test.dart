@@ -15,6 +15,7 @@ void main() {
     expect(controller.spacingScale, 1.0);
     expect(controller.contrastLevel, ContrastLevel.padrao);
     expect(controller.reinforcedVisualFeedback, isFalse);
+    expect(controller.criticalActionConfirmation, isFalse);
   });
 
   test('update() applies every field and notifies listeners', () {
@@ -27,6 +28,7 @@ void main() {
       spacingScale: 1.5,
       contrastLevel: ContrastLevel.escuro,
       reinforcedVisualFeedback: true,
+      criticalActionConfirmation: true,
     );
 
     expect(controller.isSimpleMode, isTrue);
@@ -34,6 +36,7 @@ void main() {
     expect(controller.spacingScale, 1.5);
     expect(controller.contrastLevel, ContrastLevel.escuro);
     expect(controller.reinforcedVisualFeedback, isTrue);
+    expect(controller.criticalActionConfirmation, isTrue);
     expect(notified, 1);
   });
 
@@ -46,6 +49,7 @@ void main() {
         spacingScale: 1.5,
         contrastLevel: ContrastLevel.escuro,
         reinforcedVisualFeedback: true,
+        criticalActionConfirmation: true,
       );
 
       var notified = 0;
@@ -57,6 +61,7 @@ void main() {
         spacingScale: 1.5,
         contrastLevel: ContrastLevel.escuro,
         reinforcedVisualFeedback: true,
+        criticalActionConfirmation: true,
       );
 
       expect(notified, 0);
@@ -70,6 +75,7 @@ void main() {
       spacingScale: 1.0,
       contrastLevel: ContrastLevel.padrao,
       reinforcedVisualFeedback: false,
+      criticalActionConfirmation: false,
     );
     var notified = 0;
     controller.addListener(() => notified++);
@@ -80,6 +86,7 @@ void main() {
       spacingScale: 1.0,
       contrastLevel: ContrastLevel.alto,
       reinforcedVisualFeedback: false,
+      criticalActionConfirmation: false,
     );
 
     expect(controller.contrastLevel, ContrastLevel.alto);

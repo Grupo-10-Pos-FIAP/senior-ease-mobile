@@ -16,7 +16,7 @@ class AppSettings {
     navigationMode: 'Avançado',
     spacing: 'Normal',
     enhancedVisualFeedback: false,
-    criticalActionConfirmation: true,
+    criticalActionConfirmation: false,
   );
 
   static const List<String> fontSizeOptions = [

@@ -95,7 +95,6 @@ class ProfileInfoScreen extends StatelessWidget {
       confirmLabel: 'Excluir conta',
       cancelLabel: 'Cancelar',
       destructive: true,
-      skipInSimpleMode: false,
     );
     if (!confirmed) return;
 

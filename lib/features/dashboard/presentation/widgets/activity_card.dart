@@ -1,4 +1,6 @@
 import 'package:flutter/material.dart';
+import 'package:senior_ease/app/di/injection_container.dart';
+import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/features/dashboard/domain/entities/activity.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
@@ -19,6 +21,7 @@ class ActivityCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final isSimpleMode = sl<AppModeController>().isSimpleMode;
     return Container(
       margin: EdgeInsets.only(bottom: AppDesignTokens.spacingLg),
       padding: EdgeInsets.all(AppDesignTokens.spacingLg),
@@ -95,28 +98,52 @@ class ActivityCard extends StatelessWidget {
             ),
           if (activity.status != ActivityStatus.active)
             SizedBox(height: AppDesignTokens.spacingLg),
-          Column(
-            crossAxisAlignment: CrossAxisAlignment.stretch,
-            children: [
-              AppButton(
-                label: 'Como fazer essa atividade?',
-                onPressed: onHowTo ?? () {},
-                variant: ButtonVariant.outlined,
-              ),
-              SizedBox(height: AppDesignTokens.spacingMd),
-              AppButton(
-                label: activity.started
-                    ? 'Continuar atividade'
-                    : 'Iniciar atividade',
-                onPressed: activity.status == ActivityStatus.active
-                    ? (onComplete ?? () {})
-                    : null,
-                loading: completing,
-                variant: ButtonVariant.primary,
-                leadingIcon: const Icon(Icons.play_arrow),
-              ),
-            ],
-          ),
+          if (isSimpleMode)
+            Column(
+              crossAxisAlignment: CrossAxisAlignment.stretch,
+              children: [
+                AppButton(
+                  label: 'Como fazer essa atividade?',
+                  onPressed: onHowTo ?? () {},
+                  variant: ButtonVariant.outlined,
+                ),
+                SizedBox(height: AppDesignTokens.spacingMd),
+                AppButton(
+                  label: activity.started
+                      ? 'Continuar a atividade'
+                      : 'Iniciar a atividade',
+                  onPressed: activity.status == ActivityStatus.active
+                      ? (onComplete ?? () {})
+                      : null,
+                  loading: completing,
+                  variant: ButtonVariant.primary,
+                  leadingIcon: const Icon(Icons.play_arrow),
+                ),
+              ],
+            )
+          else
+            Row(
+              children: [
+                AppButton(
+                  label: '',
+                  onPressed: onHowTo ?? () {},
+                  variant: ButtonVariant.lightIcon,
+                  leadingIcon: const Icon(Icons.help_outline),
+                ),
+                SizedBox(width: AppDesignTokens.spacingMd),
+                Expanded(
+                  child: AppButton(
+                    label: activity.started ? 'Continuar' : 'Iniciar',
+                    onPressed: activity.status == ActivityStatus.active
+                        ? (onComplete ?? () {})
+                        : null,
+                    loading: completing,
+                    variant: ButtonVariant.primary,
+                    leadingIcon: const Icon(Icons.play_arrow),
+                  ),
+                ),
+              ],
+            ),
         ],
       ),
     );

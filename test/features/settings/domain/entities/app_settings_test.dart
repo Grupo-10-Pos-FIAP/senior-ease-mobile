@@ -11,7 +11,7 @@ void main() {
     expect(defaults.navigationMode, 'Avançado');
     expect(defaults.spacing, 'Normal');
     expect(defaults.enhancedVisualFeedback, isFalse);
-    expect(defaults.criticalActionConfirmation, isTrue);
+    expect(defaults.criticalActionConfirmation, isFalse);
   });
 
   test(

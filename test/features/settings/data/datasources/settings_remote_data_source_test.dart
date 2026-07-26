@@ -80,7 +80,7 @@ void main() {
 
       expect(result.fontSize, 'Grande');
       expect(result.contrastLevel, 'Escuro');
-      expect(result.navigationMode, 'Simples');
+      expect(result.navigationMode, 'Básico');
       expect(result.spacing, 'Muito amplo');
       expect(result.enhancedVisualFeedback, isTrue);
       expect(result.criticalActionConfirmation, isFalse);
@@ -124,7 +124,7 @@ void main() {
       final settings = AppSettings.defaults().copyWith(
         fontSize: 'Grande',
         contrastLevel: 'Escuro',
-        navigationMode: 'Simples',
+        navigationMode: 'Básico',
         spacing: 'Muito amplo',
         enhancedVisualFeedback: true,
         criticalActionConfirmation: false,
@@ -144,7 +144,7 @@ void main() {
       expect(preferences['confirmCriticalActions'], isFalse);
     });
 
-    test('a non-Simples navigationMode is saved as "standard"', () async {
+    test('a non-Básico navigationMode is saved as "standard"', () async {
       final settings = AppSettings.defaults().copyWith(
         navigationMode: 'Avançado',
       );

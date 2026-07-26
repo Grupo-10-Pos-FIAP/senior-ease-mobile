@@ -61,11 +61,12 @@ class LoginController extends ChangeNotifier {
       await action();
       final settings = await _getSettings(const NoParams());
       _appMode.update(
-        isSimpleMode: settings.navigationMode == 'Simples',
+        isSimpleMode: settings.navigationMode == 'Básico',
         fontScale: settings.fontScale,
         spacingScale: settings.spacingScale,
         contrastLevel: settings.contrastLevelEnum,
         reinforcedVisualFeedback: settings.enhancedVisualFeedback,
+        criticalActionConfirmation: settings.criticalActionConfirmation,
       );
       return true;
     } on DeactivatedAccountException {

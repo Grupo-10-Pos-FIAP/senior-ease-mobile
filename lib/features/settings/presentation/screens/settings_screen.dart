@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final draft = controller.draft;
-        final isSimpleMode = draft.navigationMode == 'Simples';
+        final isSimpleMode = draft.navigationMode == 'Básico';
         return ListView(
           padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
@@ -96,26 +96,26 @@ class SettingsScreen extends StatelessWidget {
                   )
                   .toList(),
             ),
-            if (!isSimpleMode) ...[
-              SizedBox(height: AppDesignTokens.spacingXl),
-              AppSubtitle(text: 'Espaçamento entre elementos'),
-              SizedBox(height: AppDesignTokens.spacingXs),
-              const AppInfo(
-                'Aumente o espaço entre botões e blocos se tiver dificuldade '
-                'para tocar.',
-              ),
-              SizedBox(height: AppDesignTokens.spacingMd),
-              AppCard(
-                options: AppSettings.spacingOptions
-                    .map(
-                      (spacing) => AppCardItem(
-                        label: spacing,
-                        selected: draft.spacing == spacing,
-                        onTap: () => controller.selectSpacing(spacing),
-                      ),
-                    )
-                    .toList(),
-              ),
+            SizedBox(height: AppDesignTokens.spacingXl),
+            AppSubtitle(text: 'Espaçamento entre elementos'),
+            SizedBox(height: AppDesignTokens.spacingXs),
+            const AppInfo(
+              'Aumente o espaço entre botões e blocos se tiver dificuldade '
+              'para tocar.',
+            ),
+            SizedBox(height: AppDesignTokens.spacingMd),
+            AppCard(
+              options: AppSettings.spacingOptions
+                  .map(
+                    (spacing) => AppCardItem(
+                      label: spacing,
+                      selected: draft.spacing == spacing,
+                      onTap: () => controller.selectSpacing(spacing),
+                    ),
+                  )
+                  .toList(),
+            ),
+            if (isSimpleMode) ...[
               SizedBox(height: AppDesignTokens.spacingXl),
               AppSubtitle(text: 'Feedback visual reforçado'),
               SizedBox(height: AppDesignTokens.spacingXs),
@@ -208,13 +208,6 @@ class SettingsScreen extends StatelessWidget {
     BuildContext context,
     SettingsController controller,
   ) async {
-    if (!controller.draft.criticalActionConfirmation) {
-      controller.resetToDefaults();
-      await controller.save();
-      if (!context.mounted) return;
-      await _showResetSuccess(context);
-      return;
-    }
     final confirmed = await AppDialog.warn(
       context,
       title: 'Restaurar configurações padrões?',

@@ -72,6 +72,7 @@ void main() {
       spacingScale: 1.0,
       contrastLevel: ContrastLevel.padrao,
       reinforcedVisualFeedback: false,
+      criticalActionConfirmation: false,
     );
 
     expect(controller.tabLabels, ['Atividades', 'Concluídas']);

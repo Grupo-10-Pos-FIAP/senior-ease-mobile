@@ -24,7 +24,7 @@ void main() {
     navigationMode: 'Avançado',
     spacing: 'Normal',
     enhancedVisualFeedback: false,
-    criticalActionConfirmation: true,
+    criticalActionConfirmation: false,
   );
 
   setUpAll(() {
@@ -71,14 +71,36 @@ void main() {
     },
   );
 
-  test('selectNavigationMode previews Simples mode immediately', () async {
+  test('selectNavigationMode previews Básico mode immediately', () async {
     await controller.load();
 
-    controller.selectNavigationMode('Simples');
+    controller.selectNavigationMode('Básico');
 
     expect(appMode.isSimpleMode, isTrue);
     expect(controller.hasUnsavedChanges, isTrue);
   });
+
+  test(
+    'selectNavigationMode to Avançado forces off enhancedVisualFeedback '
+    'and criticalActionConfirmation',
+    () async {
+      when(() => getSettings(const NoParams())).thenAnswer(
+        (_) async => persisted.copyWith(
+          navigationMode: 'Básico',
+          enhancedVisualFeedback: true,
+          criticalActionConfirmation: true,
+        ),
+      );
+      await controller.load();
+
+      controller.selectNavigationMode('Avançado');
+
+      expect(controller.draft.enhancedVisualFeedback, isFalse);
+      expect(controller.draft.criticalActionConfirmation, isFalse);
+      expect(appMode.reinforcedVisualFeedback, isFalse);
+      expect(appMode.criticalActionConfirmation, isFalse);
+    },
+  );
 
   test('selectSpacing previews the new spacing scale immediately', () async {
     await controller.load();
@@ -118,16 +140,13 @@ void main() {
     'resetToDefaults previews AppSettings.defaults() immediately, unsaved',
     () async {
       await controller.load();
-      controller.selectNavigationMode('Simples');
+      controller.selectNavigationMode('Básico');
       await controller.save();
 
       controller.resetToDefaults();
 
       expect(controller.draft, AppSettings.defaults());
-      expect(
-        appMode.isSimpleMode,
-        AppSettings.defaults().navigationMode == 'Simples',
-      );
+      expect(appMode.isSimpleMode, isFalse);
       expect(controller.hasUnsavedChanges, isTrue);
       verifyNever(() => saveSettings(AppSettings.defaults()));
     },

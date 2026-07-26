@@ -3,6 +3,7 @@ import 'package:flutter/services.dart';
 import 'package:senior_ease/app/di/injection_container.dart';
 import 'package:senior_ease/core/app_mode/app_mode_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
+import 'package:senior_ease/shared/widgets/reinforced_focus_ring.dart';
 
 class AppCardItem {
   final String label;
@@ -229,15 +230,20 @@ class _TappableCard extends StatelessWidget {
           }
         : onTap;
 
-    return Material(
-      color: Colors.transparent,
+    return ReinforcedFocusRing(
+      enabled: reinforced,
       borderRadius: borderRadius,
-      child: InkWell(
-        onTap: effectiveOnTap,
+      builder: (context, focusNode) => Material(
+        color: Colors.transparent,
         borderRadius: borderRadius,
-        splashColor: AppDesignTokens.colorGray500.withValues(alpha: 0.4),
-        highlightColor: AppDesignTokens.colorGray500.withValues(alpha: 0.3),
-        child: child,
+        child: InkWell(
+          onTap: effectiveOnTap,
+          borderRadius: borderRadius,
+          focusNode: focusNode,
+          splashColor: AppDesignTokens.colorGray500.withValues(alpha: 0.4),
+          highlightColor: AppDesignTokens.colorGray500.withValues(alpha: 0.3),
+          child: child,
+        ),
       ),
     );
   }
