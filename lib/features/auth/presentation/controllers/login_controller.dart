@@ -43,9 +43,7 @@ class LoginController extends ChangeNotifier {
 
   Future<bool> submitGoogle() {
     return _submit(
-      () => _authController.signInWithGoogle(
-        isSignUp: mode == AuthFormMode.signUp,
-      ),
+      _authController.signInWithGoogle,
       onAuthError: (_) => 'Não foi possível entrar com o Google.',
       setLoading: (value) => isGoogleLoading = value,
     );
@@ -73,7 +71,8 @@ class LoginController extends ChangeNotifier {
       return true;
     } on DeactivatedAccountException {
       errorMessage =
-          'Esta conta foi desativada e não está mais disponível para acesso.';
+          'Esta conta foi desativada. Você pode reativá-la em até 90 dias '
+          'a partir da desativação, criando uma conta com o mesmo e-mail.';
       return false;
     } on FirebaseAuthException catch (e) {
       errorMessage = onAuthError(e.code);

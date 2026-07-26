@@ -106,7 +106,8 @@ void main() {
         expect(controller.isLoading, isFalse);
         expect(
           controller.errorMessage,
-          'Esta conta foi desativada e não está mais disponível para acesso.',
+          'Esta conta foi desativada. Você pode reativá-la em até 90 dias '
+          'a partir da desativação, criando uma conta com o mesmo e-mail.',
         );
       },
     );
@@ -186,39 +187,18 @@ void main() {
     test(
       'calls signInWithGoogle and syncs AppModeController on success',
       () async {
-        when(() => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp'))).thenAnswer((_) async {});
+        when(() => authController.signInWithGoogle()).thenAnswer((_) async {});
 
         final result = await controller.submitGoogle();
 
         expect(result, isTrue);
-        verify(() => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp'))).called(1);
+        verify(() => authController.signInWithGoogle()).called(1);
       },
     );
 
-    test('passes isSignUp: false in signIn mode', () async {
-      when(
-        () => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp')),
-      ).thenAnswer((_) async {});
-
-      await controller.submitGoogle();
-
-      verify(() => authController.signInWithGoogle(isSignUp: false)).called(1);
-    });
-
-    test('passes isSignUp: true in signUp mode', () async {
-      controller.toggleMode();
-      when(
-        () => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp')),
-      ).thenAnswer((_) async {});
-
-      await controller.submitGoogle();
-
-      verify(() => authController.signInWithGoogle(isSignUp: true)).called(1);
-    });
-
     test('uses a Google-specific message on FirebaseAuthException', () async {
       when(
-        () => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp')),
+        () => authController.signInWithGoogle(),
       ).thenThrow(FirebaseAuthException(code: 'anything'));
 
       final result = await controller.submitGoogle();
@@ -228,7 +208,7 @@ void main() {
     });
 
     test('does not surface a canceled sign-in as an error', () async {
-      when(() => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp'))).thenThrow(
+      when(() => authController.signInWithGoogle()).thenThrow(
         const GoogleSignInException(code: GoogleSignInExceptionCode.canceled),
       );
 
@@ -240,7 +220,7 @@ void main() {
     test('only spins isGoogleLoading, never isEmailLoading', () async {
       final completer = Completer<void>();
       when(
-        () => authController.signInWithGoogle(isSignUp: any(named: 'isSignUp')),
+        () => authController.signInWithGoogle(),
       ).thenAnswer((_) => completer.future);
 
       final future = controller.submitGoogle();

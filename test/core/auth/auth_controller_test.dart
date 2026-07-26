@@ -1,6 +1,5 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
-import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mocktail/mocktail.dart';
@@ -43,14 +42,9 @@ void main() {
 
   const uid = 'uid-123';
 
-  setUpAll(() async {
+  setUpAll(() {
     registerFallbackValue(FakeAuthCredential());
     registerFallbackValue(SetOptions(merge: true));
-    await dotenv.load(
-      fileName: 'no_such_file',
-      isOptional: true,
-      mergeWith: {'GOOGLE_SERVER_CLIENT_ID': 'test-client-id'},
-    );
   });
 
   setUp(() {
@@ -184,7 +178,7 @@ void main() {
     });
 
     test(
-      'rejects even when deactivated within 90 days — plain login never reactivates',
+      'reactivates and lets the sign-in through when deactivated within 90 days',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -201,6 +195,37 @@ void main() {
           'deactivated': true,
           'deactivatedAt': Timestamp.fromDate(
             DateTime.now().subtract(const Duration(days: 10)),
+          ),
+        });
+
+        await controller.signInWithEmail('a@b.com', 'secret');
+
+        final captured =
+            verify(() => docRef.set(captureAny(), any())).captured.single
+                as Map<String, dynamic>;
+        expect(captured['deactivated'], isFalse);
+        verifyNever(() => firebaseAuth.signOut());
+      },
+    );
+
+    test(
+      'rejects and signs out when deactivated more than 90 days ago',
+      () async {
+        final user = MockUser();
+        when(() => user.uid).thenReturn(uid);
+        final credential = MockUserCredential();
+        when(() => credential.user).thenReturn(user);
+        when(
+          () => firebaseAuth.signInWithEmailAndPassword(
+            email: any(named: 'email'),
+            password: any(named: 'password'),
+          ),
+        ).thenAnswer((_) async => credential);
+        when(() => firebaseAuth.currentUser).thenReturn(user);
+        when(() => docSnapshot.data()).thenReturn({
+          'deactivated': true,
+          'deactivatedAt': Timestamp.fromDate(
+            DateTime.now().subtract(const Duration(days: 91)),
           ),
         });
         when(() => googleSignIn.signOut()).thenAnswer((_) async {});
@@ -437,7 +462,7 @@ void main() {
     });
 
     test(
-      'reactivates when isSignUp is true and deactivated within 90 days',
+      'reactivates when deactivated within 90 days',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -453,7 +478,7 @@ void main() {
           ),
         });
 
-        await controller.signInWithGoogle(isSignUp: true);
+        await controller.signInWithGoogle();
 
         final captured =
             verify(() => docRef.set(captureAny(), any())).captured.single
@@ -463,7 +488,7 @@ void main() {
     );
 
     test(
-      'still rejects with isSignUp true once past the 90-day window',
+      'still rejects once past the 90-day window',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -482,7 +507,7 @@ void main() {
         when(() => firebaseAuth.signOut()).thenAnswer((_) async {});
 
         await expectLater(
-          controller.signInWithGoogle(isSignUp: true),
+          controller.signInWithGoogle(),
           throwsA(isA<DeactivatedAccountException>()),
         );
       },
