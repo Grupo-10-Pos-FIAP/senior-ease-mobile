@@ -137,7 +137,7 @@ class _LoginFormState extends State<_LoginForm> {
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
-              label: 'Entrar com Google',
+              label: isSignIn ? 'Entrar com Google' : 'Cadastrar com Google',
               variant: ButtonVariant.outlined,
               loading: controller.isGoogleLoading,
               enabled: !controller.isLoading,

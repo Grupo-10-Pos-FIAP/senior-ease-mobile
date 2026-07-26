@@ -43,7 +43,9 @@ class LoginController extends ChangeNotifier {
 
   Future<bool> submitGoogle() {
     return _submit(
-      _authController.signInWithGoogle,
+      () => _authController.signInWithGoogle(
+        isSignUp: mode == AuthFormMode.signUp,
+      ),
       onAuthError: (_) => 'Não foi possível entrar com o Google.',
       setLoading: (value) => isGoogleLoading = value,
     );

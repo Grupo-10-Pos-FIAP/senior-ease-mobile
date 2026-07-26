@@ -52,8 +52,15 @@ próprio projeto Firebase antes de rodar o app:
 
 - `android/app/google-services.json` — baixado do console do Firebase (app Android)
 - `ios/Runner/GoogleService-Info.plist` — baixado do console do Firebase (app iOS)
-- `.env` — precisa existir na raiz do projeto (pode ficar vazio); é declarado
-  como asset no `pubspec.yaml`
+- `.env` — precisa existir na raiz do projeto; é declarado como asset no
+  `pubspec.yaml`. Deve conter:
+
+  ```env
+  GOOGLE_SERVER_CLIENT_ID=<client ID web (client_type 3) do google-services.json>
+  ```
+
+  Esse valor é o `serverClientId` exigido pelo `google_sign_in` no Android
+  para retornar o `idToken` usado no login com Google.
 
 ## Rodando o projeto
 
