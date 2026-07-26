@@ -8,7 +8,7 @@ void main() {
 
     expect(defaults.fontSize, 'Normal');
     expect(defaults.contrastLevel, 'Padrão');
-    expect(defaults.navigationMode, 'Simplificado');
+    expect(defaults.navigationMode, 'Padrão');
     expect(defaults.spacing, 'Normal');
     expect(defaults.enhancedVisualFeedback, isFalse);
     expect(defaults.criticalActionConfirmation, isFalse);
