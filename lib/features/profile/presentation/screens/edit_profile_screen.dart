@@ -25,7 +25,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   late final TextEditingController _nameController;
   late final TextEditingController _birthDateController;
-  late final TextEditingController _registrationController;
   late final TextEditingController _disabilityController;
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
@@ -34,7 +33,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _initialized = false;
   String? _nameError;
   String? _birthDateError;
-  String? _registrationError;
   String? _emailError;
   String? _phoneError;
 
@@ -42,7 +40,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _birthDateController.dispose();
-    _registrationController.dispose();
     _disabilityController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -60,9 +57,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _birthDate = profile.birthDate;
     _birthDateController = TextEditingController(
       text: _birthDate != null ? _dateFormat.format(_birthDate!) : '',
-    );
-    _registrationController = TextEditingController(
-      text: profile.registrationId == '-' ? '' : profile.registrationId,
     );
     _disabilityController = TextEditingController(
       text: profile.disabilityDescription ?? '',
@@ -94,7 +88,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     var valid = true;
     String? nameError;
     String? birthError;
-    String? registrationError;
     String? emailError;
     String? phoneError;
 
@@ -119,11 +112,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     }
 
-    if (_registrationController.text.trim().isEmpty) {
-      registrationError = 'Matrícula é obrigatória';
-      valid = false;
-    }
-
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
       emailError = 'E-mail inválido';
@@ -142,7 +130,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       _nameError = nameError;
       _birthDateError = birthError;
-      _registrationError = registrationError;
       _emailError = emailError;
       _phoneError = phoneError;
     });
@@ -157,7 +144,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final updated = current.copyWith(
       fullName: _nameController.text.trim(),
       birthDate: _birthDate,
-      registrationId: _registrationController.text.trim(),
       disabilityDescription: disabilityText.isEmpty ? null : disabilityText,
       clearDisability: disabilityText.isEmpty,
       email: _emailController.text.trim(),
@@ -267,12 +253,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         errorText: _birthDateError,
                       ),
                     ),
-                  ),
-                  SizedBox(height: AppDesignTokens.spacingMd),
-                  AppTextField(
-                    label: 'Matrícula',
-                    controller: _registrationController,
-                    errorText: _registrationError,
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),
                   AppTextField(
