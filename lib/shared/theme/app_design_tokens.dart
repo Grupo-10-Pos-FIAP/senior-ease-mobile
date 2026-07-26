@@ -214,12 +214,26 @@ class AppDesignTokens {
   static const Color colorBgOverlay = Color(0xCCFFFFFF);
   static const Color colorBgFullscreen = Color(0xE6FFFFFF);
   static const Color colorBgAvatar = Color(0xFFEDF2FE);
-  // Máximo inverts to a white card (its accent/primary is already white),
-  // so the lavender tint would vanish; every other level keeps the tint.
-  static Color get colorCardSelectedBackground =>
-      _contrast == ContrastLevel.maximo ? colorWhite : const Color(0xFFE6E4FF);
-  static Color get colorCardSelectedContent =>
+  // Máximo inverts to a white card (its accent/primary is already white,
+  // so the lavender tint would vanish); Escuro fills with its accent blue
+  // — same color as the border — instead of the lavender tint.
+  static Color get colorCardSelectedBackground {
+    if (_contrast == ContrastLevel.maximo) return colorWhite;
+    if (_contrast == ContrastLevel.escuro) return colorPrimary;
+    return const Color(0xFFE6E4FF);
+  }
+
+  // Border stays the accent color (Escuro's blue included) — only Máximo
+  // needs black, since its accent is white and would vanish on its own
+  // white card background.
+  static Color get colorCardSelectedBorder =>
       _contrast == ContrastLevel.maximo ? colorBlack : colorPrimary;
+
+  static Color get colorCardSelectedContent {
+    if (_contrast == ContrastLevel.maximo) return colorBlack;
+    if (_contrast == ContrastLevel.escuro) return colorWhite;
+    return colorPrimary;
+  }
 
   static Color get colorContentDefault => colorBase;
   static Color get colorContentPrimary => colorPrimary;

@@ -171,7 +171,7 @@ Color _cardPressedColorFor(bool selected) {
 Border _cardBorderFor(bool selected) {
   return Border.all(
     color: selected
-        ? AppDesignTokens.colorCardSelectedContent
+        ? AppDesignTokens.colorCardSelectedBorder
         : AppDesignTokens.colorBorderDefault,
         width: selected ? 1.5 : 1.0,
   );
