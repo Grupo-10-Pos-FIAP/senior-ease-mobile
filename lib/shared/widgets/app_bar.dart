@@ -3,8 +3,14 @@ import 'package:flutter_svg/flutter_svg.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
 class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
-  const SeniorEaseAppBar({super.key, this.onProfileTap, this.onLogoutTap});
+  const SeniorEaseAppBar({
+    super.key,
+    this.onLogoTap,
+    this.onProfileTap,
+    this.onLogoutTap,
+  });
 
+  final VoidCallback? onLogoTap;
   final VoidCallback? onProfileTap;
   final VoidCallback? onLogoutTap;
 
@@ -21,10 +27,14 @@ class SeniorEaseAppBar extends StatelessWidget implements PreferredSizeWidget {
       shape: Border(
         bottom: BorderSide(color: AppDesignTokens.colorGray200, width: 1),
       ),
-      title: SvgPicture.asset(
-        'lib/assets/logo.svg',
-        height: 32,
-        fit: BoxFit.contain,
+      title: GestureDetector(
+        onTap: onLogoTap,
+        behavior: HitTestBehavior.opaque,
+        child: SvgPicture.asset(
+          'lib/assets/logo.svg',
+          height: 32,
+          fit: BoxFit.contain,
+        ),
       ),
       actions: [
         TextButton.icon(
