@@ -27,12 +27,15 @@ void main() {
     ];
     when(
       () => dataSource.getSteps('activity-1'),
-    ).thenAnswer((_) async => (title: 'Oficina', steps: steps));
+    ).thenAnswer(
+      (_) async => (title: 'Oficina', steps: steps, started: false),
+    );
 
     final result = await repository.getSteps('activity-1');
 
     expect(result.title, 'Oficina');
     expect(result.steps, steps);
+    expect(result.started, isFalse);
     verify(() => dataSource.getSteps('activity-1')).called(1);
   });
 
@@ -46,6 +49,20 @@ void main() {
     verify(() => dataSource.completeStep('activity-1', 'step-1')).called(1);
   });
 
+  test(
+    'completeGuideStep delegates to TaskRemoteDataSource.completeGuideStep',
+    () async {
+      when(
+        () => dataSource.completeGuideStep('activity-1', 'step-1'),
+      ).thenAnswer((_) async {});
+
+      await repository.completeGuideStep('activity-1', 'step-1');
+
+      verify(
+        () => dataSource.completeGuideStep('activity-1', 'step-1'),
+      ).called(1);
+    },
+  );
   test('markStarted delegates to TaskRemoteDataSource.markStarted', () async {
     when(() => dataSource.markStarted('activity-1')).thenAnswer((_) async {});
 

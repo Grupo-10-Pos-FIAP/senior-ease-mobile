@@ -65,10 +65,9 @@ class DashboardScreen extends StatelessWidget {
                             );
                             if (!confirmed) return;
                             if (!context.mounted) return;
-                            // Opens the guided flow — it must never mark the
-                            // activity as done outright. Resume right after
-                            // the last completed step, or from the start if
-                            // the activity has never been opened.
+                            // Opens the real activity flow — never the
+                            // pedagogical guide. Resume after the last
+                            // completed step, or from the start.
                             await Navigator.of(context).pushNamed(
                               RouteNames.stage,
                               arguments: (
@@ -76,6 +75,7 @@ class DashboardScreen extends StatelessWidget {
                                 initialStepIndex: activity.completedStepsCount,
                               ),
                             );
+                            if (context.mounted) controller.refresh();
                           },
                           onHowTo: () => Navigator.of(
                             context,

@@ -1,5 +1,4 @@
 import 'package:senior_ease/core/usecase/usecase.dart';
-import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/repositories/task_repository.dart';
 
 class GetStepsParams {
@@ -8,14 +7,13 @@ class GetStepsParams {
   final String activityId;
 }
 
-class GetSteps
-    implements UseCase<({String title, List<TaskStep> steps}), GetStepsParams> {
+class GetSteps implements UseCase<ActivityStepsData, GetStepsParams> {
   const GetSteps(this.repository);
 
   final TaskRepository repository;
 
   @override
-  Future<({String title, List<TaskStep> steps})> call(GetStepsParams params) {
+  Future<ActivityStepsData> call(GetStepsParams params) {
     return repository.getSteps(params.activityId);
   }
 }

@@ -6,6 +6,7 @@ import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/complete_step.dart';
+import 'package:senior_ease/features/tasks/domain/usecases/mark_activity_started.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
@@ -37,12 +38,21 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
     if (_initialized) return;
     _initialized = true;
     _currentIndex = args.initialStepIndex;
-    _controller.load(args.activityId);
+    _controller.load(args.activityId).then((_) {
+      sl<MarkActivityStarted>()(args.activityId);
+    });
   }
 
   bool _canAdvance(TaskStep step) {
-    if (step.kind == TaskStepKind.contentReading) return true;
-    return step.completed || _selectedOptionId != null;
+    switch (step.kind) {
+      case TaskStepKind.contentReading:
+      case TaskStepKind.watchContent:
+        return true;
+      case TaskStepKind.multipleChoice:
+        return step.completed || _selectedOptionId != null;
+      case TaskStepKind.openQuestion:
+        return true;
+    }
   }
 
   Future<void> _goNext(String activityId, TaskStep step) async {
@@ -180,10 +190,10 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
-                  if (step.kind == TaskStepKind.contentReading)
-                    ..._buildReadingContent(step)
+                  if (step.kind == TaskStepKind.multipleChoice)
+                    ..._buildQuizContent(step)
                   else
-                    ..._buildQuizContent(step),
+                    ..._buildReadingContent(step),
                   SizedBox(height: AppDesignTokens.spacingLg),
                   AppButton(
                     label: 'Sair e voltar depois',

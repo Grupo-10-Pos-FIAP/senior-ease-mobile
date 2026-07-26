@@ -96,44 +96,23 @@ class ActivityCard extends StatelessWidget {
                 ),
               ),
             ),
-          if (activity.status != ActivityStatus.active)
-            SizedBox(height: AppDesignTokens.spacingLg),
-          if (isSimpleMode)
-            Column(
-              crossAxisAlignment: CrossAxisAlignment.stretch,
-              children: [
-                AppButton(
-                  label: 'Como fazer essa atividade?',
-                  onPressed: onHowTo ?? () {},
-                  variant: ButtonVariant.outlined,
-                ),
-                SizedBox(height: AppDesignTokens.spacingMd),
-                AppButton(
-                  label: activity.started
-                      ? 'Continuar a atividade'
-                      : 'Iniciar a atividade',
-                  onPressed: activity.status == ActivityStatus.active
-                      ? (onComplete ?? () {})
-                      : null,
-                  loading: completing,
-                  variant: ButtonVariant.primary,
-                  leadingIcon: const Icon(Icons.play_arrow),
-                ),
-              ],
-            )
-          else
-            Row(
-              children: [
-                AppButton(
-                  label: '',
-                  onPressed: onHowTo ?? () {},
-                  variant: ButtonVariant.lightIcon,
-                  leadingIcon: const Icon(Icons.help_outline),
-                ),
-                SizedBox(width: AppDesignTokens.spacingMd),
-                Expanded(
-                  child: AppButton(
-                    label: activity.started ? 'Continuar' : 'Iniciar',
+          if (activity.status != ActivityStatus.completed) ...[
+            if (activity.status != ActivityStatus.active)
+              SizedBox(height: AppDesignTokens.spacingLg),
+            if (isSimpleMode)
+              Column(
+                crossAxisAlignment: CrossAxisAlignment.stretch,
+                children: [
+                  AppButton(
+                    label: 'Como fazer essa atividade?',
+                    onPressed: onHowTo ?? () {},
+                    variant: ButtonVariant.outlined,
+                  ),
+                  SizedBox(height: AppDesignTokens.spacingMd),
+                  AppButton(
+                    label: activity.started
+                        ? 'Continuar a atividade'
+                        : 'Iniciar a atividade',
                     onPressed: activity.status == ActivityStatus.active
                         ? (onComplete ?? () {})
                         : null,
@@ -141,9 +120,32 @@ class ActivityCard extends StatelessWidget {
                     variant: ButtonVariant.primary,
                     leadingIcon: const Icon(Icons.play_arrow),
                   ),
-                ),
-              ],
-            ),
+                ],
+              )
+            else
+              Row(
+                children: [
+                  AppButton(
+                    label: '',
+                    onPressed: onHowTo ?? () {},
+                    variant: ButtonVariant.lightIcon,
+                    leadingIcon: const Icon(Icons.help_outline),
+                  ),
+                  SizedBox(width: AppDesignTokens.spacingMd),
+                  Expanded(
+                    child: AppButton(
+                      label: activity.started ? 'Continuar' : 'Iniciar',
+                      onPressed: activity.status == ActivityStatus.active
+                          ? (onComplete ?? () {})
+                          : null,
+                      loading: completing,
+                      variant: ButtonVariant.primary,
+                      leadingIcon: const Icon(Icons.play_arrow),
+                    ),
+                  ),
+                ],
+              ),
+          ],
         ],
       ),
     );

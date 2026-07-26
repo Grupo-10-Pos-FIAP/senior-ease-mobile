@@ -17,6 +17,7 @@ void main() {
       final updated = step.copyWith(completed: true);
 
       expect(updated.completed, isTrue);
+      expect(updated.guideCompleted, isFalse);
       expect(updated.id, step.id);
       expect(updated.label, step.label);
       expect(updated.order, step.order);
@@ -29,8 +30,38 @@ void main() {
     final updated = step.copyWith();
 
     expect(updated.completed, step.completed);
+    expect(updated.guideCompleted, step.guideCompleted);
   });
 
+  test('copyWith(guideCompleted: true) flips only the guide flag', () {
+    final updated = step.copyWith(guideCompleted: true);
+
+    expect(updated.guideCompleted, isTrue);
+    expect(updated.completed, isFalse);
+  });
+
+  test('typeLabel matches the step kind', () {
+    expect(
+      const TaskStep(
+        id: '1',
+        label: 'a',
+        order: 1,
+        kind: TaskStepKind.watchContent,
+        completed: false,
+      ).typeLabel,
+      'Assistir conteúdo',
+    );
+    expect(
+      const TaskStep(
+        id: '2',
+        label: 'b',
+        order: 2,
+        kind: TaskStepKind.openQuestion,
+        completed: false,
+      ).typeLabel,
+      'Questão aberta',
+    );
+  });
   test('multipleChoice steps keep their question and options', () {
     const quiz = TaskStep(
       id: 'step-2',

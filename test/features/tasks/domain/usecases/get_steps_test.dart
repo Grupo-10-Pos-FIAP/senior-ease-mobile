@@ -29,7 +29,9 @@ void main() {
       ];
       when(
         () => repository.getSteps('activity-1'),
-      ).thenAnswer((_) async => (title: 'Oficina', steps: steps));
+      ).thenAnswer(
+        (_) async => (title: 'Oficina', steps: steps, started: false),
+      );
 
       final result = await usecase(
         const GetStepsParams(activityId: 'activity-1'),
@@ -37,6 +39,7 @@ void main() {
 
       expect(result.title, 'Oficina');
       expect(result.steps, steps);
+      expect(result.started, isFalse);
       verify(() => repository.getSteps('activity-1')).called(1);
     },
   );

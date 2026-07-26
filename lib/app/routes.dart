@@ -8,12 +8,14 @@ import 'package:senior_ease/features/dashboard/presentation/screens/dashboard_sc
 import 'package:senior_ease/features/profile/presentation/screens/edit_profile_screen.dart';
 import 'package:senior_ease/features/tasks/presentation/screens/activity_stage_screen.dart';
 import 'package:senior_ease/features/tasks/presentation/screens/activity_steps_screen.dart';
+import 'package:senior_ease/features/tasks/presentation/screens/step_tutorial_screen.dart';
 
 Map<String, WidgetBuilder> buildRoutes() {
   return {
     RouteNames.login: _reactiveToAppMode((context) => LoginScreen()),
     RouteNames.home: _reactiveToAppMode((context) => DashboardScreen()),
     RouteNames.steps: _reactiveToAppMode((context) => ActivityStepsScreen()),
+    RouteNames.tutorial: _reactiveToAppMode((context) => StepTutorialScreen()),
     RouteNames.stage: _reactiveToAppMode((context) => ActivityStageScreen()),
     RouteNames.profile: _reactiveToAppMode((context) => ProfileShellScreen()),
     RouteNames.editProfile: _reactiveToAppMode(
