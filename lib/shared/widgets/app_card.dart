@@ -276,35 +276,40 @@ class _TappableCardState extends State<_TappableCard> {
           }
         : widget.onTap;
 
-    return ReinforcedFocusRing(
-      enabled: reinforced,
-      borderRadius: widget.borderRadius,
-      builder: (context, focusNode) => Listener(
-        onPointerDown: widget.onTap == null
-            ? null
-            : (_) => _setPressed(true),
-        onPointerUp: widget.onTap == null ? null : (_) => _setPressed(false),
-        onPointerCancel: widget.onTap == null
-            ? null
-            : (_) => _setPressed(false),
-        child: Material(
-          color: Colors.transparent,
-          borderRadius: widget.borderRadius,
-          child: InkWell(
-            onTap: effectiveOnTap,
+    return Padding(
+      padding: widget.margin,
+      child: ReinforcedFocusRing(
+        enabled: reinforced,
+        borderRadius: widget.borderRadius,
+        builder: (context, focusNode) => Listener(
+          onPointerDown: widget.onTap == null
+              ? null
+              : (_) => _setPressed(true),
+          onPointerUp: widget.onTap == null
+              ? null
+              : (_) => _setPressed(false),
+          onPointerCancel: widget.onTap == null
+              ? null
+              : (_) => _setPressed(false),
+          child: Material(
+            color: Colors.transparent,
             borderRadius: widget.borderRadius,
-            focusNode: focusNode,
-            child: AnimatedContainer(
-              duration: const Duration(milliseconds: 100),
-              curve: Curves.easeOut,
-              margin: widget.margin,
-              padding: widget.padding,
-              decoration: BoxDecoration(
-                color: _pressed ? widget.pressedColor : widget.color,
-                borderRadius: widget.borderRadius,
-                border: widget.border,
+            clipBehavior: Clip.antiAlias,
+            child: InkWell(
+              onTap: effectiveOnTap,
+              borderRadius: widget.borderRadius,
+              focusNode: focusNode,
+              child: AnimatedContainer(
+                duration: const Duration(milliseconds: 100),
+                curve: Curves.easeOut,
+                padding: widget.padding,
+                decoration: BoxDecoration(
+                  color: _pressed ? widget.pressedColor : widget.color,
+                  borderRadius: widget.borderRadius,
+                  border: widget.border,
+                ),
+                child: widget.builder(context, _pressed),
               ),
-              child: widget.builder(context, _pressed),
             ),
           ),
         ),
