@@ -22,15 +22,16 @@ void main() {
     configure();
   });
 
-  group('Padrão', () {
-    test('leaves every adjustable color untouched', () {
+  group('Padrão (nível 1)', () {
+    test('usa a paleta do web', () {
       configure();
 
-      expect(AppDesignTokens.colorGray100, const Color(0xFFF8F9FA));
+      expect(AppDesignTokens.colorBgLight, const Color(0xFFFFFFFF));
       expect(AppDesignTokens.colorBase, const Color(0xFF1A1A1A));
       expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
-      // buttonOutlinedBorderDefault mirrors colorPrimary's own contrast
-      // handling rather than tracking a separate literal.
+      expect(AppDesignTokens.colorBgDefault, const Color(0xFFF4F6F9));
+      expect(AppDesignTokens.colorBorderDefault, const Color(0xFF949494));
+      expect(AppDesignTokens.colorContentMuted, const Color(0xFF5A6478));
       expect(
         AppDesignTokens.buttonOutlinedBorderDefault,
         AppDesignTokens.colorPrimary,
@@ -38,139 +39,108 @@ void main() {
     });
   });
 
-  group('Escuro', () {
-    test(
-      'inverts lightness, turning light backgrounds dark and vice versa',
-      () {
-        configure(contrast: ContrastLevel.escuro);
+  group('Suave (nível 2)', () {
+    test('usa fundo creme anti-reflexo do web', () {
+      configure(contrast: ContrastLevel.suave);
 
-        final bg = HSLColor.fromColor(AppDesignTokens.colorGray100);
-        final fg = HSLColor.fromColor(AppDesignTokens.colorBase);
+      expect(AppDesignTokens.colorBgLight, const Color(0xFFF5F0E6));
+      expect(AppDesignTokens.colorBase, const Color(0xFF2B2B2B));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFF2C5282));
+      expect(AppDesignTokens.colorBgDefault, const Color(0xFFEBE4D6));
+      expect(AppDesignTokens.colorBorderDefault, const Color(0xFF7A7268));
+      expect(AppDesignTokens.colorContentMuted, const Color(0xFF4A4A4A));
+    });
+  });
 
-        expect(bg.lightness, lessThan(0.5));
-        expect(fg.lightness, greaterThan(0.5));
-      },
-    );
+  group('Conforto (nível 3)', () {
+    test('usa a paleta do web', () {
+      configure(contrast: ContrastLevel.conforto);
 
-    test('swaps colorPrimary and buttonOutlinedBorderDefault to white', () {
+      expect(AppDesignTokens.colorBgLight, const Color(0xFFFAFAFA));
+      expect(AppDesignTokens.colorBase, const Color(0xFF0D0D0D));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFF1A365D));
+      expect(AppDesignTokens.colorBgDefault, const Color(0xFFF0F0F0));
+      expect(AppDesignTokens.colorBorderDefault, const Color(0xFF767676));
+      expect(AppDesignTokens.colorContentMuted, const Color(0xFF3D3D3D));
+    });
+  });
+
+  group('Alto (nível 4)', () {
+    test('usa a paleta do web', () {
+      configure(contrast: ContrastLevel.alto);
+
+      expect(AppDesignTokens.colorBgLight, const Color(0xFFFFFFFF));
+      expect(AppDesignTokens.colorBase, const Color(0xFF000000));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFF004080));
+      expect(AppDesignTokens.colorBorderDefault, const Color(0xFF333333));
+      expect(AppDesignTokens.colorContentMuted, const Color(0xFF1A1A1A));
+    });
+  });
+
+  group('Máximo (nível 5)', () {
+    test('usa preto/branco absoluto do web', () {
+      configure(contrast: ContrastLevel.maximo);
+
+      expect(AppDesignTokens.colorBgLight, const Color(0xFF000000));
+      expect(AppDesignTokens.colorBase, const Color(0xFFFFFFFF));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFFFFFFFF));
+      expect(AppDesignTokens.colorBgDefault, const Color(0xFF1A1A1A));
+      expect(AppDesignTokens.colorBorderDefault, const Color(0xFFFFFFFF));
+      expect(AppDesignTokens.colorContentMuted, const Color(0xFFFFFFFF));
+    });
+
+    test('botão primary: fundo branco e texto preto (override web)', () {
+      configure(contrast: ContrastLevel.maximo);
+
+      expect(AppDesignTokens.buttonBrandBgDefault, const Color(0xFFFFFFFF));
+      expect(AppDesignTokens.buttonBrandContentDefault, const Color(0xFF000000));
+      expect(AppDesignTokens.buttonBrandBgPressed, const Color(0xFFE8E8E8));
+    });
+  });
+
+  group('Escuro (nível 6)', () {
+    test('usa tema escuro + azul do web', () {
       configure(contrast: ContrastLevel.escuro);
 
-      expect(AppDesignTokens.colorPrimary, AppDesignTokens.colorWhite);
+      expect(AppDesignTokens.colorBgLight, const Color(0xFF121212));
+      expect(AppDesignTokens.colorBase, const Color(0xFFF5F5F5));
+      expect(AppDesignTokens.colorPrimary, const Color(0xFF58A6FF));
+      expect(AppDesignTokens.colorBgDefault, const Color(0xFF1E1E1E));
+      expect(AppDesignTokens.colorBorderDefault, const Color(0xFF888888));
+      expect(AppDesignTokens.colorContentMuted, const Color(0xFFD0D0D0));
+    });
+
+    test('botão primary usa accent azul com texto branco', () {
+      configure(contrast: ContrastLevel.escuro);
+
+      expect(AppDesignTokens.buttonBrandBgDefault, const Color(0xFF58A6FF));
+      expect(AppDesignTokens.buttonBrandContentDefault, const Color(0xFFFFFFFF));
       expect(
         AppDesignTokens.buttonOutlinedBorderDefault,
-        AppDesignTokens.colorWhite,
+        AppDesignTokens.colorPrimary,
       );
     });
+  });
 
-    test('still runs colorPrimarySurface through the same inversion', () {
-      configure();
-      final beforeLightness = HSLColor.fromColor(
-        AppDesignTokens.colorPrimarySurface,
-      ).lightness;
+  group('feedback por nível', () {
+    test('erro e sucesso seguem a paleta do web no Suave', () {
+      configure(contrast: ContrastLevel.suave);
 
+      expect(AppDesignTokens.colorErrorSurface, const Color(0xFFFDE8E8));
+      expect(AppDesignTokens.colorErrorOnSurface, const Color(0xFF7F1D1D));
+      expect(AppDesignTokens.colorFeedbackError, const Color(0xFF7F1D1D));
+      expect(AppDesignTokens.colorSuccessSurface, const Color(0xFFEBE4D6));
+      expect(AppDesignTokens.colorSuccessOnSurface, const Color(0xFF2C5282));
+    });
+
+    test('erro no Escuro usa a paleta vermelha do web', () {
       configure(contrast: ContrastLevel.escuro);
-      final afterLightness = HSLColor.fromColor(
-        AppDesignTokens.colorPrimarySurface,
-      ).lightness;
 
-      expect(afterLightness, lessThan(beforeLightness));
+      expect(AppDesignTokens.colorErrorSurface, const Color(0xFF3B1212));
+      expect(AppDesignTokens.colorErrorOnSurface, const Color(0xFFFECACA));
+      expect(AppDesignTokens.colorFeedbackError, const Color(0xFFFECACA));
     });
   });
-
-  group('Suave / Conforto / Alto', () {
-    test('colorPrimary and its border stay the fixed navy (never swap)', () {
-      for (final level in [
-        ContrastLevel.suave,
-        ContrastLevel.conforto,
-        ContrastLevel.alto,
-      ]) {
-        configure(contrast: level);
-
-        expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
-        expect(
-          AppDesignTokens.buttonOutlinedBorderDefault,
-          AppDesignTokens.colorPrimary,
-        );
-      }
-    });
-
-    test('a true background gets progressively (but gently) darker', () {
-      configure(contrast: ContrastLevel.suave);
-      final suave = HSLColor.fromColor(AppDesignTokens.colorGray100).lightness;
-      configure(contrast: ContrastLevel.conforto);
-      final conforto = HSLColor.fromColor(
-        AppDesignTokens.colorGray100,
-      ).lightness;
-      configure(contrast: ContrastLevel.alto);
-      final alto = HSLColor.fromColor(AppDesignTokens.colorGray100).lightness;
-
-      expect(suave, lessThan(0.976));
-      expect(conforto, lessThan(suave));
-      expect(alto, lessThan(conforto));
-      expect(alto, greaterThan(0.5));
-    });
-
-    test('a structural/foreground color darkens more aggressively', () {
-      configure(contrast: ContrastLevel.suave);
-      final suave = HSLColor.fromColor(AppDesignTokens.colorGray500).lightness;
-      configure(contrast: ContrastLevel.conforto);
-      final conforto = HSLColor.fromColor(
-        AppDesignTokens.colorGray500,
-      ).lightness;
-      configure(contrast: ContrastLevel.alto);
-      final alto = HSLColor.fromColor(AppDesignTokens.colorGray500).lightness;
-
-      expect(suave, lessThan(0.5));
-      expect(conforto, lessThan(suave));
-      expect(alto, lessThan(conforto));
-    });
-  });
-
-  group('Máximo', () {
-    test('snaps a dark structural color to pure black', () {
-      configure(contrast: ContrastLevel.maximo);
-
-      expect(AppDesignTokens.colorGray900, Colors.black);
-      expect(AppDesignTokens.colorGray700, Colors.black);
-    });
-
-    test('snaps a light-but-not-background structural color to pure white', () {
-      configure(contrast: ContrastLevel.maximo);
-
-      expect(AppDesignTokens.colorGray300, Colors.white);
-    });
-
-    test(
-      'a true background visibly shifts tone instead of snapping to white',
-      () {
-        configure(contrast: ContrastLevel.maximo);
-        final maximo = HSLColor.fromColor(
-          AppDesignTokens.colorGray100,
-        ).lightness;
-        configure(contrast: ContrastLevel.alto);
-        final alto = HSLColor.fromColor(AppDesignTokens.colorGray100).lightness;
-
-        expect(AppDesignTokens.colorGray100, isNot(Colors.white));
-        expect(maximo, lessThan(alto));
-      },
-    );
-
-    test('colorPrimary is not affected — only Escuro swaps it', () {
-      configure(contrast: ContrastLevel.maximo);
-
-      expect(AppDesignTokens.colorPrimary, const Color(0xFF1D2D50));
-    });
-  });
-
-  test(
-    'buttonBrandBgDefault never changes with contrast — it is a constant',
-    () {
-      for (final level in ContrastLevel.values) {
-        configure(contrast: level);
-        expect(AppDesignTokens.buttonBrandBgDefault, const Color(0xFF1D2D50));
-      }
-    },
-  );
 
   group('font/spacing scaling', () {
     test('configure() scales font sizes proportionally', () {

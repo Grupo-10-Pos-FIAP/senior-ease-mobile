@@ -52,7 +52,7 @@ class AppTheme {
           borderRadius: BorderRadius.circular(
             AppDesignTokens.borderRadiusDefault,
           ),
-          borderSide: const BorderSide(
+          borderSide: BorderSide(
             color: AppDesignTokens.colorFeedbackError,
           ),
         ),
