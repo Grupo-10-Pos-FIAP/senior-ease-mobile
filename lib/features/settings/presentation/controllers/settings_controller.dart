@@ -78,7 +78,7 @@ class SettingsController extends ChangeNotifier {
 
   void _applyDraftLive() {
     _appMode.update(
-      isSimpleMode: draft.navigationMode == 'Básico',
+      isSimpleMode: draft.navigationMode == 'Padrão',
       fontScale: draft.fontScale,
       spacingScale: draft.spacingScale,
       contrastLevel: draft.contrastLevelEnum,
@@ -88,7 +88,7 @@ class SettingsController extends ChangeNotifier {
   }
 
   AppSettings _normalizeForMode(AppSettings settings) {
-    if (settings.navigationMode == 'Básico') return settings;
+    if (settings.navigationMode == 'Padrão') return settings;
     return settings.copyWith(
       enhancedVisualFeedback: false,
       criticalActionConfirmation: false,

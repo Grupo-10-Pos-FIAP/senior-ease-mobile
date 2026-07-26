@@ -24,7 +24,7 @@ void main() {
   const settings = AppSettings(
     fontSize: 'Grande',
     contrastLevel: 'Escuro',
-    navigationMode: 'Básico',
+    navigationMode: 'Padrão',
     spacing: 'Amplo',
     enhancedVisualFeedback: true,
     criticalActionConfirmation: true,

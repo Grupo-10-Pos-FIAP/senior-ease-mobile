@@ -30,7 +30,7 @@ Future<void> initDependencies() async {
   if (sl<AuthController>().currentUser != null) {
     final settings = await sl<GetSettings>()(const NoParams());
     sl<AppModeController>().update(
-      isSimpleMode: settings.navigationMode == 'Básico',
+      isSimpleMode: settings.navigationMode == 'Padrão',
       fontScale: settings.fontScale,
       spacingScale: settings.spacingScale,
       contrastLevel: settings.contrastLevelEnum,

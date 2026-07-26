@@ -61,7 +61,7 @@ class LoginController extends ChangeNotifier {
       await action();
       final settings = await _getSettings(const NoParams());
       _appMode.update(
-        isSimpleMode: settings.navigationMode == 'Básico',
+        isSimpleMode: settings.navigationMode == 'Padrão',
         fontScale: settings.fontScale,
         spacingScale: settings.spacingScale,
         contrastLevel: settings.contrastLevelEnum,

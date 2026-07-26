@@ -32,8 +32,8 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
         preferences['contrast'] as num?,
       ),
       navigationMode: preferences['interfaceMode'] == 'simple'
-          ? 'Básico'
-          : 'Avançado',
+          ? 'Padrão'
+          : 'Simplificado',
       spacing: _labelFromIndex(
         AppSettings.spacingOptions,
         preferences['spacing'] as num?,
@@ -57,7 +57,7 @@ class SettingsRemoteDataSourceImpl implements SettingsRemoteDataSource {
           AppSettings.contrastLevelOptions,
           settings.contrastLevel,
         ),
-        'interfaceMode': settings.navigationMode == 'Básico'
+        'interfaceMode': settings.navigationMode == 'Padrão'
             ? 'simple'
             : 'standard',
         'spacing': _indexFromLabel(

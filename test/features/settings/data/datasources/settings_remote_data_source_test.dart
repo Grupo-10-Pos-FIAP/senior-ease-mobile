@@ -80,26 +80,29 @@ void main() {
 
       expect(result.fontSize, 'Grande');
       expect(result.contrastLevel, 'Escuro');
-      expect(result.navigationMode, 'Básico');
+      expect(result.navigationMode, 'Padrão');
       expect(result.spacing, 'Muito amplo');
       expect(result.enhancedVisualFeedback, isTrue);
       expect(result.criticalActionConfirmation, isFalse);
     });
 
-    test('any interfaceMode other than "simple" reads as Avançado', () async {
-      when(() => docSnapshot.data()).thenReturn({
-        'preferences': {
-          'fontSize': 3,
-          'contrast': 1,
-          'interfaceMode': 'standard',
-          'spacing': 3,
-        },
-      });
+    test(
+      'any interfaceMode other than "simple" reads as Simplificado',
+      () async {
+        when(() => docSnapshot.data()).thenReturn({
+          'preferences': {
+            'fontSize': 3,
+            'contrast': 1,
+            'interfaceMode': 'standard',
+            'spacing': 3,
+          },
+        });
 
-      final result = await dataSource.getSettings();
+        final result = await dataSource.getSettings();
 
-      expect(result.navigationMode, 'Avançado');
-    });
+        expect(result.navigationMode, 'Simplificado');
+      },
+    );
 
     test('an out-of-range stored index clamps to the first option', () async {
       when(() => docSnapshot.data()).thenReturn({
@@ -124,7 +127,7 @@ void main() {
       final settings = AppSettings.defaults().copyWith(
         fontSize: 'Grande',
         contrastLevel: 'Escuro',
-        navigationMode: 'Básico',
+        navigationMode: 'Padrão',
         spacing: 'Muito amplo',
         enhancedVisualFeedback: true,
         criticalActionConfirmation: false,
@@ -144,9 +147,9 @@ void main() {
       expect(preferences['confirmCriticalActions'], isFalse);
     });
 
-    test('a non-Básico navigationMode is saved as "standard"', () async {
+    test('a non-Padrão navigationMode is saved as "standard"', () async {
       final settings = AppSettings.defaults().copyWith(
-        navigationMode: 'Avançado',
+        navigationMode: 'Simplificado',
       );
 
       await dataSource.saveSettings(settings);

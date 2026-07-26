@@ -21,7 +21,7 @@ class SettingsScreen extends StatelessWidget {
           return const SizedBox.shrink();
         }
         final draft = controller.draft;
-        final isSimpleMode = draft.navigationMode == 'Básico';
+        final isSimpleMode = draft.navigationMode == 'Padrão';
         return ListView(
           padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
@@ -81,8 +81,8 @@ class SettingsScreen extends StatelessWidget {
             AppSubtitle(text: 'Modo de navegação'),
             SizedBox(height: AppDesignTokens.spacingXs),
             const AppInfo(
-              'No modo básico, a plataforma oferece mais orientações e texto didáticos.'
-              'Já no modo avançado, a inferface fica mais enxuta, com menos ajuda na tela.',
+              'No modo padrão, a plataforma oferece mais orientações e texto didáticos. '
+              'Já no modo simplificado, a inferface fica mais enxuta, com menos ajuda na tela.',
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
             AppCard(

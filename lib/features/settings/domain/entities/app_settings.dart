@@ -13,7 +13,7 @@ class AppSettings {
   factory AppSettings.defaults() => const AppSettings(
     fontSize: 'Normal',
     contrastLevel: 'Padrão',
-    navigationMode: 'Avançado',
+    navigationMode: 'Simplificado',
     spacing: 'Normal',
     enhancedVisualFeedback: false,
     criticalActionConfirmation: false,
@@ -36,7 +36,10 @@ class AppSettings {
     'Escuro',
   ];
 
-  static const List<String> navigationModeOptions = ['Básico', 'Avançado'];
+  static const List<String> navigationModeOptions = [
+    'Padrão',
+    'Simplificado',
+  ];
 
   static const List<String> spacingOptions = [
     'Compacto',

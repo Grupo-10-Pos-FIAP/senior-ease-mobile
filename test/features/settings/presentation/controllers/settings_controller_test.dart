@@ -21,7 +21,7 @@ void main() {
   const persisted = AppSettings(
     fontSize: 'Normal',
     contrastLevel: 'Padrão',
-    navigationMode: 'Avançado',
+    navigationMode: 'Simplificado',
     spacing: 'Normal',
     enhancedVisualFeedback: false,
     criticalActionConfirmation: false,
@@ -71,29 +71,29 @@ void main() {
     },
   );
 
-  test('selectNavigationMode previews Básico mode immediately', () async {
+  test('selectNavigationMode previews Padrão mode immediately', () async {
     await controller.load();
 
-    controller.selectNavigationMode('Básico');
+    controller.selectNavigationMode('Padrão');
 
     expect(appMode.isSimpleMode, isTrue);
     expect(controller.hasUnsavedChanges, isTrue);
   });
 
   test(
-    'selectNavigationMode to Avançado forces off enhancedVisualFeedback '
+    'selectNavigationMode to Simplificado forces off enhancedVisualFeedback '
     'and criticalActionConfirmation',
     () async {
       when(() => getSettings(const NoParams())).thenAnswer(
         (_) async => persisted.copyWith(
-          navigationMode: 'Básico',
+          navigationMode: 'Padrão',
           enhancedVisualFeedback: true,
           criticalActionConfirmation: true,
         ),
       );
       await controller.load();
 
-      controller.selectNavigationMode('Avançado');
+      controller.selectNavigationMode('Simplificado');
 
       expect(controller.draft.enhancedVisualFeedback, isFalse);
       expect(controller.draft.criticalActionConfirmation, isFalse);
@@ -140,7 +140,7 @@ void main() {
     'resetToDefaults previews AppSettings.defaults() immediately, unsaved',
     () async {
       await controller.load();
-      controller.selectNavigationMode('Básico');
+      controller.selectNavigationMode('Padrão');
       await controller.save();
 
       controller.resetToDefaults();
