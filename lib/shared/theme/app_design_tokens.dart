@@ -214,6 +214,7 @@ class AppDesignTokens {
   static const Color colorBgOverlay = Color(0xCCFFFFFF);
   static const Color colorBgFullscreen = Color(0xE6FFFFFF);
   static const Color colorBgAvatar = Color(0xFFEDF2FE);
+  static const Color colorCardSelectedBackground = Color(0xFFE6E4FF);
 
   static Color get colorContentDefault => colorBase;
   static Color get colorContentPrimary => colorPrimary;

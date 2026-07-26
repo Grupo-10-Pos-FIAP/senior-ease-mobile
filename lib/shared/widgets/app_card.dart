@@ -55,18 +55,19 @@ class AppCard extends StatelessWidget {
     return _TappableCard(
       onTap: onTap,
       borderRadius: BorderRadius.circular(AppDesignTokens.borderRadiusDefault),
-      child: Container(
-        margin: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
-        decoration: BoxDecoration(
-          color: selected
-              ? AppDesignTokens.colorPrimarySurface
-              : AppDesignTokens.colorBgLight,
-          borderRadius: BorderRadius.circular(
-            AppDesignTokens.borderRadiusDefault,
-          ),
-          border: Border.all(color: AppDesignTokens.colorBorderDefault),
-        ),
-        child: Padding(
+      margin: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+      color: _cardColorFor(selected),
+      pressedColor: _cardPressedColorFor(selected),
+      border: _cardBorderFor(selected),
+      builder: (context, _) {
+        final highlighted = selected;
+        final contentColor = highlighted
+            ? AppDesignTokens.colorPrimary
+            : AppDesignTokens.colorContentDefault;
+        final secondaryContentColor = highlighted
+            ? AppDesignTokens.colorPrimary
+            : AppDesignTokens.colorContentSecondary;
+        return Padding(
           padding: EdgeInsets.symmetric(
             horizontal: AppDesignTokens.spacingMd,
             vertical: AppDesignTokens.spacingMd,
@@ -84,7 +85,7 @@ class AppCard extends StatelessWidget {
                         style: TextStyle(
                           fontSize: AppDesignTokens.fontSizeSmall,
                           fontWeight: AppDesignTokens.fontWeightSemibold,
-                          color: AppDesignTokens.colorContentSecondary,
+                          color: secondaryContentColor,
                         ),
                       ),
                       SizedBox(height: AppDesignTokens.spacingXs),
@@ -94,7 +95,7 @@ class AppCard extends StatelessWidget {
                       style: TextStyle(
                         fontSize: AppDesignTokens.fontSizeBody,
                         fontWeight: AppDesignTokens.fontWeightSemibold,
-                        color: AppDesignTokens.colorContentDefault,
+                        color: contentColor,
                       ),
                     ),
                     if (subtitle != null) ...[
@@ -107,7 +108,7 @@ class AppCard extends StatelessWidget {
                           style: TextStyle(
                             fontSize: AppDesignTokens.fontSizeCaption,
                             fontWeight: AppDesignTokens.fontWeightMedium,
-                            color: AppDesignTokens.colorContentSecondary,
+                            color: secondaryContentColor,
                           ),
                         ),
                     ],
@@ -123,8 +124,8 @@ class AppCard extends StatelessWidget {
                 ),
             ],
           ),
-        ),
-      ),
+        );
+      },
     );
   }
 
@@ -155,6 +156,33 @@ class AppCard extends StatelessWidget {
   }
 }
 
+/// Resting background: selected items get a light lavender tint so the
+/// marked option stands out at all times, not just while being touched.
+Color _cardColorFor(bool selected) {
+  return selected
+      ? AppDesignTokens.colorCardSelectedBackground
+      : AppDesignTokens.colorBgLight;
+}
+
+/// Background shown while the card is being pressed. Selected items stay on
+/// their strong resting color; unselected items get a light preview tint.
+Color _cardPressedColorFor(bool selected) {
+  return selected
+      ? AppDesignTokens.colorCardSelectedBackground
+      : AppDesignTokens.colorPrimarySurface;
+}
+
+/// Border: selected items get the brand primary color to reinforce the
+/// selection alongside the lavender background.
+Border _cardBorderFor(bool selected) {
+  return Border.all(
+    color: selected
+        ? AppDesignTokens.colorPrimary
+        : AppDesignTokens.colorBorderDefault,
+        width: selected ? 1.5 : 1.0,
+  );
+}
+
 class _AppCardItemWidget extends StatelessWidget {
   const _AppCardItemWidget({required this.item});
 
@@ -165,22 +193,16 @@ class _AppCardItemWidget extends StatelessWidget {
     return _TappableCard(
       onTap: item.onTap,
       borderRadius: BorderRadius.circular(AppDesignTokens.borderRadiusDefault),
-      child: Container(
-        margin: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
-        decoration: BoxDecoration(
-          color: item.selected
-              ? AppDesignTokens.colorPrimarySurface
-              : AppDesignTokens.colorBgLight,
-          borderRadius: BorderRadius.circular(
-            AppDesignTokens.borderRadiusDefault,
-          ),
-          border: Border.all(color: AppDesignTokens.colorBorderDefault),
-        ),
-        padding: EdgeInsets.symmetric(
-          horizontal: AppDesignTokens.spacingMd,
-          vertical: AppDesignTokens.spacingMd,
-        ),
-        child: Row(
+      margin: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
+      color: _cardColorFor(item.selected),
+      pressedColor: _cardPressedColorFor(item.selected),
+      border: _cardBorderFor(item.selected),
+      padding: EdgeInsets.symmetric(
+        horizontal: AppDesignTokens.spacingMd,
+        vertical: AppDesignTokens.spacingMd,
+      ),
+      builder: (context, _) {
+        return Row(
           mainAxisAlignment: MainAxisAlignment.spaceBetween,
           children: [
             Expanded(
@@ -188,8 +210,10 @@ class _AppCardItemWidget extends StatelessWidget {
                 item.label,
                 style: TextStyle(
                   fontSize: AppDesignTokens.fontSizeBody,
-                  fontWeight: AppDesignTokens.fontWeightMedium,
-                  color: AppDesignTokens.colorContentDefault,
+                  fontWeight: item.selected ? AppDesignTokens.fontWeightSemibold : AppDesignTokens.fontWeightMedium,
+                  color: item.selected
+                      ? AppDesignTokens.colorPrimary
+                      : AppDesignTokens.colorContentDefault,
                 ),
               ),
             ),
@@ -200,49 +224,89 @@ class _AppCardItemWidget extends StatelessWidget {
                 size: 20,
               ),
           ],
-        ),
-      ),
+        );
+      },
     );
   }
 }
 
-class _TappableCard extends StatelessWidget {
+class _TappableCard extends StatefulWidget {
   const _TappableCard({
     required this.onTap,
     required this.borderRadius,
-    required this.child,
+    required this.color,
+    required this.pressedColor,
+    required this.border,
+    required this.builder,
+    this.margin = EdgeInsets.zero,
+    this.padding = EdgeInsets.zero,
   });
 
   final VoidCallback? onTap;
   final BorderRadius borderRadius;
-  final Widget child;
+  final Color color;
+  final Color pressedColor;
+  final Border border;
+  final EdgeInsets margin;
+  final EdgeInsets padding;
+  final Widget Function(BuildContext context, bool pressed) builder;
+
+  @override
+  State<_TappableCard> createState() => _TappableCardState();
+}
+
+class _TappableCardState extends State<_TappableCard> {
+  bool _pressed = false;
+
+  void _setPressed(bool value) {
+    if (_pressed == value) return;
+    setState(() => _pressed = value);
+  }
 
   @override
   Widget build(BuildContext context) {
     final reinforced = sl<AppModeController>().reinforcedVisualFeedback;
 
-    final effectiveOnTap = onTap == null
+    final effectiveOnTap = widget.onTap == null
         ? null
         : reinforced
         ? () {
             HapticFeedback.mediumImpact();
-            onTap!();
+            widget.onTap!();
           }
-        : onTap;
+        : widget.onTap;
 
     return ReinforcedFocusRing(
       enabled: reinforced,
-      borderRadius: borderRadius,
-      builder: (context, focusNode) => Material(
-        color: Colors.transparent,
-        borderRadius: borderRadius,
-        child: InkWell(
-          onTap: effectiveOnTap,
-          borderRadius: borderRadius,
-          focusNode: focusNode,
-          splashColor: AppDesignTokens.colorGray500.withValues(alpha: 0.4),
-          highlightColor: AppDesignTokens.colorGray500.withValues(alpha: 0.3),
-          child: child,
+      borderRadius: widget.borderRadius,
+      builder: (context, focusNode) => Listener(
+        onPointerDown: widget.onTap == null
+            ? null
+            : (_) => _setPressed(true),
+        onPointerUp: widget.onTap == null ? null : (_) => _setPressed(false),
+        onPointerCancel: widget.onTap == null
+            ? null
+            : (_) => _setPressed(false),
+        child: Material(
+          color: Colors.transparent,
+          borderRadius: widget.borderRadius,
+          child: InkWell(
+            onTap: effectiveOnTap,
+            borderRadius: widget.borderRadius,
+            focusNode: focusNode,
+            child: AnimatedContainer(
+              duration: const Duration(milliseconds: 100),
+              curve: Curves.easeOut,
+              margin: widget.margin,
+              padding: widget.padding,
+              decoration: BoxDecoration(
+                color: _pressed ? widget.pressedColor : widget.color,
+                borderRadius: widget.borderRadius,
+                border: widget.border,
+              ),
+              child: widget.builder(context, _pressed),
+            ),
+          ),
         ),
       ),
     );
