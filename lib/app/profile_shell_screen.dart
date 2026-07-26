@@ -21,7 +21,7 @@ class ProfileShellScreen extends StatefulWidget {
 class _ProfileShellScreenState extends State<ProfileShellScreen> {
   int _selectedTab = 0;
 
-  final List<String> _tabs = const ['Personalização', 'Informações'];
+  final List<String> _tabs = const ['Personalização', 'Informações da conta'];
 
   @override
   void initState() {
@@ -44,6 +44,9 @@ class _ProfileShellScreenState extends State<ProfileShellScreen> {
       child: Scaffold(
         backgroundColor: AppDesignTokens.colorGray100,
         appBar: SeniorEaseAppBar(
+          onLogoTap: () => Navigator.of(
+            context,
+          ).pushNamedAndRemoveUntil(RouteNames.home, (route) => false),
           onProfileTap: () =>
               Navigator.of(context).pushNamed(RouteNames.profile),
           onLogoutTap: () => confirmAndSignOut(context),

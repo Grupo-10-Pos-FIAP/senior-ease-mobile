@@ -6,6 +6,7 @@ import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/auth/presentation/controllers/login_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
+import 'package:senior_ease/shared/widgets/app_dialog.dart';
 import 'package:senior_ease/shared/widgets/app_subtitle.dart';
 import 'package:senior_ease/shared/widgets/app_text_field.dart';
 
@@ -34,12 +35,33 @@ class _LoginForm extends StatefulWidget {
 class _LoginFormState extends State<_LoginForm> {
   final _emailController = TextEditingController();
   final _passwordController = TextEditingController();
+  bool _showedDeactivatedNotice = false;
 
   @override
   void dispose() {
     _emailController.dispose();
     _passwordController.dispose();
     super.dispose();
+  }
+
+  @override
+  void didChangeDependencies() {
+    super.didChangeDependencies();
+    if (_showedDeactivatedNotice) return;
+    final args = ModalRoute.of(context)?.settings.arguments;
+    if (args == 'accountDeactivated') {
+      _showedDeactivatedNotice = true;
+      WidgetsBinding.instance.addPostFrameCallback((_) async {
+        if (!mounted) return;
+        await AppDialog.success(
+          context,
+          title: 'Pronto',
+          description:
+              'Sua conta foi desativada. Você pode reativá-la em até 90 dias '
+              'ao criar conta com o mesmo e-mail.',
+        );
+      });
+    }
   }
 
   Future<void> _onSuccess() async {

@@ -18,16 +18,20 @@ class UserProfile {
   UserProfile copyWith({
     String? fullName,
     DateTime? birthDate,
+    String? registrationId,
     String? disabilityDescription,
+    String? email,
     String? phone,
+    bool clearDisability = false,
   }) {
     return UserProfile(
       fullName: fullName ?? this.fullName,
       birthDate: birthDate ?? this.birthDate,
-      registrationId: registrationId,
-      disabilityDescription:
-          disabilityDescription ?? this.disabilityDescription,
-      email: email,
+      registrationId: registrationId ?? this.registrationId,
+      disabilityDescription: clearDisability
+          ? null
+          : (disabilityDescription ?? this.disabilityDescription),
+      email: email ?? this.email,
       phone: phone ?? this.phone,
     );
   }

@@ -24,7 +24,7 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     return UserProfile(
       fullName: data['fullName'] as String? ?? '',
       birthDate: birthDateRaw != null ? DateTime.tryParse(birthDateRaw) : null,
-      registrationId: uid,
+      registrationId: data['registrationId'] as String? ?? uid,
       disabilityDescription: data['disability'] as String?,
       email: data['email'] as String? ?? '',
       phone: data['phone'] as String? ?? '',
@@ -36,8 +36,10 @@ class ProfileRemoteDataSourceImpl implements ProfileRemoteDataSource {
     final uid = _firebaseAuth.currentUser!.uid;
     return _firestore.collection('users').doc(uid).set({
       'fullName': profile.fullName,
-      'birthDate': profile.birthDate?.toIso8601String(),
+      'birthDate': profile.birthDate?.toIso8601String().split('T').first,
+      'registrationId': profile.registrationId,
       'disability': profile.disabilityDescription,
+      'email': profile.email,
       'phone': profile.phone,
     }, SetOptions(merge: true));
   }
