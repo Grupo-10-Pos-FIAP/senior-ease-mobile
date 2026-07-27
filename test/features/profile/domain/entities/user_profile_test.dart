@@ -6,6 +6,7 @@ void main() {
     fullName: 'Maria',
     birthDate: null,
     registrationId: 'uid-1',
+    registrationCode: 'SE12345',
     disabilityDescription: null,
     email: 'maria@gmail.com',
     phone: '',
@@ -26,6 +27,7 @@ void main() {
     expect(updated.disabilityDescription, 'Baixa visão');
     expect(updated.phone, '11999999999');
     expect(updated.registrationId, 'uid-1');
+    expect(updated.registrationCode, 'SE12345');
     expect(updated.email, 'maria@gmail.com');
   });
 
@@ -37,6 +39,7 @@ void main() {
     expect(updated.disabilityDescription, profile.disabilityDescription);
     expect(updated.phone, profile.phone);
     expect(updated.registrationId, profile.registrationId);
+    expect(updated.registrationCode, profile.registrationCode);
     expect(updated.email, profile.email);
   });
 }

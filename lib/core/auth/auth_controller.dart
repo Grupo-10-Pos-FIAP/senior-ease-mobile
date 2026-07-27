@@ -3,6 +3,7 @@ import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
 import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:senior_ease/core/registration_code.dart';
 
 class DeactivatedAccountException implements Exception {}
 
@@ -131,8 +132,8 @@ class AuthController extends ChangeNotifier {
     await signOut();
   }
 
-  Future<void> _seedUserDocument(firebase_auth.User user) {
-    return _firestore.collection('users').doc(user.uid).set({
+  Future<void> _seedUserDocument(firebase_auth.User user) async {
+    await _firestore.collection('users').doc(user.uid).set({
       'id': user.uid,
       'fullName': user.displayName ?? '',
       'email': user.email ?? '',
@@ -140,6 +141,7 @@ class AuthController extends ChangeNotifier {
       'disability': null,
       'enrolledCourseId': 'default-course',
       'registrationId': user.uid,
+      'registrationCode': generateRegistrationCode(),
       'preferences': {
         'fontSize': 3,
         'contrast': 1,

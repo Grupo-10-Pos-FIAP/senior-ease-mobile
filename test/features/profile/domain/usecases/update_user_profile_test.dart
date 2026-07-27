@@ -20,6 +20,7 @@ void main() {
       fullName: 'Maria Silva',
       birthDate: null,
       registrationId: 'uid-1',
+      registrationCode: 'SE12345',
       disabilityDescription: null,
       email: 'maria@gmail.com',
       phone: '11999999999',

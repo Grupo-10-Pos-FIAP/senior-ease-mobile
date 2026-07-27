@@ -25,6 +25,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
 
   late final TextEditingController _nameController;
   late final TextEditingController _birthDateController;
+  late final TextEditingController _registrationCodeController;
   late final TextEditingController _disabilityController;
   late final TextEditingController _emailController;
   late final TextEditingController _phoneController;
@@ -40,6 +41,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   void dispose() {
     _nameController.dispose();
     _birthDateController.dispose();
+    _registrationCodeController.dispose();
     _disabilityController.dispose();
     _emailController.dispose();
     _phoneController.dispose();
@@ -57,6 +59,9 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     _birthDate = profile.birthDate;
     _birthDateController = TextEditingController(
       text: _birthDate != null ? _dateFormat.format(_birthDate!) : '',
+    );
+    _registrationCodeController = TextEditingController(
+      text: profile.registrationCode,
     );
     _disabilityController = TextEditingController(
       text: profile.disabilityDescription ?? '',
@@ -253,6 +258,13 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         errorText: _birthDateError,
                       ),
                     ),
+                  ),
+                  SizedBox(height: AppDesignTokens.spacingMd),
+                  AppTextField(
+                    label: 'Matrícula',
+                    controller: _registrationCodeController,
+                    enabled: false,
+                    helperText: 'Gerada automaticamente, não pode ser alterada.',
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),
                   AppTextField(

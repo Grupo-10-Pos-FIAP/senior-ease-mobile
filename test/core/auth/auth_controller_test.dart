@@ -300,6 +300,7 @@ void main() {
         expect(captured['email'], 'new@user.com');
         expect(captured['enrolledCourseId'], 'default-course');
         expect(captured['registrationId'], uid);
+        expect(captured['registrationCode'], matches(RegExp(r'^SE\d{5}$')));
         expect(captured['preferences'], isA<Map>());
       },
     );
@@ -448,6 +449,7 @@ void main() {
               as Map<String, dynamic>;
       expect(captured['id'], uid);
       expect(captured['email'], 'maria@gmail.com');
+      expect(captured['registrationCode'], matches(RegExp(r'^SE\d{5}$')));
     });
 
     test('does not seed a document for a returning user', () async {

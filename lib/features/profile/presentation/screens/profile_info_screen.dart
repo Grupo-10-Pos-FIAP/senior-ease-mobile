@@ -90,7 +90,7 @@ class ProfileInfoScreen extends StatelessWidget {
             InfoRow(label: 'Idade', value: _ageLabel(profile.birthDate)),
             InfoRow(
               label: 'Matrícula',
-              value: _orNotInformed(profile.registrationId),
+              value: _orNotInformed(profile.registrationCode),
             ),
             InfoRow(
               label: 'Possui alguma deficiência?',
