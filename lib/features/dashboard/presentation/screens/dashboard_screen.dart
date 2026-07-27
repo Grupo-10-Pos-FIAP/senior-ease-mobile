@@ -5,18 +5,27 @@ import 'package:senior_ease/core/auth/logout_action.dart';
 import 'package:senior_ease/core/routes/route_names.dart';
 import 'package:senior_ease/features/dashboard/presentation/controllers/dashboard_controller.dart';
 import 'package:senior_ease/features/dashboard/presentation/widgets/activity_card.dart';
+import 'package:senior_ease/features/profile/presentation/controllers/profile_info_controller.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_dialog.dart';
 import 'package:senior_ease/shared/widgets/app_tabs.dart';
+import 'package:senior_ease/shared/widgets/incomplete_profile_callout.dart';
 
 class DashboardScreen extends StatelessWidget {
   const DashboardScreen({super.key});
 
   @override
   Widget build(BuildContext context) {
-    return ChangeNotifierProvider<DashboardController>(
-      create: (_) => sl<DashboardController>()..load(),
+    return MultiProvider(
+      providers: [
+        ChangeNotifierProvider<DashboardController>(
+          create: (_) => sl<DashboardController>()..load(),
+        ),
+        ChangeNotifierProvider<ProfileInfoController>.value(
+          value: sl<ProfileInfoController>()..load(),
+        ),
+      ],
       child: Scaffold(
         backgroundColor: AppDesignTokens.colorGray100,
         appBar: SeniorEaseAppBar(
@@ -26,11 +35,20 @@ class DashboardScreen extends StatelessWidget {
         ),
         body: SafeArea(
           bottom: false,
-          child: Consumer<DashboardController>(
-            builder: (context, controller, _) {
+          child: Consumer2<DashboardController, ProfileInfoController>(
+            builder: (context, controller, profileController, _) {
               final items = controller.filteredActivities;
+              final profile = profileController.profile;
+              final showIncompleteProfile =
+                  profile != null && profile.isIncomplete;
+
               return RefreshIndicator(
-                onRefresh: controller.refresh,
+                onRefresh: () async {
+                  await Future.wait([
+                    controller.refresh(),
+                    profileController.load(),
+                  ]);
+                },
                 child: ListView(
                   physics: const AlwaysScrollableScrollPhysics(),
                   padding: EdgeInsets.symmetric(
@@ -38,6 +56,26 @@ class DashboardScreen extends StatelessWidget {
                     vertical: AppDesignTokens.spacingLg,
                   ),
                   children: [
+                    if (showIncompleteProfile) ...[
+                      IncompleteProfileCallout(
+                        description:
+                            'Algumas informações suas ainda estão faltando. '
+                            'Toque em "Completar perfil" abaixo para '
+                            'preenchê-las.',
+                        actionLabel: 'Completar perfil',
+                        onAction: () async {
+                          await Navigator.of(
+                            context,
+                          ).pushNamed(RouteNames.editProfile);
+                          if (context.mounted) {
+                            await context
+                                .read<ProfileInfoController>()
+                                .load();
+                          }
+                        },
+                      ),
+                      SizedBox(height: AppDesignTokens.spacingLg),
+                    ],
                     AppTabs(
                       tabs: controller.tabLabels,
                       selectedIndex: controller.selectedTab,

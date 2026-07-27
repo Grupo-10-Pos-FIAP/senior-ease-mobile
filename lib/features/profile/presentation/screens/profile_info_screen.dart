@@ -9,7 +9,7 @@ import 'package:senior_ease/shared/lib/format_phone.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_dialog.dart';
-import 'package:senior_ease/shared/widgets/app_warning_banner.dart';
+import 'package:senior_ease/shared/widgets/incomplete_profile_callout.dart';
 import 'package:senior_ease/shared/widgets/info_row.dart';
 
 class ProfileInfoScreen extends StatelessWidget {
@@ -74,10 +74,9 @@ class ProfileInfoScreen extends StatelessWidget {
               ),
             ),
             SizedBox(height: AppDesignTokens.spacingLg),
-            if (_isIncomplete(profile)) ...[
-              const AppWarningBanner(
-                title: 'Complete seu perfil',
-                message:
+            if (profile.isIncomplete) ...[
+              const IncompleteProfileCallout(
+                description:
                     'Algumas informações suas ainda estão faltando. Toque '
                     'em "Editar informações" abaixo para preenchê-las.',
               ),
@@ -128,7 +127,7 @@ class ProfileInfoScreen extends StatelessWidget {
       value.trim().isEmpty || value.trim() == '-' ? 'Não informado' : value;
 
   String _nameOrNotInformed(String value) {
-    if (value.trim().isEmpty || value.trim() == 'Complete seu perfil') {
+    if (value.trim().isEmpty || value.trim() == incompleteProfileName) {
       return 'Não informado';
     }
     return value;
@@ -190,10 +189,4 @@ class ProfileInfoScreen extends StatelessWidget {
     return age == 1 ? '1 ano' : '$age anos';
   }
 
-  bool _isIncomplete(UserProfile profile) {
-    return profile.fullName.trim().isEmpty ||
-        profile.fullName == 'Complete seu perfil' ||
-        profile.phone.isEmpty ||
-        profile.birthDate == null;
-  }
 }

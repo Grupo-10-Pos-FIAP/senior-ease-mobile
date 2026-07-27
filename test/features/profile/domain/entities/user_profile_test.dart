@@ -39,4 +39,32 @@ void main() {
     expect(updated.registrationId, profile.registrationId);
     expect(updated.email, profile.email);
   });
+
+  test('isIncomplete when placeholder name or missing required fields', () {
+    expect(profile.isIncomplete, isTrue);
+
+    expect(
+      const UserProfile(
+        fullName: incompleteProfileName,
+        birthDate: null,
+        registrationId: 'SE00001',
+        disabilityDescription: null,
+        email: 'maria@gmail.com',
+        phone: '11999999999',
+      ).isIncomplete,
+      isTrue,
+    );
+
+    expect(
+      UserProfile(
+        fullName: 'Maria Silva',
+        birthDate: DateTime(1960, 5, 20),
+        registrationId: 'SE00001',
+        disabilityDescription: null,
+        email: 'maria@gmail.com',
+        phone: '11999999999',
+      ).isIncomplete,
+      isFalse,
+    );
+  });
 }

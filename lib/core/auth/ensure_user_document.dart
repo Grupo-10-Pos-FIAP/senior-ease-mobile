@@ -1,6 +1,7 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:senior_ease/core/registration/registration_counter.dart';
 import 'package:senior_ease/core/registration/registration_id.dart';
+import 'package:senior_ease/features/profile/domain/entities/user_profile.dart';
 
 const defaultCourseId = 'default-course';
 
@@ -46,7 +47,7 @@ class EnsureUserDocument {
       'id': uid,
       'fullName': (name != null && name.isNotEmpty)
           ? name
-          : 'Complete seu perfil',
+          : incompleteProfileName,
       'birthDate': '',
       'registrationId': registrationId,
       'disability': null,

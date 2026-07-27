@@ -55,7 +55,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     if (_initialized) return;
     _initialized = true;
     final isPlaceholderName =
-        profile.fullName.isEmpty || profile.fullName == 'Complete seu perfil';
+        profile.fullName.isEmpty ||
+        profile.fullName == incompleteProfileName;
     _nameController = TextEditingController(
       text: isPlaceholderName ? '' : profile.fullName,
     );
