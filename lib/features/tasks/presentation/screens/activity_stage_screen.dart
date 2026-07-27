@@ -8,6 +8,7 @@ import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/complete_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/mark_activity_started.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
+import 'package:senior_ease/features/tasks/presentation/widgets/youtube_step_player.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
@@ -188,6 +189,8 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                   SizedBox(height: AppDesignTokens.spacingLg),
                   if (step.kind == TaskStepKind.multipleChoice)
                     ..._buildQuizContent(step)
+                  else if (step.kind == TaskStepKind.watchContent)
+                    ..._buildVideoContent(step)
                   else
                     ..._buildReadingContent(step),
                   SizedBox(height: AppDesignTokens.spacingLg),
@@ -237,6 +240,14 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildVideoContent(TaskStep step) {
+    final videoUrl = step.videoUrl;
+    if (videoUrl == null || videoUrl.isEmpty) {
+      return _buildReadingContent(step);
+    }
+    return [YoutubeStepPlayer(videoUrl: videoUrl)];
   }
 
   List<Widget> _buildReadingContent(TaskStep step) {
