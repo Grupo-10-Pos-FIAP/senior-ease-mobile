@@ -111,8 +111,7 @@ presentation → domain ← data
   único lugar autorizado a enxergar tudo: DI + rotas).
 
 Nenhuma dessas regras é garantida por lint automático — são convenção de
-projeto. Decisões e simplificações deliberadas (histórico) estão em
-[ARCHITECTURE.md](ARCHITECTURE.md).
+projeto.
 
 **Exceção deliberada**: o módulo `auth` não segue o layering completo — é um
 wrapper fino direto sobre `firebase_auth`/`cloud_firestore`
