@@ -33,7 +33,6 @@ class ActivityStepsScreen extends StatelessWidget {
       confirmLabel: controller.started ? 'Sim, continuar' : 'Sim, iniciar',
       cancelLabel: 'Não, ainda não',
       onlyInBasicMode: true,
-      stackedActions: true,
     );
     if (!confirmed || !context.mounted) return;
 

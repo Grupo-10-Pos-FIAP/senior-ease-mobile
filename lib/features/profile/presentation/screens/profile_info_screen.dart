@@ -154,7 +154,6 @@ class ProfileInfoScreen extends StatelessWidget {
       confirmLabel: 'Sim, desativar minha conta',
       cancelLabel: 'Não, manter minha conta',
       destructive: true,
-      stackedActions: true,
     );
     if (!confirmed) return;
 

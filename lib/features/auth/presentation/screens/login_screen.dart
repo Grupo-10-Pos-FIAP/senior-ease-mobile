@@ -85,7 +85,6 @@ class _LoginFormState extends State<_LoginForm> {
           'e o seu progresso.',
       confirmLabel: 'Sim, reativar minha conta',
       cancelLabel: 'Não, manter desativada',
-      stackedActions: true,
       confirmFirst: true,
     );
     if (!mounted) return;

@@ -132,7 +132,6 @@ class _StepTutorialScreenState extends State<StepTutorialScreen> {
             '"${nextStep.label}".',
         confirmLabel: 'Ir para a próxima tarefa',
         cancelLabel: 'Voltar para a lista de tarefas',
-        stackedActions: true,
       ),
     );
     if (!mounted) return;
@@ -239,7 +238,6 @@ class _StepTutorialScreenState extends State<StepTutorialScreen> {
       confirmLabel: started ? 'Sim, continuar' : 'Sim, iniciar',
       cancelLabel: 'Não, ainda não',
       onlyInBasicMode: true,
-      stackedActions: true,
     );
     if (!confirmed || !mounted) return;
 
