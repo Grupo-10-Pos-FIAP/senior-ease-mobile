@@ -15,17 +15,53 @@ void main() {
   });
 
   test(
-    'delegates to TaskRepository.completeStep with activityId and stepId',
+    'delegates to TaskRepository.completeStep with activityId, stepId and answer',
     () async {
       when(
-        () => repository.completeStep('activity-1', 'step-1'),
+        () => repository.completeStep(
+          'activity-1',
+          'step-1',
+          answer: 'b',
+        ),
       ).thenAnswer((_) async {});
 
       await usecase(
-        const CompleteStepParams(activityId: 'activity-1', stepId: 'step-1'),
+        const CompleteStepParams(
+          activityId: 'activity-1',
+          stepId: 'step-1',
+          answer: 'b',
+        ),
       );
 
-      verify(() => repository.completeStep('activity-1', 'step-1')).called(1);
+      verify(
+        () => repository.completeStep(
+          'activity-1',
+          'step-1',
+          answer: 'b',
+        ),
+      ).called(1);
     },
   );
+
+  test('passes null answer when omitted', () async {
+    when(
+      () => repository.completeStep(
+        'activity-1',
+        'step-1',
+        answer: null,
+      ),
+    ).thenAnswer((_) async {});
+
+    await usecase(
+      const CompleteStepParams(activityId: 'activity-1', stepId: 'step-1'),
+    );
+
+    verify(
+      () => repository.completeStep(
+        'activity-1',
+        'step-1',
+        answer: null,
+      ),
+    ).called(1);
+  });
 }

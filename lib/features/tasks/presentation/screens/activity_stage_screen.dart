@@ -37,7 +37,25 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
     _currentIndex = args.initialStepIndex;
     _controller.load(args.activityId).then((_) {
       sl<MarkActivityStarted>()(args.activityId);
+      if (!mounted) return;
+      _syncSelectionFromStep();
     });
+  }
+
+  void _syncSelectionFromStep() {
+    if (_controller.steps.isEmpty) return;
+    final index = _currentIndex.clamp(0, _controller.steps.length - 1);
+    final step = _controller.steps[index];
+    setState(() {
+      _selectedOptionId = step.answer;
+    });
+  }
+
+  String? _answerFor(TaskStep step) {
+    if (step.kind == TaskStepKind.multipleChoice) {
+      return _selectedOptionId ?? step.answer;
+    }
+    return null;
   }
 
   bool _canAdvance(TaskStep step) {
@@ -46,7 +64,9 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
       case TaskStepKind.watchContent:
         return true;
       case TaskStepKind.multipleChoice:
-        return step.completed || _selectedOptionId != null;
+        return step.completed ||
+            _selectedOptionId != null ||
+            step.answer != null;
       case TaskStepKind.openQuestion:
         return true;
     }
@@ -55,17 +75,23 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
   Future<void> _goNext(String activityId, TaskStep step) async {
     setState(() => _isSubmitting = true);
     try {
+      final answer = _answerFor(step);
       if (!step.completed) {
         await sl<CompleteStep>()(
-          CompleteStepParams(activityId: activityId, stepId: step.id),
+          CompleteStepParams(
+            activityId: activityId,
+            stepId: step.id,
+            answer: answer,
+          ),
         );
-        _controller.markCompleted(step.id);
+        _controller.markCompleted(step.id, answer: answer);
       }
       if (!mounted) return;
       setState(() {
         _currentIndex++;
         _selectedOptionId = null;
       });
+      _syncSelectionFromStep();
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -76,6 +102,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
       _currentIndex--;
       _selectedOptionId = null;
     });
+    _syncSelectionFromStep();
   }
 
   Future<void> _exitActivity() async {
@@ -107,16 +134,24 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
     }
     setState(() => _isSubmitting = true);
     try {
+      final answer = _answerFor(step);
       if (!step.completed) {
         await sl<CompleteStep>()(
-          CompleteStepParams(activityId: activityId, stepId: step.id),
+          CompleteStepParams(
+            activityId: activityId,
+            stepId: step.id,
+            answer: answer,
+          ),
         );
+        _controller.markCompleted(step.id, answer: answer);
       }
       await _controller.completeActivity();
       if (!mounted) return;
-      Navigator.of(
-        context,
-      ).pushNamedAndRemoveUntil(RouteNames.home, (route) => false);
+      Navigator.of(context).pushNamedAndRemoveUntil(
+        RouteNames.completed,
+        (route) => false,
+        arguments: (activityId: activityId),
+      );
     } finally {
       if (mounted) setState(() => _isSubmitting = false);
     }
@@ -124,8 +159,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
 
   @override
   Widget build(BuildContext context) {
-    final args =
-        ModalRoute.of(context)!.settings.arguments as ActivityStageArgs;
+    final args = ModalRoute.of(context)!.settings.arguments as ActivityStageArgs;
     _initFromArgs(args);
 
     return ChangeNotifierProvider<TaskStepsController>.value(
@@ -149,6 +183,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
               final step = steps[index];
               final isFirst = index == 0;
               final isLast = index == steps.length - 1;
+              final selectedOptionId = _selectedOptionId ?? step.answer;
 
               return ListView(
                 padding: EdgeInsets.symmetric(
@@ -176,7 +211,6 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
-                  
                   SizedBox(height: AppDesignTokens.spacingSm),
                   Text(
                     step.label,
@@ -188,7 +222,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
                   if (step.kind == TaskStepKind.multipleChoice)
-                    ..._buildQuizContent(step)
+                    ..._buildQuizContent(step, selectedOptionId)
                   else if (step.kind == TaskStepKind.watchContent)
                     ..._buildVideoContent(step)
                   else
@@ -263,7 +297,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
     ];
   }
 
-  List<Widget> _buildQuizContent(TaskStep step) {
+  List<Widget> _buildQuizContent(TaskStep step, String? selectedOptionId) {
     return [
       if (step.question != null) ...[
         Text(
@@ -281,7 +315,7 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
           padding: EdgeInsets.only(bottom: AppDesignTokens.spacingMd),
           child: AppCard.simple(
             title: option.label,
-            selected: _selectedOptionId == option.id,
+            selected: selectedOptionId == option.id,
             onTap: _isSubmitting || step.completed
                 ? null
                 : () => setState(() => _selectedOptionId = option.id),
@@ -290,4 +324,3 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
     ];
   }
 }
-

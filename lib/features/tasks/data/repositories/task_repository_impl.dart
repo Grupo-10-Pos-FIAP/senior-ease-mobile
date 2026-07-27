@@ -12,8 +12,12 @@ class TaskRepositoryImpl implements TaskRepository {
   }
 
   @override
-  Future<void> completeStep(String activityId, String stepId) {
-    return remoteDataSource.completeStep(activityId, stepId);
+  Future<void> completeStep(
+    String activityId,
+    String stepId, {
+    String? answer,
+  }) {
+    return remoteDataSource.completeStep(activityId, stepId, answer: answer);
   }
 
   @override

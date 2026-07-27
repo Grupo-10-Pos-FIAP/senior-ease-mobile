@@ -62,7 +62,7 @@ void main() {
       'Questão aberta',
     );
   });
-  test('multipleChoice steps keep their question and options', () {
+  test('multipleChoice steps keep their question, options and gabarito', () {
     const quiz = TaskStep(
       id: 'step-2',
       label: 'Pergunta',
@@ -70,17 +70,21 @@ void main() {
       kind: TaskStepKind.multipleChoice,
       completed: false,
       question: 'Qual botão fecha o app?',
+      correctOptionId: 'a',
       options: [
         TaskStepOption(id: 'a', label: 'O X vermelho'),
         TaskStepOption(id: 'b', label: 'O botão home'),
       ],
     );
 
-    final updated = quiz.copyWith(completed: true);
+    final updated = quiz.copyWith(completed: true, answer: 'a');
 
     expect(updated.question, quiz.question);
     expect(updated.options, quiz.options);
+    expect(updated.correctOptionId, 'a');
+    expect(updated.answer, 'a');
     expect(updated.completed, isTrue);
+    expect(updated.isMultipleChoiceAnswerCorrect, isTrue);
   });
 
   test('watchContent steps keep their videoUrl through copyWith', () {

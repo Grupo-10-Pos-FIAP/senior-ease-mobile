@@ -6,7 +6,11 @@ import 'package:senior_ease/features/tasks/domain/repositories/task_repository.d
 abstract class TaskRemoteDataSource {
   Future<ActivityStepsData> getSteps(String activityId);
 
-  Future<void> completeStep(String activityId, String stepId);
+  Future<void> completeStep(
+    String activityId,
+    String stepId, {
+    String? answer,
+  });
 
   Future<void> completeGuideStep(String activityId, String stepId);
 
@@ -50,6 +54,11 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     final completedGuideStepIds = List<String>.from(
       (progress?['completedGuideStepIds'] as List<dynamic>?) ?? [],
     );
+    final stepAnswers = Map<String, String>.from(
+      ((progress?['stepAnswers'] as Map<String, dynamic>?) ?? {}).map(
+        (key, value) => MapEntry(key, value.toString()),
+      ),
+    );
     final started =
         progress?['started'] == true || completedStepIds.isNotEmpty;
 
@@ -60,6 +69,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
                 raw as Map<String, dynamic>,
                 completedStepIds,
                 completedGuideStepIds,
+                stepAnswers,
               ),
             )
             .toList()
@@ -76,6 +86,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
     Map<String, dynamic> data,
     List<String> completedStepIds,
     List<String> completedGuideStepIds,
+    Map<String, String> stepAnswers,
   ) {
     final id = data['id'] as String;
     final content = data['content'] as Map<String, dynamic>?;
@@ -91,6 +102,8 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
       body: content?['body'] as String?,
       question: content?['question'] as String?,
       videoUrl: content?['videoUrl'] as String?,
+      correctOptionId: content?['correctOptionId'] as String?,
+      answer: stepAnswers[id],
       options: optionsData
           ?.map(
             (option) => TaskStepOption(
@@ -117,17 +130,33 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
   }
 
   @override
-  Future<void> completeStep(String activityId, String stepId) {
+  Future<void> completeStep(
+    String activityId,
+    String stepId, {
+    String? answer,
+  }) async {
     final uid = _firebaseAuth.currentUser!.uid;
-    return _firestore
+    final progressRef = _firestore
         .collection('users')
         .doc(uid)
         .collection('activityProgress')
-        .doc(activityId)
-        .set({
-          'activityId': activityId,
-          'completedStepIds': FieldValue.arrayUnion([stepId]),
-        }, SetOptions(merge: true));
+        .doc(activityId);
+
+    final progressDoc = await progressRef.get();
+    final stepAnswers = Map<String, dynamic>.from(
+      (progressDoc.data()?['stepAnswers'] as Map<String, dynamic>?) ?? {},
+    );
+
+    final trimmedAnswer = answer?.trim();
+    if (trimmedAnswer != null && trimmedAnswer.isNotEmpty) {
+      stepAnswers[stepId] = trimmedAnswer;
+    }
+
+    await progressRef.set({
+      'activityId': activityId,
+      'completedStepIds': FieldValue.arrayUnion([stepId]),
+      if (stepAnswers.isNotEmpty) 'stepAnswers': stepAnswers,
+    }, SetOptions(merge: true));
   }
 
   @override

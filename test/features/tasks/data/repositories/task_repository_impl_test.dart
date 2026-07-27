@@ -41,12 +41,14 @@ void main() {
 
   test('completeStep delegates to TaskRemoteDataSource.completeStep', () async {
     when(
-      () => dataSource.completeStep('activity-1', 'step-1'),
+      () => dataSource.completeStep('activity-1', 'step-1', answer: 'b'),
     ).thenAnswer((_) async {});
 
-    await repository.completeStep('activity-1', 'step-1');
+    await repository.completeStep('activity-1', 'step-1', answer: 'b');
 
-    verify(() => dataSource.completeStep('activity-1', 'step-1')).called(1);
+    verify(
+      () => dataSource.completeStep('activity-1', 'step-1', answer: 'b'),
+    ).called(1);
   });
 
   test(

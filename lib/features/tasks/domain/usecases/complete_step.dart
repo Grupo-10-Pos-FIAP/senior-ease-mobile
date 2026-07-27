@@ -2,10 +2,15 @@ import 'package:senior_ease/core/usecase/usecase.dart';
 import 'package:senior_ease/features/tasks/domain/repositories/task_repository.dart';
 
 class CompleteStepParams {
-  const CompleteStepParams({required this.activityId, required this.stepId});
+  const CompleteStepParams({
+    required this.activityId,
+    required this.stepId,
+    this.answer,
+  });
 
   final String activityId;
   final String stepId;
+  final String? answer;
 }
 
 class CompleteStep implements UseCase<void, CompleteStepParams> {
@@ -15,6 +20,10 @@ class CompleteStep implements UseCase<void, CompleteStepParams> {
 
   @override
   Future<void> call(CompleteStepParams params) {
-    return repository.completeStep(params.activityId, params.stepId);
+    return repository.completeStep(
+      params.activityId,
+      params.stepId,
+      answer: params.answer,
+    );
   }
 }

@@ -66,7 +66,7 @@ void main() {
     expect(controller.started, isFalse);
   });
 
-  test('markCompleted flips only the matching step', () async {
+  test('markCompleted flips only the matching step and stores answer', () async {
     when(
       () => getSteps(any(that: forActivity('activity-1'))),
     ).thenAnswer(
@@ -74,12 +74,11 @@ void main() {
     );
     await controller.load('activity-1');
 
-    controller.markCompleted('step-1');
+    controller.markCompleted('step-1', answer: 'b');
 
-    expect(
-      controller.steps.firstWhere((s) => s.id == 'step-1').completed,
-      isTrue,
-    );
+    final completed = controller.steps.firstWhere((s) => s.id == 'step-1');
+    expect(completed.completed, isTrue);
+    expect(completed.answer, 'b');
     expect(
       controller.steps.firstWhere((s) => s.id == 'step-2').completed,
       isFalse,

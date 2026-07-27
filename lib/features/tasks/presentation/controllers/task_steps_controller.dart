@@ -30,10 +30,12 @@ class TaskStepsController extends ChangeNotifier {
     notifyListeners();
   }
 
-  void markCompleted(String stepId) {
+  void markCompleted(String stepId, {String? answer}) {
     steps = steps
         .map(
-          (step) => step.id == stepId ? step.copyWith(completed: true) : step,
+          (step) => step.id == stepId
+              ? step.copyWith(completed: true, answer: answer)
+              : step,
         )
         .toList();
     started = true;

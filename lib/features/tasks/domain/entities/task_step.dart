@@ -24,6 +24,8 @@ class TaskStep {
     this.question,
     this.options,
     this.videoUrl,
+    this.correctOptionId,
+    this.answer,
   });
 
   final String id;
@@ -36,6 +38,8 @@ class TaskStep {
   final String? question;
   final List<TaskStepOption>? options;
   final String? videoUrl;
+  final String? correctOptionId;
+  final String? answer;
 
   String get typeLabel => switch (kind) {
     TaskStepKind.contentReading => 'Leitura de conteúdo',
@@ -44,7 +48,22 @@ class TaskStep {
     TaskStepKind.openQuestion => 'Questão aberta',
   };
 
-  TaskStep copyWith({bool? completed, bool? guideCompleted}) {
+  bool get isMultipleChoiceAnswerCorrect {
+    if (kind != TaskStepKind.multipleChoice) return false;
+    final selected = answer?.trim();
+    final correct = correctOptionId?.trim();
+    if (selected == null || selected.isEmpty || correct == null || correct.isEmpty) {
+      return false;
+    }
+    return selected == correct;
+  }
+
+  TaskStep copyWith({
+    bool? completed,
+    bool? guideCompleted,
+    String? answer,
+    bool clearAnswer = false,
+  }) {
     return TaskStep(
       id: id,
       label: label,
@@ -56,6 +75,8 @@ class TaskStep {
       question: question,
       options: options,
       videoUrl: videoUrl,
+      correctOptionId: correctOptionId,
+      answer: clearAnswer ? null : (answer ?? this.answer),
     );
   }
 }

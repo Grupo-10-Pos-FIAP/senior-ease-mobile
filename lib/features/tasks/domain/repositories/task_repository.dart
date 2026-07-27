@@ -9,7 +9,11 @@ typedef ActivityStepsData = ({
 abstract class TaskRepository {
   Future<ActivityStepsData> getSteps(String activityId);
 
-  Future<void> completeStep(String activityId, String stepId);
+  Future<void> completeStep(
+    String activityId,
+    String stepId, {
+    String? answer,
+  });
 
   Future<void> completeGuideStep(String activityId, String stepId);
 
