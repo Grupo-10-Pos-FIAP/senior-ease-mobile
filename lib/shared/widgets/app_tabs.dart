@@ -15,55 +15,57 @@ class AppTabs extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    return Container(
-      decoration: BoxDecoration(
-        border: Border(
-          bottom: BorderSide(color: AppDesignTokens.colorGray200, width: 1),
-        ),
-      ),
-      child: Row(
-        children: List.generate(tabs.length, (index) {
-          final isSelected = index == selectedIndex;
-          return Expanded(
-            child: GestureDetector(
-              onTap: () => onTabSelected(index),
-              child: Column(
-                mainAxisSize: MainAxisSize.min,
-                children: [
-                  Padding(
-                    padding: EdgeInsets.symmetric(
-                      vertical: AppDesignTokens.spacingMd,
-                    ),
-                    child: Text(
-                      tabs[index],
-                      textAlign: TextAlign.center,
-                      style: TextStyle(
-                        fontSize: AppDesignTokens.fontSizeBody,
-                        fontWeight: isSelected
-                            ? AppDesignTokens.fontWeightSemibold
-                            : AppDesignTokens.fontWeightRegular,
-                        color: isSelected
-                            ? AppDesignTokens.colorContentDefault
-                            : AppDesignTokens.colorContentSecondary,
-                      ),
-                    ),
+    return Column(
+      mainAxisSize: MainAxisSize.min,
+      children: [
+        Row(
+          children: List.generate(tabs.length, (index) {
+            final isSelected = index == selectedIndex;
+            return Expanded(
+              child: GestureDetector(
+                onTap: () => onTabSelected(index),
+                child: Padding(
+                  padding: EdgeInsets.symmetric(
+                    vertical: AppDesignTokens.spacingMd,
                   ),
-                  Container(
-                    height: 3,
-                    width: double.infinity,
-                    decoration: BoxDecoration(
+                  child: Text(
+                    tabs[index],
+                    textAlign: TextAlign.center,
+                    style: TextStyle(
+                      fontSize: AppDesignTokens.fontSizeBody,
+                      fontWeight: isSelected
+                          ? AppDesignTokens.fontWeightSemibold
+                          : AppDesignTokens.fontWeightRegular,
                       color: isSelected
-                          ? AppDesignTokens.colorPrimary
-                          : Colors.transparent,
-                      borderRadius: BorderRadius.circular(2),
+                          ? AppDesignTokens.colorContentDefault
+                          : AppDesignTokens.colorContentSecondary,
                     ),
                   ),
-                ],
+                ),
               ),
-            ),
-          );
-        }),
-      ),
+            );
+          }),
+        ),
+        // A single continuous line, bottom-aligned so every segment shares
+        // the same baseline — the selected tab's segment is thicker and
+        // colored, the rest is the thin divider — so the indicator is
+        // always exactly on the divider instead of two separately
+        // positioned bars.
+        Row(
+          crossAxisAlignment: CrossAxisAlignment.end,
+          children: List.generate(tabs.length, (index) {
+            final isSelected = index == selectedIndex;
+            return Expanded(
+              child: Container(
+                height: isSelected ? 3 : 1,
+                color: isSelected
+                    ? AppDesignTokens.colorPrimary
+                    : AppDesignTokens.colorGray200,
+              ),
+            );
+          }),
+        ),
+      ],
     );
   }
 }
