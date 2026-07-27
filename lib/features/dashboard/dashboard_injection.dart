@@ -19,9 +19,6 @@ void registerDashboardDependencies(GetIt sl) {
     () => ActivityRepositoryImpl(sl()),
   );
   sl.registerLazySingleton(() => GetActivities(sl()));
-  // Only consumed by TaskStepsController (tasks feature) now — the
-  // Dashboard's "Iniciar a atividade" opens the guided flow instead of
-  // completing the activity outright.
   sl.registerLazySingleton(() => CompleteActivity(sl()));
   sl.registerFactory(() => DashboardController(sl()));
 }

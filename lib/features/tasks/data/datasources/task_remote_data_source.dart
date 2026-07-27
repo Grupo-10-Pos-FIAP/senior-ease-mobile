@@ -90,6 +90,7 @@ class TaskRemoteDataSourceImpl implements TaskRemoteDataSource {
       guideCompleted: completedGuideStepIds.contains(id),
       body: content?['body'] as String?,
       question: content?['question'] as String?,
+      videoUrl: content?['videoUrl'] as String?,
       options: optionsData
           ?.map(
             (option) => TaskStepOption(

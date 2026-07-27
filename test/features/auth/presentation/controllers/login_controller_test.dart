@@ -106,8 +106,29 @@ void main() {
         expect(controller.isLoading, isFalse);
         expect(
           controller.errorMessage,
-          'Esta conta foi excluída e não está mais disponível para acesso.',
+          'Esta conta foi desativada e o prazo de 90 dias para reativação '
+          'já passou. Ela não está mais disponível.',
         );
+        expect(controller.pendingReactivation, isFalse);
+      },
+    );
+
+    test(
+      'sets pendingReactivation, with no error message, on '
+      'DeactivatedAccountFoundException',
+      () async {
+        when(
+          () => authController.signInWithEmail(any(), any()),
+        ).thenThrow(DeactivatedAccountFoundException());
+
+        final result = await controller.submitEmailPassword(
+          'a@b.com',
+          'secret',
+        );
+
+        expect(result, isFalse);
+        expect(controller.pendingReactivation, isTrue);
+        expect(controller.errorMessage, isNull);
       },
     );
 
@@ -229,6 +250,44 @@ void main() {
 
       completer.complete();
       await future;
+    });
+  });
+
+  group('confirmReactivation', () {
+    test('clears pendingReactivation and syncs AppModeController on success', () async {
+      when(
+        () => authController.signInWithEmail(any(), any()),
+      ).thenThrow(DeactivatedAccountFoundException());
+      await controller.submitEmailPassword('a@b.com', 'secret');
+      expect(controller.pendingReactivation, isTrue);
+
+      when(
+        () => authController.confirmReactivation(),
+      ).thenAnswer((_) async {});
+
+      final result = await controller.confirmReactivation();
+
+      expect(result, isTrue);
+      expect(controller.pendingReactivation, isFalse);
+      expect(appMode.isSimpleMode, isTrue);
+      verify(() => authController.confirmReactivation()).called(1);
+    });
+  });
+
+  group('declineReactivation', () {
+    test('clears pendingReactivation and signs out', () async {
+      when(
+        () => authController.signInWithEmail(any(), any()),
+      ).thenThrow(DeactivatedAccountFoundException());
+      await controller.submitEmailPassword('a@b.com', 'secret');
+      expect(controller.pendingReactivation, isTrue);
+
+      when(() => authController.signOut()).thenAnswer((_) async {});
+
+      await controller.declineReactivation();
+
+      expect(controller.pendingReactivation, isFalse);
+      verify(() => authController.signOut()).called(1);
     });
   });
 }

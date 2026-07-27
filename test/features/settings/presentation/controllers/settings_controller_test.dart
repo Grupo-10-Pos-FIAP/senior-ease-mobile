@@ -140,13 +140,13 @@ void main() {
     'resetToDefaults previews AppSettings.defaults() immediately, unsaved',
     () async {
       await controller.load();
-      controller.selectNavigationMode('Padrão');
+      controller.selectContrastLevel('Escuro');
       await controller.save();
 
       controller.resetToDefaults();
 
       expect(controller.draft, AppSettings.defaults());
-      expect(appMode.isSimpleMode, isFalse);
+      expect(appMode.isSimpleMode, isTrue);
       expect(controller.hasUnsavedChanges, isTrue);
       verifyNever(() => saveSettings(AppSettings.defaults()));
     },

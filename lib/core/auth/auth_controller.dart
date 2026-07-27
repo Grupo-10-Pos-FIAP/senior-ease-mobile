@@ -1,10 +1,15 @@
 import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
+import 'package:flutter_dotenv/flutter_dotenv.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:senior_ease/core/auth/ensure_user_document.dart';
 
 class DeactivatedAccountException implements Exception {}
+
+class DeactivatedAccountFoundException implements Exception {}
+
+const _reactivationWindow = Duration(days: 90);
 
 class AuthController extends ChangeNotifier {
   AuthController(
@@ -35,20 +40,37 @@ class AuthController extends ChangeNotifier {
       password: password,
     );
     await _prepareUserDocument(credential.user);
-    await _rejectIfDeactivated(credential.user);
+    await _checkDeactivated(credential.user);
   }
 
   Future<void> signUpWithEmail(String email, String password) async {
-    final credential = await _firebaseAuth.createUserWithEmailAndPassword(
-      email: email,
-      password: password,
-    );
-    await _prepareUserDocument(credential.user);
+    try {
+      final credential = await _firebaseAuth.createUserWithEmailAndPassword(
+        email: email,
+        password: password,
+      );
+      await _prepareUserDocument(credential.user);
+    } on firebase_auth.FirebaseAuthException catch (emailInUse) {
+      if (emailInUse.code != 'email-already-in-use') rethrow;
+      final firebase_auth.UserCredential credential;
+      try {
+        credential = await _firebaseAuth.signInWithEmailAndPassword(
+          email: email,
+          password: password,
+        );
+      } catch (_) {
+        throw emailInUse;
+      }
+      await _prepareUserDocument(credential.user);
+      await _checkDeactivated(credential.user);
+    }
   }
 
   Future<void> signInWithGoogle() async {
     if (!_googleSignInInitialized) {
-      await _googleSignIn.initialize();
+      await _googleSignIn.initialize(
+        serverClientId: dotenv.env['GOOGLE_SERVER_CLIENT_ID'],
+      );
       _googleSignInInitialized = true;
     }
     try {
@@ -60,7 +82,7 @@ class AuthController extends ChangeNotifier {
         credential,
       );
       await _prepareUserDocument(userCredential.user);
-      await _rejectIfDeactivated(userCredential.user);
+      await _checkDeactivated(userCredential.user);
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) return;
       rethrow;
@@ -84,12 +106,32 @@ class AuthController extends ChangeNotifier {
     return doc.data()?['deactivated'] == true;
   }
 
-  Future<void> _rejectIfDeactivated(firebase_auth.User? user) async {
+  Future<void> confirmReactivation() async {
+    final user = _firebaseAuth.currentUser;
     if (user == null) return;
-    if (await isCurrentAccountDeactivated()) {
-      await signOut();
-      throw DeactivatedAccountException();
+    await _firestore.collection('users').doc(user.uid).set({
+      'deactivated': false,
+      'deactivatedAt': FieldValue.delete(),
+    }, SetOptions(merge: true));
+  }
+
+  Future<void> _checkDeactivated(firebase_auth.User? user) async {
+    if (user == null) return;
+    final data = (await _firestore.collection('users').doc(user.uid).get())
+        .data();
+    if (data?['deactivated'] != true) return;
+
+    final deactivatedAt = data?['deactivatedAt'];
+    final withinWindow =
+        deactivatedAt is Timestamp &&
+        DateTime.now().difference(deactivatedAt.toDate()) <=
+            _reactivationWindow;
+    if (withinWindow) {
+      throw DeactivatedAccountFoundException();
     }
+
+    await signOut();
+    throw DeactivatedAccountException();
   }
 
   Future<void> deleteAccount() async {

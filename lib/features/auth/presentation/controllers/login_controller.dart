@@ -17,6 +17,7 @@ class LoginController extends ChangeNotifier {
   AuthFormMode mode = AuthFormMode.signIn;
   bool isEmailLoading = false;
   bool isGoogleLoading = false;
+  bool pendingReactivation = false;
   String? errorMessage;
 
   bool get isLoading => isEmailLoading || isGoogleLoading;
@@ -49,6 +50,24 @@ class LoginController extends ChangeNotifier {
     );
   }
 
+  /// Called after the user confirms the "conta desativada encontrada"
+  /// dialog shown when [_submit] sets [pendingReactivation].
+  Future<bool> confirmReactivation() {
+    return _submit(
+      _authController.confirmReactivation,
+      onAuthError: (_) => 'Não foi possível reativar sua conta.',
+      setLoading: (value) => isEmailLoading = value,
+    );
+  }
+
+  /// Called when the user declines that same dialog — the account stays
+  /// deactivated and signed out.
+  Future<void> declineReactivation() async {
+    pendingReactivation = false;
+    await _authController.signOut();
+    notifyListeners();
+  }
+
   Future<bool> _submit(
     Future<void> Function() action, {
     required String Function(String code) onAuthError,
@@ -56,6 +75,7 @@ class LoginController extends ChangeNotifier {
   }) async {
     setLoading(true);
     errorMessage = null;
+    pendingReactivation = false;
     notifyListeners();
     try {
       await action();
@@ -69,9 +89,13 @@ class LoginController extends ChangeNotifier {
         criticalActionConfirmation: settings.criticalActionConfirmation,
       );
       return true;
+    } on DeactivatedAccountFoundException {
+      pendingReactivation = true;
+      return false;
     } on DeactivatedAccountException {
       errorMessage =
-          'Esta conta foi excluída e não está mais disponível para acesso.';
+          'Esta conta foi desativada e o prazo de 90 dias para reativação '
+          'já passou. Ela não está mais disponível.';
       return false;
     } on FirebaseAuthException catch (e) {
       errorMessage = onAuthError(e.code);
@@ -93,7 +117,7 @@ class LoginController extends ChangeNotifier {
       case 'invalid-credential':
         return 'E-mail ou senha incorretos.';
       case 'email-already-in-use':
-        return 'Este e-mail já está cadastrado.';
+        return 'Este e-mail já possui uma conta. Faça login para continuar.';
       case 'weak-password':
         return 'A senha deve ter pelo menos 6 caracteres.';
       case 'invalid-email':

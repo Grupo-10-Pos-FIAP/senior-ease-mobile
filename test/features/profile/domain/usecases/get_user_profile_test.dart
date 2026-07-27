@@ -20,7 +20,7 @@ void main() {
     const profile = UserProfile(
       fullName: 'Maria',
       birthDate: null,
-      registrationId: 'uid-1',
+      registrationId: 'SE00001',
       disabilityDescription: null,
       email: 'maria@gmail.com',
       phone: '',

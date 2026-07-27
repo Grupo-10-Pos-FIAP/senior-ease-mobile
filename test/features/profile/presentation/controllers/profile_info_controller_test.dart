@@ -18,7 +18,7 @@ void main() {
   const profile = UserProfile(
     fullName: 'Maria',
     birthDate: null,
-    registrationId: 'uid-1',
+    registrationId: 'SE00001',
     disabilityDescription: null,
     email: 'maria@gmail.com',
     phone: '',
@@ -26,7 +26,7 @@ void main() {
   const updatedProfile = UserProfile(
     fullName: 'Maria Silva',
     birthDate: null,
-    registrationId: 'uid-1',
+    registrationId: 'SE00001',
     disabilityDescription: null,
     email: 'maria@gmail.com',
     phone: '11999999999',
@@ -49,6 +49,21 @@ void main() {
     expect(controller.isLoading, isFalse);
     expect(controller.profile, profile);
   });
+
+  test(
+    'load() stops loading and leaves profile null instead of hanging, '
+    'when getUserProfile throws',
+    () async {
+      when(
+        () => getUserProfile(const NoParams()),
+      ).thenThrow(Exception('permission-denied'));
+
+      await controller.load();
+
+      expect(controller.isLoading, isFalse);
+      expect(controller.profile, isNull);
+    },
+  );
 
   test('save() persists the update then reloads the profile', () async {
     when(() => updateUserProfile(updatedProfile)).thenAnswer((_) async {});

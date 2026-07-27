@@ -64,7 +64,7 @@ class _LoginFormState extends State<_LoginForm> {
           title: 'Pronto',
           description:
               'Sua conta foi desativada. Você pode reativá-la em até 90 dias '
-              'ao criar conta com o mesmo e-mail.',
+              'fazendo login ou cadastro novamente com o mesmo e-mail.',
         );
       });
     }
@@ -73,6 +73,28 @@ class _LoginFormState extends State<_LoginForm> {
   Future<void> _onSuccess() async {
     if (!mounted) return;
     Navigator.of(context).pushReplacementNamed(RouteNames.home);
+  }
+
+  Future<void> _handlePendingReactivation(LoginController controller) async {
+    final confirmed = await AppDialog.confirm(
+      context,
+      title: 'Conta desativada encontrada',
+      description:
+          'Encontramos uma conta desativada com este e-mail. Se quiser, '
+          'podemos reativá-la agora e trazer de volta todos os seus dados '
+          'e o seu progresso.',
+      confirmLabel: 'Sim, reativar minha conta',
+      cancelLabel: 'Não, manter desativada',
+      stackedActions: true,
+      confirmFirst: true,
+    );
+    if (!mounted) return;
+    if (confirmed) {
+      final success = await controller.confirmReactivation();
+      if (success) await _onSuccess();
+    } else {
+      await controller.declineReactivation();
+    }
   }
 
   @override
@@ -132,18 +154,26 @@ class _LoginFormState extends State<_LoginForm> {
                   _emailController.text.trim(),
                   _passwordController.text,
                 );
-                if (success) await _onSuccess();
+                if (success) {
+                  await _onSuccess();
+                } else if (controller.pendingReactivation) {
+                  await _handlePendingReactivation(controller);
+                }
               },
             ),
             SizedBox(height: AppDesignTokens.spacingMd),
             AppButton(
-              label: 'Entrar com Google',
+              label: isSignIn ? 'Entrar com Google' : 'Cadastrar com Google',
               variant: ButtonVariant.outlined,
               loading: controller.isGoogleLoading,
               enabled: !controller.isLoading,
               onPressed: () async {
                 final success = await controller.submitGoogle();
-                if (success) await _onSuccess();
+                if (success) {
+                  await _onSuccess();
+                } else if (controller.pendingReactivation) {
+                  await _handlePendingReactivation(controller);
+                }
               },
             ),
             SizedBox(height: AppDesignTokens.spacingLg),

@@ -5,7 +5,7 @@ void main() {
   const profile = UserProfile(
     fullName: 'Maria',
     birthDate: null,
-    registrationId: 'uid-1',
+    registrationId: 'SE00001',
     disabilityDescription: null,
     email: 'maria@gmail.com',
     phone: '',
@@ -25,7 +25,7 @@ void main() {
     expect(updated.birthDate, birthDate);
     expect(updated.disabilityDescription, 'Baixa visão');
     expect(updated.phone, '11999999999');
-    expect(updated.registrationId, 'uid-1');
+    expect(updated.registrationId, 'SE00001');
     expect(updated.email, 'maria@gmail.com');
   });
 

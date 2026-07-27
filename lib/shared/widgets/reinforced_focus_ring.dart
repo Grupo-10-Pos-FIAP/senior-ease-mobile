@@ -1,19 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
-/// Wraps a focusable/pressable widget with a black outline offset by 1px
-/// from the component, shown only while focused or pressed — the visual
-/// half of "Feedback visual reforçado". [builder] must attach the given
-/// [FocusNode] to the wrapped widget (via its `focusNode` parameter) so
-/// this ring knows when it's focused.
-///
-/// Deliberately avoids sharing a [WidgetStatesController] with the child:
-/// Flutter's own button widgets write to that controller synchronously
-/// while mounting, and reacting to that with `setState` here would try to
-/// rebuild this element while it's still building, triggering a
-/// "setState called during build" (`!_dirty`) crash. `FocusNode` and
-/// pointer events only fire from real user interaction, after the current
-/// build has finished, so they don't have that hazard.
 class ReinforcedFocusRing extends StatefulWidget {
   const ReinforcedFocusRing({
     super.key,

@@ -23,6 +23,7 @@ class TaskStep {
     this.body,
     this.question,
     this.options,
+    this.videoUrl,
   });
 
   final String id;
@@ -34,6 +35,7 @@ class TaskStep {
   final String? body;
   final String? question;
   final List<TaskStepOption>? options;
+  final String? videoUrl;
 
   String get typeLabel => switch (kind) {
     TaskStepKind.contentReading => 'Leitura de conteúdo',
@@ -53,6 +55,7 @@ class TaskStep {
       body: body,
       question: question,
       options: options,
+      videoUrl: videoUrl,
     );
   }
 }

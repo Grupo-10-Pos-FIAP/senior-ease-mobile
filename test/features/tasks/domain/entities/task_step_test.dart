@@ -82,4 +82,20 @@ void main() {
     expect(updated.options, quiz.options);
     expect(updated.completed, isTrue);
   });
+
+  test('watchContent steps keep their videoUrl through copyWith', () {
+    const watch = TaskStep(
+      id: 'step-3',
+      label: 'Assista o vídeo',
+      order: 3,
+      kind: TaskStepKind.watchContent,
+      completed: false,
+      videoUrl: 'https://www.youtube.com/watch?v=qzgmDZphKVE',
+    );
+
+    final updated = watch.copyWith(completed: true);
+
+    expect(updated.videoUrl, watch.videoUrl);
+    expect(updated.completed, isTrue);
+  });
 }

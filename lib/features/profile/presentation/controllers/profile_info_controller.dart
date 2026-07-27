@@ -16,9 +16,15 @@ class ProfileInfoController extends ChangeNotifier {
   Future<void> load() async {
     isLoading = true;
     notifyListeners();
-    profile = await _getUserProfile(const NoParams());
-    isLoading = false;
-    notifyListeners();
+    try {
+      profile = await _getUserProfile(const NoParams());
+    } catch (e) {
+      debugPrint('Erro ao carregar perfil: $e');
+      profile = null;
+    } finally {
+      isLoading = false;
+      notifyListeners();
+    }
   }
 
   Future<void> save(UserProfile updated) async {

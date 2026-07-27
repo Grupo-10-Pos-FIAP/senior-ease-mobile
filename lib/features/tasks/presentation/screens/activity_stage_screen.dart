@@ -8,16 +8,13 @@ import 'package:senior_ease/features/tasks/domain/entities/task_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/complete_step.dart';
 import 'package:senior_ease/features/tasks/domain/usecases/mark_activity_started.dart';
 import 'package:senior_ease/features/tasks/presentation/controllers/task_steps_controller.dart';
+import 'package:senior_ease/features/tasks/presentation/widgets/youtube_step_player.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 import 'package:senior_ease/shared/widgets/app_bar.dart';
 import 'package:senior_ease/shared/widgets/app_button.dart';
 import 'package:senior_ease/shared/widgets/app_card.dart';
 import 'package:senior_ease/shared/widgets/app_dialog.dart';
 
-/// [initialStepIndex] lets an entry point that already knows which step to
-/// open skip ahead — the Dashboard passes the number of already-completed
-/// steps (0 for a never-started activity), while the overview list passes
-/// the exact index the user tapped.
 typedef ActivityStageArgs = ({String activityId, int initialStepIndex});
 
 class ActivityStageScreen extends StatefulWidget {
@@ -192,6 +189,8 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
                   SizedBox(height: AppDesignTokens.spacingLg),
                   if (step.kind == TaskStepKind.multipleChoice)
                     ..._buildQuizContent(step)
+                  else if (step.kind == TaskStepKind.watchContent)
+                    ..._buildVideoContent(step)
                   else
                     ..._buildReadingContent(step),
                   SizedBox(height: AppDesignTokens.spacingLg),
@@ -241,6 +240,14 @@ class _ActivityStageScreenState extends State<ActivityStageScreen> {
         ),
       ),
     );
+  }
+
+  List<Widget> _buildVideoContent(TaskStep step) {
+    final videoUrl = step.videoUrl;
+    if (videoUrl == null || videoUrl.isEmpty) {
+      return _buildReadingContent(step);
+    }
+    return [YoutubeStepPlayer(videoUrl: videoUrl)];
   }
 
   List<Widget> _buildReadingContent(TaskStep step) {
