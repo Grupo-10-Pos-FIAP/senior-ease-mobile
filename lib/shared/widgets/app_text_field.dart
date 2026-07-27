@@ -39,15 +39,26 @@ class AppTextField extends StatelessWidget {
       inputFormatters: inputFormatters,
       style: TextStyle(
         fontSize: AppDesignTokens.fontSizeBody,
-        color: AppDesignTokens.colorContentDefault,
+        color: enabled
+            ? AppDesignTokens.colorContentDefault
+            : AppDesignTokens.colorContentDisabled,
       ),
       decoration: InputDecoration(
         labelText: label,
         hintText: hintText,
         helperText: helperText,
         errorText: errorText,
+        suffixIcon: enabled
+            ? null
+            : Icon(
+                Icons.lock_outline,
+                color: AppDesignTokens.colorContentDisabled,
+                size: 20,
+              ),
         filled: true,
-        fillColor: AppDesignTokens.colorBgLight,
+        fillColor: enabled
+            ? AppDesignTokens.colorBgLight
+            : AppDesignTokens.colorBgDisabled,
         contentPadding: EdgeInsets.symmetric(
           horizontal: AppDesignTokens.spacingMd,
           vertical: AppDesignTokens.spacingMd,
@@ -72,6 +83,12 @@ class AppTextField extends StatelessWidget {
             color: AppDesignTokens.colorBorderFocused,
             width: AppDesignTokens.borderWidthSmall,
           ),
+        ),
+        disabledBorder: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(
+            AppDesignTokens.borderRadiusDefault,
+          ),
+          borderSide: BorderSide(color: AppDesignTokens.colorGray300),
         ),
       ),
     );

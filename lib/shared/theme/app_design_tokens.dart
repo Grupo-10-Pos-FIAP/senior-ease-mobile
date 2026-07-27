@@ -210,7 +210,7 @@ class AppDesignTokens {
   static Color get colorBgLight => _palette.bg;
   static Color get colorBgPrimary => colorPrimary;
   static const Color colorBgSecondary = colorSecondary;
-  static Color get colorBgDisabled => colorGray200;
+  static Color get colorBgDisabled => colorGray100;
   static const Color colorBgOverlay = Color(0xCCFFFFFF);
   static const Color colorBgFullscreen = Color(0xE6FFFFFF);
   static const Color colorBgAvatar = Color(0xFFEDF2FE);

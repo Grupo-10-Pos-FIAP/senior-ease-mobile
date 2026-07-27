@@ -252,8 +252,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                         controller: _birthDateController,
                         hintText: 'DD/MM/AAAA',
                         helperText: _birthDateError == null
-                            ? 'Digite dia, mês e ano. Sua idade será '
-                                  'calculada automaticamente.'
+                            ? 'Digite dia, mês e ano.'
                             : null,
                         errorText: _birthDateError,
                       ),
@@ -264,7 +263,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     label: 'Matrícula',
                     controller: _registrationCodeController,
                     enabled: false,
-                    helperText: 'Gerada automaticamente, não pode ser alterada.',
+                    helperText: 'Não pode ser alterada.',
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),
                   AppTextField(
@@ -286,8 +285,7 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                     keyboardType: TextInputType.phone,
                     hintText: '(00) 00000-0000',
                     helperText: _phoneError == null
-                        ? 'Digite apenas os números — a formatação é '
-                              'aplicada automaticamente.'
+                        ? 'Digite apenas os números.'
                         : null,
                     errorText: _phoneError,
                     onChanged: (value) {
