@@ -4,6 +4,7 @@ import 'package:flutter_test/flutter_test.dart';
 import 'package:google_sign_in/google_sign_in.dart';
 import 'package:mocktail/mocktail.dart';
 import 'package:senior_ease/core/auth/auth_controller.dart';
+import 'package:senior_ease/core/auth/ensure_user_document.dart';
 
 class MockFirebaseAuth extends Mock implements firebase_auth.FirebaseAuth {}
 
@@ -29,6 +30,8 @@ class MockAdditionalUserInfo extends Mock
 
 class MockGoogleSignInAccount extends Mock implements GoogleSignInAccount {}
 
+class MockEnsureUserDocument extends Mock implements EnsureUserDocument {}
+
 class FakeAuthCredential extends Fake implements firebase_auth.AuthCredential {}
 
 void main() {
@@ -38,6 +41,7 @@ void main() {
   late MockCollectionReference usersCollection;
   late MockDocumentReference docRef;
   late MockDocumentSnapshot docSnapshot;
+  late MockEnsureUserDocument ensureUserDocument;
   late AuthController controller;
 
   const uid = 'uid-123';
@@ -54,6 +58,7 @@ void main() {
     usersCollection = MockCollectionReference();
     docRef = MockDocumentReference();
     docSnapshot = MockDocumentSnapshot();
+    ensureUserDocument = MockEnsureUserDocument();
 
     when(
       () => firebaseAuth.authStateChanges(),
@@ -62,8 +67,20 @@ void main() {
     when(() => usersCollection.doc(any())).thenReturn(docRef);
     when(() => docRef.get()).thenAnswer((_) async => docSnapshot);
     when(() => docRef.set(any(), any())).thenAnswer((_) async {});
+    when(
+      () => ensureUserDocument(
+        any(),
+        any(),
+        displayName: any(named: 'displayName'),
+      ),
+    ).thenAnswer((_) async {});
 
-    controller = AuthController(firebaseAuth, googleSignIn, firestore);
+    controller = AuthController(
+      firebaseAuth,
+      googleSignIn,
+      firestore,
+      ensureUserDocument,
+    );
   });
 
   group('isCurrentAccountDeactivated', () {
@@ -129,9 +146,11 @@ void main() {
   });
 
   group('signInWithEmail', () {
-    test('signs in normally when the account is not deactivated', () async {
+    test('signs in and ensures the user document', () async {
       final user = MockUser();
       when(() => user.uid).thenReturn(uid);
+      when(() => user.email).thenReturn('a@b.com');
+      when(() => user.displayName).thenReturn(null);
       final credential = MockUserCredential();
       when(() => credential.user).thenReturn(user);
       when(
@@ -151,11 +170,16 @@ void main() {
           password: 'secret',
         ),
       ).called(1);
+      verify(
+        () => ensureUserDocument(uid, 'a@b.com', displayName: null),
+      ).called(1);
     });
 
     test('rejects and signs out when the account is deactivated', () async {
       final user = MockUser();
       when(() => user.uid).thenReturn(uid);
+      when(() => user.email).thenReturn('a@b.com');
+      when(() => user.displayName).thenReturn(null);
       final credential = MockUserCredential();
       when(() => credential.user).thenReturn(user);
       when(
@@ -180,7 +204,7 @@ void main() {
 
   group('signUpWithEmail', () {
     test(
-      'creates the account and seeds a default Firestore document',
+      'creates the account and ensures a Firestore document with registration',
       () async {
         final user = MockUser();
         when(() => user.uid).thenReturn(uid);
@@ -198,14 +222,9 @@ void main() {
 
         await controller.signUpWithEmail('new@user.com', 'secret');
 
-        final captured =
-            verify(() => docRef.set(captureAny(), any())).captured.single
-                as Map<String, dynamic>;
-        expect(captured['id'], uid);
-        expect(captured['email'], 'new@user.com');
-        expect(captured['enrolledCourseId'], 'default-course');
-        expect(captured['registrationId'], uid);
-        expect(captured['preferences'], isA<Map>());
+        verify(
+          () => ensureUserDocument(uid, 'new@user.com', displayName: null),
+        ).called(1);
       },
     );
   });
@@ -228,7 +247,7 @@ void main() {
       ).thenAnswer((_) async => credential);
     }
 
-    test('seeds a Firestore document only for a brand-new user', () async {
+    test('ensures a Firestore document for every Google sign-in', () async {
       final user = MockUser();
       when(() => user.uid).thenReturn(uid);
       when(() => user.displayName).thenReturn('Maria');
@@ -240,14 +259,16 @@ void main() {
 
       await controller.signInWithGoogle();
 
-      final captured =
-          verify(() => docRef.set(captureAny(), any())).captured.single
-              as Map<String, dynamic>;
-      expect(captured['id'], uid);
-      expect(captured['email'], 'maria@gmail.com');
+      verify(
+        () => ensureUserDocument(
+          uid,
+          'maria@gmail.com',
+          displayName: 'Maria',
+        ),
+      ).called(1);
     });
 
-    test('does not seed a document for a returning user', () async {
+    test('also ensures the document for a returning Google user', () async {
       final user = MockUser();
       when(() => user.uid).thenReturn(uid);
       when(() => user.displayName).thenReturn('Maria');
@@ -259,7 +280,13 @@ void main() {
 
       await controller.signInWithGoogle();
 
-      verifyNever(() => docRef.set(any(), any()));
+      verify(
+        () => ensureUserDocument(
+          uid,
+          'maria@gmail.com',
+          displayName: 'Maria',
+        ),
+      ).called(1);
     });
 
     test('rejects and signs out when the account is deactivated', () async {
@@ -318,6 +345,22 @@ void main() {
 
       verify(() => googleSignIn.signOut()).called(1);
       verify(() => firebaseAuth.signOut()).called(1);
+    });
+  });
+
+  group('ensureCurrentUserDocument', () {
+    test('delegates to EnsureUserDocument for the current user', () async {
+      final user = MockUser();
+      when(() => user.uid).thenReturn(uid);
+      when(() => user.email).thenReturn('a@b.com');
+      when(() => user.displayName).thenReturn('Ana');
+      when(() => firebaseAuth.currentUser).thenReturn(user);
+
+      await controller.ensureCurrentUserDocument();
+
+      verify(
+        () => ensureUserDocument(uid, 'a@b.com', displayName: 'Ana'),
+      ).called(1);
     });
   });
 }

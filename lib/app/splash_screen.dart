@@ -27,6 +27,7 @@ class _SplashScreenState extends State<SplashScreen> {
       }
 
       if (isSignedIn) {
+        await auth.ensureCurrentUserDocument();
         await sl<SettingsController>().load();
       }
       if (!mounted) return;

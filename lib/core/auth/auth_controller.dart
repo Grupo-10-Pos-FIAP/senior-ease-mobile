@@ -2,17 +2,25 @@ import 'package:cloud_firestore/cloud_firestore.dart';
 import 'package:firebase_auth/firebase_auth.dart' as firebase_auth;
 import 'package:flutter/foundation.dart';
 import 'package:google_sign_in/google_sign_in.dart';
+import 'package:senior_ease/core/auth/ensure_user_document.dart';
 
 class DeactivatedAccountException implements Exception {}
 
 class AuthController extends ChangeNotifier {
-  AuthController(this._firebaseAuth, this._googleSignIn, this._firestore) {
+  AuthController(
+    this._firebaseAuth,
+    this._googleSignIn,
+    this._firestore, [
+    EnsureUserDocument? ensureUserDocument,
+  ]) : _ensureUserDocument =
+           ensureUserDocument ?? EnsureUserDocument(_firestore) {
     _firebaseAuth.authStateChanges().listen((_) => notifyListeners());
   }
 
   final firebase_auth.FirebaseAuth _firebaseAuth;
   final GoogleSignIn _googleSignIn;
   final FirebaseFirestore _firestore;
+  final EnsureUserDocument _ensureUserDocument;
 
   bool _googleSignInInitialized = false;
 
@@ -26,6 +34,7 @@ class AuthController extends ChangeNotifier {
       email: email,
       password: password,
     );
+    await _prepareUserDocument(credential.user);
     await _rejectIfDeactivated(credential.user);
   }
 
@@ -34,7 +43,7 @@ class AuthController extends ChangeNotifier {
       email: email,
       password: password,
     );
-    await _seedUserDocument(credential.user!);
+    await _prepareUserDocument(credential.user);
   }
 
   Future<void> signInWithGoogle() async {
@@ -50,9 +59,7 @@ class AuthController extends ChangeNotifier {
       final userCredential = await _firebaseAuth.signInWithCredential(
         credential,
       );
-      if (userCredential.additionalUserInfo?.isNewUser ?? false) {
-        await _seedUserDocument(userCredential.user!);
-      }
+      await _prepareUserDocument(userCredential.user);
       await _rejectIfDeactivated(userCredential.user);
     } on GoogleSignInException catch (e) {
       if (e.code == GoogleSignInExceptionCode.canceled) return;
@@ -63,6 +70,11 @@ class AuthController extends ChangeNotifier {
   Future<void> signOut() async {
     await _googleSignIn.signOut();
     await _firebaseAuth.signOut();
+  }
+
+  /// Garante doc + matrícula sequencial para a sessão já autenticada (ex.: splash).
+  Future<void> ensureCurrentUserDocument() async {
+    await _prepareUserDocument(_firebaseAuth.currentUser);
   }
 
   Future<bool> isCurrentAccountDeactivated() async {
@@ -90,23 +102,19 @@ class AuthController extends ChangeNotifier {
     await signOut();
   }
 
-  Future<void> _seedUserDocument(firebase_auth.User user) {
-    return _firestore.collection('users').doc(user.uid).set({
-      'id': user.uid,
-      'fullName': user.displayName ?? '',
-      'email': user.email ?? '',
-      'phone': user.phoneNumber ?? '',
-      'disability': null,
-      'enrolledCourseId': 'default-course',
-      'registrationId': user.uid,
-      'preferences': {
-        'fontSize': 3,
-        'contrast': 1,
-        'spacing': 3,
-        'interfaceMode': 'simple',
-        'reinforcedVisualFeedback': false,
-        'confirmCriticalActions': true,
-      },
-    }, SetOptions(merge: true));
+  Future<void> _prepareUserDocument(firebase_auth.User? user) async {
+    if (user == null) return;
+    try {
+      await _ensureUserDocument(
+        user.uid,
+        user.email,
+        displayName: user.displayName,
+      );
+    } catch (error, stackTrace) {
+      debugPrint(
+        '[SeniorEase] Falha ao preparar dados do usuário no Firestore: $error',
+      );
+      debugPrint('$stackTrace');
+    }
   }
 }
