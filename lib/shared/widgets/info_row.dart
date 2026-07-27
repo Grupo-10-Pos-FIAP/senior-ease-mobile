@@ -2,10 +2,16 @@ import 'package:flutter/material.dart';
 import 'package:senior_ease/shared/theme/app_design_tokens.dart';
 
 class InfoRow extends StatelessWidget {
-  const InfoRow({super.key, required this.label, required this.value});
+  const InfoRow({
+    super.key,
+    required this.label,
+    required this.value,
+    this.helperText,
+  });
 
   final String label;
   final String value;
+  final String? helperText;
 
   @override
   Widget build(BuildContext context) {
@@ -31,6 +37,16 @@ class InfoRow extends StatelessWidget {
               fontWeight: AppDesignTokens.fontWeightSemibold,
             ),
           ),
+          if (helperText != null) ...[
+            SizedBox(height: AppDesignTokens.spacingXs),
+            Text(
+              helperText!,
+              style: TextStyle(
+                fontSize: AppDesignTokens.fontSizeSmall,
+                color: AppDesignTokens.colorContentSecondary,
+              ),
+            ),
+          ],
         ],
       ),
     );

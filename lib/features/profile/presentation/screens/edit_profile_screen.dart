@@ -34,9 +34,11 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
   bool _initialized = false;
   String? _nameError;
   String? _birthDateError;
-  String? _registrationError;
   String? _emailError;
   String? _phoneError;
+
+  static const _registrationFieldHint =
+      'Gerada automaticamente. Não pode ser alterada.';
 
   @override
   void dispose() {
@@ -94,7 +96,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     var valid = true;
     String? nameError;
     String? birthError;
-    String? registrationError;
     String? emailError;
     String? phoneError;
 
@@ -119,11 +120,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
       }
     }
 
-    if (_registrationController.text.trim().isEmpty) {
-      registrationError = 'Matrícula é obrigatória';
-      valid = false;
-    }
-
     final email = _emailController.text.trim();
     if (email.isEmpty || !email.contains('@')) {
       emailError = 'E-mail inválido';
@@ -142,7 +138,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     setState(() {
       _nameError = nameError;
       _birthDateError = birthError;
-      _registrationError = registrationError;
       _emailError = emailError;
       _phoneError = phoneError;
     });
@@ -157,7 +152,6 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
     final updated = current.copyWith(
       fullName: _nameController.text.trim(),
       birthDate: _birthDate,
-      registrationId: _registrationController.text.trim(),
       disabilityDescription: disabilityText.isEmpty ? null : disabilityText,
       clearDisability: disabilityText.isEmpty,
       email: _emailController.text.trim(),
@@ -272,7 +266,8 @@ class _EditProfileScreenState extends State<EditProfileScreen> {
                   AppTextField(
                     label: 'Matrícula',
                     controller: _registrationController,
-                    errorText: _registrationError,
+                    enabled: false,
+                    helperText: _registrationFieldHint,
                   ),
                   SizedBox(height: AppDesignTokens.spacingMd),
                   AppTextField(

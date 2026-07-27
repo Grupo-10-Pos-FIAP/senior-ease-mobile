@@ -91,6 +91,7 @@ class ProfileInfoScreen extends StatelessWidget {
             InfoRow(
               label: 'Matrícula',
               value: _orNotInformed(profile.registrationId),
+              helperText: 'Gerada automaticamente. Não pode ser alterada.',
             ),
             InfoRow(
               label: 'Possui alguma deficiência?',
