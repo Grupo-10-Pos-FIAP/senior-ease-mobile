@@ -30,6 +30,10 @@ class _ActivityCompletedScreenState extends State<ActivityCompletedScreen> {
   var _completedSteps = 0;
   var _totalSteps = 0;
 
+  bool get _hasGradedQuestions => _summary.total > 0;
+  bool get _hasIncorrectAnswers =>
+      _hasGradedQuestions && _summary.incorrect > 0;
+
   @override
   void didChangeDependencies() {
     super.didChangeDependencies();
@@ -71,21 +75,12 @@ class _ActivityCompletedScreenState extends State<ActivityCompletedScreen> {
                   vertical: AppDesignTokens.spacingLg,
                 ),
                 children: [
-                  Center(
-                    child: Container(
-                      width: 72,
-                      height: 72,
-                      decoration: const BoxDecoration(
-                        color: AppDesignTokens.colorBadgeScheduledForeground,
-                        shape: BoxShape.circle,
-                      ),
-                      alignment: Alignment.center,
-                      child: const Icon(Icons.check, color: Colors.white, size: 40),
-                    ),
-                  ),
+                  Center(child: _CompletedIcon(hasIncorrect: _hasIncorrectAnswers)),
                   SizedBox(height: AppDesignTokens.spacingLg),
                   Text(
-                    'Parabéns! Você concluiu a atividade',
+                    _hasIncorrectAnswers
+                        ? 'Você concluiu a atividade. Veja seu resultado.'
+                        : 'Parabéns! Você concluiu a atividade',
                     textAlign: TextAlign.center,
                     style: TextStyle(
                       fontSize: AppDesignTokens.fontSizeH4,
@@ -104,29 +99,23 @@ class _ActivityCompletedScreenState extends State<ActivityCompletedScreen> {
                     ),
                   ),
                   SizedBox(height: AppDesignTokens.spacingLg),
-                  if (_summary.total > 0) ...[
+                  if (_hasGradedQuestions) ...[
                     Text(
-                      _summary.incorrect > 0
-                          ? 'Você acertou ${_summary.correct} de ${_summary.total} '
-                                '${_summary.total == 1 ? 'pergunta' : 'perguntas'}. '
-                                'Errou ${_summary.incorrect}.'
-                          : 'Você acertou ${_summary.correct} de ${_summary.total} '
-                                '${_summary.total == 1 ? 'pergunta' : 'perguntas'}. '
-                                'Muito bem!',
+                      formatAnswerSummaryMessage(_summary),
                       textAlign: TextAlign.center,
                       style: TextStyle(
                         fontSize: AppDesignTokens.fontSizeBody,
                         height: AppDesignTokens.lineHeightBody,
-                        color: AppDesignTokens.colorContentDefault,
+                        color: AppDesignTokens.colorContentPrimary,
                       ),
                     ),
                     SizedBox(height: AppDesignTokens.spacingLg),
                     Text(
-                      'Suas respostas',
+                      _summary.total == 1 ? 'Sua resposta' : 'Suas respostas',
                       style: TextStyle(
                         fontSize: AppDesignTokens.fontSizeH4,
                         fontWeight: AppDesignTokens.fontWeightBold,
-                        color: AppDesignTokens.colorContentDefault,
+                        color: AppDesignTokens.colorContentPrimary,
                       ),
                     ),
                     SizedBox(height: AppDesignTokens.spacingMd),
@@ -142,7 +131,7 @@ class _ActivityCompletedScreenState extends State<ActivityCompletedScreen> {
                       style: TextStyle(
                         fontSize: AppDesignTokens.fontSizeBody,
                         height: AppDesignTokens.lineHeightBody,
-                        color: AppDesignTokens.colorContentDefault,
+                        color: AppDesignTokens.colorContentPrimary,
                       ),
                     ),
                     SizedBox(height: AppDesignTokens.spacingLg),
@@ -155,11 +144,53 @@ class _ActivityCompletedScreenState extends State<ActivityCompletedScreen> {
                         (route) => false,
                       );
                     },
-                    variant: ButtonVariant.primary,
+                    variant: ButtonVariant.secondary,
+                    leadingIcon: const Icon(Icons.arrow_back),
                   ),
                 ],
               ),
       ),
+    );
+  }
+}
+
+class _CompletedIcon extends StatelessWidget {
+  const _CompletedIcon({required this.hasIncorrect});
+
+  final bool hasIncorrect;
+
+  @override
+  Widget build(BuildContext context) {
+    if (hasIncorrect) {
+      return Container(
+        width: 64,
+        height: 64,
+        decoration: BoxDecoration(
+          color: AppDesignTokens.colorWarningSurface,
+          shape: BoxShape.circle,
+          border: Border.all(
+            color: AppDesignTokens.colorWarningBorder,
+            width: 2,
+          ),
+        ),
+        alignment: Alignment.center,
+        child: Icon(
+          Icons.assignment_outlined,
+          color: AppDesignTokens.colorContentPrimary,
+          size: 32,
+        ),
+      );
+    }
+
+    return Container(
+      width: 64,
+      height: 64,
+      decoration: const BoxDecoration(
+        color: AppDesignTokens.colorBadgeScheduledForeground,
+        shape: BoxShape.circle,
+      ),
+      alignment: Alignment.center,
+      child: const Icon(Icons.check, color: Colors.white, size: 36),
     );
   }
 }
@@ -171,12 +202,12 @@ class _AnswerResultCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
-    final statusColor = result.isCorrect
-        ? AppDesignTokens.colorBadgeScheduledForeground
-        : AppDesignTokens.colorErrorOnSurface;
     final borderColor = result.isCorrect
         ? AppDesignTokens.colorBadgeScheduledForeground
-        : AppDesignTokens.colorErrorOnSurface;
+        : AppDesignTokens.colorWarningBorder;
+    final statusColor = result.isCorrect
+        ? AppDesignTokens.colorBadgeScheduledForeground
+        : AppDesignTokens.colorContentPrimary;
 
     return Container(
       width: double.infinity,
@@ -189,30 +220,25 @@ class _AnswerResultCard extends StatelessWidget {
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
-          Row(
-            children: [
-              Icon(
-                result.isCorrect ? Icons.check_circle : Icons.cancel,
-                color: statusColor,
-              ),
-              SizedBox(width: AppDesignTokens.spacingSm),
-              Text(
-                result.isCorrect ? 'Acertou' : 'Errou',
-                style: TextStyle(
-                  fontSize: AppDesignTokens.fontSizeBody,
-                  fontWeight: AppDesignTokens.fontWeightBold,
-                  color: statusColor,
-                ),
-              ),
-            ],
-          ),
-          SizedBox(height: AppDesignTokens.spacingSm),
           Text(
-            result.question,
+            result.isCorrect
+                ? '🎉 Parabéns! Você respondeu corretamente. Continue assim!'
+                : '💙 A resposta não foi a correta. Não tem problema! '
+                    'Veja abaixo qual era a resposta certa.',
             style: TextStyle(
               fontSize: AppDesignTokens.fontSizeBody,
               fontWeight: AppDesignTokens.fontWeightBold,
-              color: AppDesignTokens.colorContentDefault,
+              height: AppDesignTokens.lineHeightBody,
+              color: statusColor,
+            ),
+          ),
+          SizedBox(height: AppDesignTokens.spacingSm),
+          Text(
+            'Pergunta: ${result.question}',
+            style: TextStyle(
+              fontSize: AppDesignTokens.fontSizeBody,
+              fontWeight: AppDesignTokens.fontWeightSemibold,
+              color: AppDesignTokens.colorContentPrimary,
             ),
           ),
           SizedBox(height: AppDesignTokens.spacingSm),
@@ -226,7 +252,7 @@ class _AnswerResultCard extends StatelessWidget {
           if (!result.isCorrect) ...[
             SizedBox(height: AppDesignTokens.spacingXs),
             Text(
-              'Resposta correta: ${result.correctOptionLabel}',
+              'Resposta certa: ${result.correctOptionLabel}',
               style: TextStyle(
                 fontSize: AppDesignTokens.fontSizeBody,
                 color: AppDesignTokens.colorContentSecondary,

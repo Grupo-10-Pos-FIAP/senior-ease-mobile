@@ -76,6 +76,33 @@ void main() {
     expect(summary.incorrect, 1);
   });
 
+  test('formatAnswerSummaryMessage incentiva aprendizado sem contar erros', () {
+    expect(
+      formatAnswerSummaryMessage(
+        const ActivityAnswerSummary(total: 1, correct: 1, incorrect: 0),
+      ),
+      'Parabéns! Você foi muito bem. Continue assim!',
+    );
+    expect(
+      formatAnswerSummaryMessage(
+        const ActivityAnswerSummary(total: 3, correct: 3, incorrect: 0),
+      ),
+      'Parabéns! Você respondeu todas as 3 perguntas corretamente. Continue assim!',
+    );
+    expect(
+      formatAnswerSummaryMessage(
+        const ActivityAnswerSummary(total: 1, correct: 0, incorrect: 1),
+      ),
+      'Veja abaixo como foi a pergunta. O importante é aprender.',
+    );
+    expect(
+      formatAnswerSummaryMessage(
+        const ActivityAnswerSummary(total: 2, correct: 1, incorrect: 1),
+      ),
+      'Veja abaixo como foram as perguntas. O importante é aprender.',
+    );
+  });
+
   test('isMultipleChoiceAnswerCorrect compara answer com gabarito', () {
     expect(steps[1].isMultipleChoiceAnswerCorrect, isTrue);
     expect(steps[2].isMultipleChoiceAnswerCorrect, isFalse);
